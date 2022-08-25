@@ -52,6 +52,7 @@ NOTE: You might have to do the above steps for helm with sudo if you're running 
 We next have to install `kube-prometheus-stack`. But before that, a word on how we want the installation to work. Check out [values.yaml](prometheus-install/values.yaml) to verify that grafana is not being installed. In other words, `grafana.enabled` is false. We've also for the moment not enabled any storage for metrics, so we're just using temporary storage. So, `storageSpec.emptyDir` is set to `Memory`. We also need to specify the address of `kube-scheduler` and `kube-apiserver` so that Prometheus can scrape metrics from them. These configs are specified in [prometheus.yaml](prometheus-install/prometheus.yaml). Note that we're exposing Prometheus metrics on `localhost:9090`.  
 To install Prometheus, we run  
 ```shell  
+$ ./k3s kubectl create namespace monitoring  
 $ helm install --values prometheus-install/values.yaml -f prometheus-install/prometheus.yaml -n monitoring monitoring prometheus-community/kube-prometheus-stack --kubeconfig /etc/rancher/k3s/k3s.yaml
 ```     
 Check if prometheus is running as expected.  
