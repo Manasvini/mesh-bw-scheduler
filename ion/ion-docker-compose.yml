@@ -1,0 +1,7 @@
+version: "3"
+services:
+  sfu:
+    image: pionwebrtc/ion-sfu:latest-grpc
+    ports:
+    - 50051:50051
+    - 5000-5020:5000-5020/udp
