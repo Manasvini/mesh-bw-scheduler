@@ -54,6 +54,11 @@ To install Prometheus, we run
 ```shell  
 $ helm install --values prometheus-install/values.yaml -f prometheus-install/prometheus.yaml -n monitoring monitoring prometheus-community/kube-prometheus-stack --kubeconfig /etc/rancher/k3s/k3s.yaml
 ```     
+Check if prometheus is running as expected.  
+```shell  
+$ ./k3s kubectl get pods -n monitoring  
+```  
+Make sure that `monitoring-kube-prometheus-prometheus` status is RUNNING. 
 By default, node exporter (which exposes node metrics) is enabled, and exposes metrics in port 9100. Prometheus in turn scrapes these metrics from all the nodes and exposes them on port 9090.  
 That's all! We're done with the setup.  
 
