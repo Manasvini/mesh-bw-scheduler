@@ -45,8 +45,8 @@ This should produce the `sfu-service.yaml` and `sfu-deployment.yaml` files. We c
 We use the `kube-prometheus-stack` which packages node-exporter, grafana and prometheus-operator for deploying onto a k8s cluster. We don't particularly need grafana right now, so I've disabled it in the config. We don't use NFS for storage, jsut temporary store, so metrics don't persist. More on this later. First we install helm which is the package manager for k3s.  
 ```shell  
 wget https://get.helm.sh/helm-v3.9.4-linux-amd64.tar.gz   
-tar -xzvf helm-v3.9.3-linux-amd64.tar.gz  
-chmod +x helm/helm  
+tar -xzvf helm-v3.9.4-linux-amd64.tar.gz  
+chmod +x linux-amd64/helm  
 ```  
 Next, add kube-prometheus-stack chart to helm.  
 ```shell  
