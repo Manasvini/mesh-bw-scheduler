@@ -35,7 +35,7 @@ chmod +x kompose
 ```  
 Next, feed PION's docker-compose.yml to kompose.   
  ```shell  
-./kompose convert -f ion/ion-docker-compose.yml  
+./kompose convert -f mesh-bw-scheduler/ion/ion-docker-compose.yml
 ```  
 This should produce the `sfu-service.yaml` and `sfu-deployment.yaml` files. We can now deploy the service onto our cluster.  
 ```shell  
