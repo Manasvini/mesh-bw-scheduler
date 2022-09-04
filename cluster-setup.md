@@ -7,20 +7,25 @@ $ wget https://github.com/k3s-io/k3s/releases/download/v1.24.4%2Bk3s1/k3s
 ```  
 Make k3s executable  
 ```shell  
-$ chmod +x k3s  
+chmod +x k3s  
 ```  
+Start the server
+```shell
+sudo ./k3s server
+```
 So we now have the server up and running. You can check and see the nodes in the cluster  
 ```shell  
-$ sudo ./k3s kubectl get nodes  
+sudo ./k3s kubectl get nodes  
 ```  
 It should list at least one node.  
 Now if you want to add nodes to the cluster, similarly install k3s on the other nodes. To start a node as a k3s agent, run  
 ```shell  
-$ sudo ./k3s agent --server https://server_ip:6443 --token [k3s_token]  
+sudo cat /var/lib/rancher/k3s/server/node-token
+sudo ./k3s agent --server https://server_ip:6443 --token [k3s_token]  
 ```  
 You can find the k3s server token in `/var/lib/rancher/k3s/server/node-token`. Et voila! We have a 2 node cluster. This can be verified by running the nodes command again.  
 ```shell  
-$ sudo ./k3s kubectl get nodes  
+sudo ./k3s kubectl get nodes  
 ```  
 ## PION Setup  
 We need to create a service deployment yaml from the [docker-compose.yml](ion/ion-docker-compose.yml) for PION (Check `ion/` directory). We use [kompose](https://github.com/kubernetes/kompose) to do this. First download the kompose binary like so:  
