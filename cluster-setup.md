@@ -27,6 +27,11 @@ You can find the k3s server token in `/var/lib/rancher/k3s/server/node-token`. E
 ```shell  
 sudo ./k3s kubectl get nodes  
 ```  
+
+Get list of running pods on k3s
+```shell
+sudo ./k3s  kubectl get pods --all-namespaces
+```
 ## PION Setup  
 We need to create a service deployment yaml from the [docker-compose.yml](ion/ion-docker-compose.yml) for PION (Check `ion/` directory). We use [kompose](https://github.com/kubernetes/kompose) to do this. First download the kompose binary like so:  
 ```shell  
@@ -58,11 +63,11 @@ We next have to install `kube-prometheus-stack`. But before that, a word on how 
 To install Prometheus, we run  
 ```shell  
 ./k3s kubectl create namespace monitoring  
-helm install --values prometheus-install/values.yaml -f prometheus-install/prometheus.yaml -n monitoring monitoring prometheus-community/kube-prometheus-stack --kubeconfig /etc/rancher/k3s/k3s.yaml
+./linux-amd64/helm install --values prometheus-install/values.yaml -f prometheus-install/prometheus.yaml -n monitoring monitoring prometheus-community/kube-prometheus-stack --kubeconfig /etc/rancher/k3s/k3s.yaml
 ```     
 Check if prometheus is running as expected.  
 ```shell  
-./k3s kubectl get pods -n monitoring  
+sudo ./k3s kubectl get pods -n monitoring  
 ```  
 Make sure that `monitoring-kube-prometheus-prometheus` status is RUNNING. 
 By default, node exporter (which exposes node metrics) is enabled, and exposes metrics in port 9100. Prometheus in turn scrapes these metrics from all the nodes and exposes them on port 9090.  
