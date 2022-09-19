@@ -2,3 +2,5 @@ helm/*
 k3s
 kompose
 prometheus-client/main
+
+/*.html

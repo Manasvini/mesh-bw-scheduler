@@ -85,3 +85,56 @@ Run a curl command to the ip address of `monitoring-kube-prometheus-prometheus` 
 curl 'http://<ip>:9090/api/v1/query?query=up'
 ```
 
+## Master setup
+
+Master is on cv2 with ip `192.168.160.23`.
+
+First install docker using the `install_docker.sh` script.
+
+First install docker registry using the `install_registry.sh` script.
+
+### Creating docker images
+
+Go to a folder with a Dockerfile and do the following
+```shell
+sudo docker image build -t <local_image_name> .
+```
+
+### Master registry updates
+
+Images can be listed from registry using the following command
+```shell
+curl -X GET 192.168.160.23:5000/v2/_catalog
+```
+
+Tag new images using the following command on master
+```shell
+sudo docker tag <local_image> localhost:5000/<name_in_registry>
+sudo docker push localhost:5000/<name_in_registry>
+```
+
+Now remove the local images
+```shell
+sudo docker image remove <local_image> 
+sudo docker image remove localhost:5000/<name_in_registry>
+```
+
+Now try pulling the image from any machine
+```shell
+sudo docker image pull 192.168.160.23:5000/simple_flask_container
+```
+
+### Connecting to docker registry from any machine
+
+Enable registry http calls by adding the `{"insecure-registries":["192.168.160.23:5000"]}` into `/etc/docker/daemon.json`. Also add `` toDOCKER_OPTS="--config-file=/etc/docker/daemon.json" `/etc/default/docker`
+
+Restart docker service
+```shell
+sudo systemctl stop docker
+sudo systemctl start docker
+```
+
+Now create a container from the image
+```shell
+sudo docker run -p 6000:6000 -d 192.168.160.23:5000/<image_name>
+```
