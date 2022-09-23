@@ -33,6 +33,11 @@ Get list of running pods on k3s
 ```shell
 sudo ./k3s  kubectl get pods --all-namespaces
 ```
+
+Kill k3s instances
+```
+ps -aux | grep k3 | awk '{ print $2 }' | while IFS= read -r line; do sudo kill -9 $line; done
+```
 ## PION Setup  
 We need to create a service deployment yaml from the [docker-compose.yml](ion/ion-docker-compose.yml) for PION (Check `ion/` directory). We use [kompose](https://github.com/kubernetes/kompose) to do this. First download the kompose binary like so:  
 ```shell  
@@ -126,7 +131,7 @@ sudo docker image pull 192.168.160.23:5000/simple_flask_container
 
 ### Connecting to docker registry from any machine
 
-Enable registry http calls by adding the `{"insecure-registries":["192.168.160.23:5000"]}` into `/etc/docker/daemon.json`. Also add `` toDOCKER_OPTS="--config-file=/etc/docker/daemon.json" `/etc/default/docker`
+Enable registry http calls by adding the `{"insecure-registries":["192.168.160.23:5000"]}` into `/etc/docker/daemon.json`. Also add ` DOCKER_OPTS="--config-file=/etc/docker/daemon.json"` to `/etc/default/docker`
 
 Restart docker service
 ```shell
@@ -137,4 +142,38 @@ sudo systemctl start docker
 Now create a container from the image
 ```shell
 sudo docker run -p 6000:6000 -d 192.168.160.23:5000/<image_name>
+```
+
+## Running a kubernetes YAML
+
+```shell
+sudo ./k3s kubectl apply -f simple_flask.yaml
+```
+
+```shell
+sudo ./k3s kubectl get deployments
+sudo ./k3s kubectl get services
+```
+
+Delete after done
+```shell
+sudo ./k3s kubectl delete -f simple_flask.yaml
+```
+
+## Copy the container from docker into containerd
+
+Create the tar from the dockerfile. Run these commands from the Dockerfile directory.
+```shell
+sudo docker build -t <image_name:version> .
+sudo docker save --output <tar_file> <image_name:version>
+```
+
+Copy the tar to ALL pods
+```shell
+scp simple_flask_container.tar cv2:/home/cvuser/mesh/simple_flask_container.tar
+```
+
+Import the tar
+```shell
+sudo ./k3s ctr images import simple_flask_container.tar
 ```
