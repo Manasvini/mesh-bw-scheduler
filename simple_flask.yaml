@@ -14,7 +14,8 @@ spec:
     spec:
       containers:
       - name: simple-flask
-        image: 192.168.160.23:5000/simple_flask_container
+        image: simple_flask_container
+        imagePullPolicy: Never
         ports:
         - containerPort: 6000
 ---
@@ -26,7 +27,7 @@ metadata:
 spec:
   type: NodePort
   selector:
-    bb: web
+    app: simple-flask
   ports:
   - port: 6000
     targetPort: 6000
