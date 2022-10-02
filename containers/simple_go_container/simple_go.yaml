@@ -1,20 +1,20 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: simple-flask
+  name: simple-go
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: simple-flask
+      app: simple-go
   template:
     metadata:
       labels:
-        app: simple-flask
+        app: simple-go
     spec:
       containers:
-      - name: simple-flask
-        image: simple_flask_container
+      - name: simple-go
+        image: simple_go_app
         imagePullPolicy: Never
         ports:
         - containerPort: 6000
@@ -22,13 +22,14 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: simple-flask-entrypoint
+  name: simple-go-entrypoint
   namespace: default
 spec:
   type: NodePort
   selector:
-    app: simple-flask
+    app: simple-go
   ports:
-  - port: 6000
-    targetPort: 6000
-    nodePort: 30000
+  - port: 6001
+    targetPort: 6001
+    nodePort: 30001
+
