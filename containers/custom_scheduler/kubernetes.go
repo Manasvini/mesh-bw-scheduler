@@ -176,7 +176,7 @@ func getUnscheduledPods() ([]*Pod, error) {
 	}
 
 	for _, pod := range podList.Items {
-		if pod.Metadata.Annotations["scheduler.alpha.kubernetes.io/name"] == schedulerName {
+		if pod.Spec.SchedulerName == schedulerName {
 			unscheduledPods = append(unscheduledPods, &pod)
 		}
 	}

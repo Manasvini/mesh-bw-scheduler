@@ -6,3 +6,4 @@ prometheus-client/main
 /*.html
 
 .DS_Store
+containers/custom_scheduler/custom_scheduler
