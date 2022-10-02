@@ -4,3 +4,5 @@ kompose
 prometheus-client/main
 
 /*.html
+
+.DS_Store
