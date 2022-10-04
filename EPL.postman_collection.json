@@ -1,0 +1,334 @@
+{
+	"info": {
+		"_postman_id": "6502ffe8-867b-41a4-b4ea-8d3ca2b5a5c5",
+		"name": "EPL",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "pods",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8003/api/v1/namespaces/default/pods/",
+					"host": [
+						"localhost"
+					],
+					"port": "8003",
+					"path": [
+						"api",
+						"v1",
+						"namespaces",
+						"default",
+						"pods",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "nodes",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true,
+				"disabledSystemHeaders": {
+					"content-type": true
+				}
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/strategic-merge-patch+json",
+						"type": "default"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"metadata\": {\n        \"annotations\": {\n            \"epl/staticinstance\": \"test1\",\n            \"epl/somethingtodelete\": null\n        }\n    }\n}\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8003/api/v1/nodes/cv2",
+					"host": [
+						"localhost"
+					],
+					"port": "8003",
+					"path": [
+						"api",
+						"v1",
+						"nodes",
+						"cv2"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "nodes annotate",
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {
+					"content-type": true
+				}
+			},
+			"request": {
+				"method": "PATCH",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/strategic-merge-patch+json",
+						"type": "default"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"metadata\": {\n        \"annotations\": {\n            \"epl/staticinstance\": \"test1\",\n            \"epl/somethingtodelete\": null\n        }\n    }\n}\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8003/api/v1/nodes/cv2",
+					"host": [
+						"localhost"
+					],
+					"port": "8003",
+					"path": [
+						"api",
+						"v1",
+						"nodes",
+						"cv2"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "watch/nodes",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8003/api/v1/watch/nodes",
+					"host": [
+						"localhost"
+					],
+					"port": "8003",
+					"path": [
+						"api",
+						"v1",
+						"watch",
+						"nodes"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "services",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8003/api/v1/namespaces/epl/services/",
+					"host": [
+						"localhost"
+					],
+					"port": "8003",
+					"path": [
+						"api",
+						"v1",
+						"namespaces",
+						"epl",
+						"services",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "services delete",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "localhost:8003/api/v1/namespaces/epl/services/simple-flask-entrypoint",
+					"host": [
+						"localhost"
+					],
+					"port": "8003",
+					"path": [
+						"api",
+						"v1",
+						"namespaces",
+						"epl",
+						"services",
+						"simple-flask-entrypoint"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "services create",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"apiVersion\": \"v1\",\n  \"kind\": \"Service\",\n  \"metadata\": {\n    \"name\": \"simple-flask-entrypoint\",\n    \"namespace\": \"epl\"\n  },\n  \"spec\": {\n    \"type\": \"NodePort\",\n    \"selector\": {\n      \"app\": \"simple-flask\"\n    },\n    \"ports\": [\n      {\n        \"port\": 6000,\n        \"targetPort\": 6000,\n        \"nodePort\": 30000\n      }\n    ]\n  }\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8003/api/v1/namespaces/epl/services",
+					"host": [
+						"localhost"
+					],
+					"port": "8003",
+					"path": [
+						"api",
+						"v1",
+						"namespaces",
+						"epl",
+						"services"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "deployments",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8003/apis/apps/v1/namespaces/epl/deployments/",
+					"host": [
+						"localhost"
+					],
+					"port": "8003",
+					"path": [
+						"apis",
+						"apps",
+						"v1",
+						"namespaces",
+						"epl",
+						"deployments",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "deployments delete",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "localhost:8003/apis/apps/v1/namespaces/epl/deployments/simple-flask",
+					"host": [
+						"localhost"
+					],
+					"port": "8003",
+					"path": [
+						"apis",
+						"apps",
+						"v1",
+						"namespaces",
+						"epl",
+						"deployments",
+						"simple-flask"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "deployments create",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"apiVersion\": \"apps/v1\",\n  \"kind\": \"Deployment\",\n  \"metadata\": {\n    \"name\": \"simple-flask\",\n    \"namespace\": \"epl\"\n  },\n  \"spec\": {\n    \"replicas\": 1,\n    \"selector\": {\n      \"matchLabels\": {\n        \"app\": \"simple-flask\"\n      }\n    },\n    \"template\": {\n      \"metadata\": {\n        \"labels\": {\n          \"app\": \"simple-flask\"\n        }\n      },\n      \"spec\": {\n        \"containers\": [\n          {\n            \"name\": \"simple-flask\",\n            \"image\": \"simple_flask_container\",\n            \"imagePullPolicy\": \"Never\",\n            \"ports\": [\n              {\n                \"containerPort\": 6000\n              }\n            ]\n          }\n        ]\n      }\n    }\n  }\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8003/apis/apps/v1/namespaces/epl/deployments",
+					"host": [
+						"localhost"
+					],
+					"port": "8003",
+					"path": [
+						"apis",
+						"apps",
+						"v1",
+						"namespaces",
+						"epl",
+						"deployments"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "namespaces",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true,
+				"disabledSystemHeaders": {}
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/strategic-merge-patch+json",
+						"type": "default",
+						"disabled": true
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"metadata\": {\n        \"name\": \"epl\"\n    }\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8003/api/v1/namespaces/epl",
+					"host": [
+						"localhost"
+					],
+					"port": "8003",
+					"path": [
+						"api",
+						"v1",
+						"namespaces",
+						"epl"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

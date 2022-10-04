@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: simple-go
+  namespace: epl
 spec:
   replicas: 1
   selector:
@@ -23,7 +24,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: simple-go-entrypoint
-  namespace: default
+  namespace: epl
 spec:
   type: NodePort
   selector:
