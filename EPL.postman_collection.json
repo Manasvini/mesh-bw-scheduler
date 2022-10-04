@@ -88,7 +88,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"metadata\": {\n        \"annotations\": {\n            \"epl/staticinstance\": \"test1\",\n            \"epl/somethingtodelete\": null\n        }\n    }\n}\n",
+					"raw": "{\n    \"metadata\": {\n        \"annotations\": {\n            \"epl/staticinstance\": null\n        }\n    }\n}\n",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -228,6 +228,50 @@
 						"epl",
 						"deployments",
 						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "deployments annotate",
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {
+					"content-type": true
+				}
+			},
+			"request": {
+				"method": "PATCH",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/strategic-merge-patch+json",
+						"type": "default"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"metadata\": {\n        \"annotations\": {\n            \"epl/staticinstance\": \"test1\"\n        }\n    }\n}\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8003/apis/apps/v1/namespaces/epl/deployments/simple-flask",
+					"host": [
+						"localhost"
+					],
+					"port": "8003",
+					"path": [
+						"apis",
+						"apps",
+						"v1",
+						"namespaces",
+						"epl",
+						"deployments",
+						"simple-flask"
 					]
 				}
 			},
