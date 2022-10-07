@@ -47,7 +47,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"metadata\": {\n        \"annotations\": {\n            \"epl/staticinstance\": \"test1\",\n            \"epl/somethingtodelete\": null\n        }\n    }\n}\n",
+					"raw": "",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -55,7 +55,7 @@
 					}
 				},
 				"url": {
-					"raw": "localhost:8003/api/v1/nodes/cv2",
+					"raw": "localhost:8003/api/v1/nodes/cv1",
 					"host": [
 						"localhost"
 					],
@@ -64,7 +64,7 @@
 						"api",
 						"v1",
 						"nodes",
-						"cv2"
+						"cv1"
 					]
 				}
 			},
@@ -138,7 +138,7 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "localhost:8003/api/v1/namespaces/epl/services/",
+					"raw": "localhost:8003/api/v1/namespaces/monitoring/services/",
 					"host": [
 						"localhost"
 					],
@@ -147,7 +147,7 @@
 						"api",
 						"v1",
 						"namespaces",
-						"epl",
+						"monitoring",
 						"services",
 						""
 					]
@@ -369,6 +369,32 @@
 						"v1",
 						"namespaces",
 						"epl"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "graphana get",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:9093/api/v1/query?query=up",
+					"host": [
+						"localhost"
+					],
+					"port": "9093",
+					"path": [
+						"api",
+						"v1",
+						"query"
+					],
+					"query": [
+						{
+							"key": "query",
+							"value": "up"
+						}
 					]
 				}
 			},

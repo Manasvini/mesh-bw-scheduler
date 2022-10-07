@@ -75,6 +75,11 @@ Check if prometheus is running as expected.
 ```shell  
 sudo ./k3s kubectl get pods -n monitoring  
 ```  
+
+Expose this service
+```
+sudo ./k3s kubectl port-forward prometheus-monitoring-kube-prometheus-prometheus-0 9091:9090 -n monitoring
+```
 Make sure that `monitoring-kube-prometheus-prometheus` status is RUNNING. 
 By default, node exporter (which exposes node metrics) is enabled, and exposes metrics in port 9100. Prometheus in turn scrapes these metrics from all the nodes and exposes them on port 9090.  
 That's all! We're done with the setup.  
