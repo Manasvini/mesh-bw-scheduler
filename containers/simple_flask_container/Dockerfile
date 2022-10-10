@@ -15,4 +15,4 @@ RUN pip install -r requirements.txt
 ENTRYPOINT [ "python" ]
 
 EXPOSE 6000
-CMD ["python", "main.py"]
+CMD ["main.py"]
