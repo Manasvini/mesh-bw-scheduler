@@ -191,7 +191,12 @@ Remove annotations
 sudo ./k3s kubectl annotate node cv1 prometheus.io/scrape-
 ```
 
+Go inside a pod
+```shell
+sudo ./k3s kubectl exec -it simple-go-78c6799577-q6phg -n epl -- /bin/bash
+```
 
+Tunnel for ssh
 ```shell
 ssh -N cvuser@192.168.160.23 -L 8002:localhost:8001
 ```
