@@ -1,5 +1,7 @@
 #!/bin/bash
 
+git pull
+
 echo "Creating image on master"
 scp -r ~/mesh/mesh-bw-scheduler/containers/$1 cvuser@cv2:~/mesh/tmp/
 scp -r ~/mesh/mesh-bw-scheduler/scripts/ cvuser@cv2:~/mesh/tmp/scripts/

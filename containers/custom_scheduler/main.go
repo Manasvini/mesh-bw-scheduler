@@ -18,10 +18,10 @@ import (
 	"os"
 	"os/signal"
 	"sync"
-	"syscall"
+	"syscall" 
 )
 
-const schedulerName = "epl_sched"
+const schedulerName = "epl-scheduler"
 
 func main() {
 	log.Println("Starting epl scheduler...")
