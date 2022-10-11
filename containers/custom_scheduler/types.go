@@ -116,7 +116,15 @@ type ListMetadata struct {
 
 type Metadata struct {
 	Name            string            `json:"name"`
-	GenerateName    string            `json:"generateName"`
+	ResourceVersion string            `json:"resourceVersion"`
+	Labels          map[string]string `json:"labels"`
+	Annotations     map[string]string `json:"annotations"`
+	Uid             string            `json:"uid"`
+}
+
+type Deployment struct {
+	Kind            string            `json:"kind"`
+	Metadata    	Metadata          `json:"metadata"`
 	ResourceVersion string            `json:"resourceVersion"`
 	Labels          map[string]string `json:"labels"`
 	Annotations     map[string]string `json:"annotations"`

@@ -69,11 +69,7 @@ func schedulePod(pod *Pod) error {
 	if len(nodes) == 0 {
 		return fmt.Errorf("Unable to schedule pod (%s) failed to fit in any node", pod.Metadata.Name)
 	}
-	node, err := bestPrice(nodes)
-	if err != nil {
-		return err
-	}
-	err = bind(pod, node)
+	err = bind(pod, nodes[0])
 	if err != nil {
 		return err
 	}

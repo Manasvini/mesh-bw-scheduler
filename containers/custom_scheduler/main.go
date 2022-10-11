@@ -21,10 +21,10 @@ import (
 	"syscall"
 )
 
-const schedulerName = "hightower"
+const schedulerName = "epl_sched"
 
 func main() {
-	log.Println("Starting custom scheduler...")
+	log.Println("Starting epl scheduler...")
 
 	doneChan := make(chan struct{})
 	var wg sync.WaitGroup

@@ -22,18 +22,17 @@ import (
 	"log"
 	"net/http"
 	"net/url"
-	"strconv"
-	"strings"
 	"time"
 )
 
 var (
 	apiHost           = "127.0.0.1:8001"
-	bindingsEndpoint  = "/api/v1/namespaces/default/pods/%s/binding/"
-	eventsEndpoint    = "/api/v1/namespaces/default/events"
+	bindingsEndpoint  = "/api/v1/namespaces/epl/pods/%s/binding/"
+	eventsEndpoint    = "/api/v1/watch/namespaces/epl/events"
 	nodesEndpoint     = "/api/v1/nodes"
-	podsEndpoint      = "/api/v1/pods"
-	watchPodsEndpoint = "/api/v1/watch/pods"
+	podsEndpoint      = "/api/v1/namespaces/epl/pods/"
+	watchPodsEndpoint = "/api/v1/watch/namespaces/epl/pods"
+	configEndpoint	  = "/apis/apps/v1/namespaces/epl/deployments/epl-scheduler"
 )
 
 func postEvent(event Event) error {
@@ -214,8 +213,34 @@ func getPods() (*PodList, error) {
 	return &podList, nil
 }
 
-type ResourceUsage struct {
-	CPU int
+func getConfig() (string, error) {
+	var deployment Deployment
+
+	request := &http.Request{
+		Header: make(http.Header),
+		Method: http.MethodGet,
+		URL: &url.URL{
+			Host:     apiHost,
+			Path:     configEndpoint,
+			Scheme:   "http",
+		},
+	}
+	request.Header.Set("Accept", "application/json, */*")
+
+	resp, err := http.DefaultClient.Do(request)
+	if err != nil {
+		return "", err
+	}
+	err = json.NewDecoder(resp.Body).Decode(&deployment)
+	if err != nil {
+		return "", err
+	}
+
+	if val, ok := deployment.Metadata.Annotations["epl/staticinstance"]; ok {
+		return val, nil
+	}
+
+	return "", nil
 }
 
 func fit(pod *Pod) ([]Node, error) {
@@ -224,91 +249,34 @@ func fit(pod *Pod) ([]Node, error) {
 		return nil, err
 	}
 
-	podList, err := getPods()
+	config, err := getConfig()
 	if err != nil {
 		return nil, err
 	}
 
-	resourceUsage := make(map[string]*ResourceUsage)
-	for _, node := range nodeList.Items {
-		resourceUsage[node.Metadata.Name] = &ResourceUsage{}
-	}
-
-	for _, p := range podList.Items {
-		if p.Spec.NodeName == "" {
-			continue
-		}
-		for _, c := range p.Spec.Containers {
-			if strings.HasSuffix(c.Resources.Requests["cpu"], "m") {
-				milliCores := strings.TrimSuffix(c.Resources.Requests["cpu"], "m")
-				cores, err := strconv.Atoi(milliCores)
-				if err != nil {
-					return nil, err
-				}
-				ru := resourceUsage[p.Spec.NodeName]
-				ru.CPU += cores
-			}
-		}
-	}
-
 	var nodes []Node
-	fitFailures := make([]string, 0)
-
-	var spaceRequired int
-	for _, c := range pod.Spec.Containers {
-		if strings.HasSuffix(c.Resources.Requests["cpu"], "m") {
-			milliCores := strings.TrimSuffix(c.Resources.Requests["cpu"], "m")
-			cores, err := strconv.Atoi(milliCores)
-			if err != nil {
-				return nil, err
-			}
-			spaceRequired += cores
-		}
-	}
 
 	for _, node := range nodeList.Items {
-		var allocatableCores int
-		var err error
-		if strings.HasSuffix(node.Status.Allocatable["cpu"], "m") {
-			milliCores := strings.TrimSuffix(node.Status.Allocatable["cpu"], "m")
-			allocatableCores, err = strconv.Atoi(milliCores)
-			if err != nil {
-				return nil, err
-			}
-		} else {
-			cpu := node.Status.Allocatable["cpu"]
-			cpuFloat, err := strconv.ParseFloat(cpu, 32)
-			if err != nil {
-				return nil, err
-			}
-			allocatableCores = int(cpuFloat * 1000)
+		if node.Metadata.Name == config {
+			nodes = append(nodes, node)
 		}
-
-		freeSpace := (allocatableCores - resourceUsage[node.Metadata.Name].CPU)
-		if freeSpace < spaceRequired {
-			m := fmt.Sprintf("fit failure on node (%s): Insufficient CPU", node.Metadata.Name)
-			fitFailures = append(fitFailures, m)
-			continue
-		}
-		nodes = append(nodes, node)
 	}
 
-	if len(nodes) == 0 {
-		// Emit a Kubernetes event that the Pod was scheduled successfully.
+	if (len(nodes) == 0) || (config == "") {
+		// Emit a Kubernetes event that the Pod failed to be scheduled.
 		timestamp := time.Now().UTC().Format(time.RFC3339)
 		event := Event{
 			Count:          1,
-			Message:        fmt.Sprintf("pod (%s) failed to fit in any node\n%s", pod.Metadata.Name, strings.Join(fitFailures, "\n")),
-			Metadata:       Metadata{GenerateName: pod.Metadata.Name + "-"},
+			Message:        fmt.Sprintf("pod (%s) failed to fit in any node\n", pod.Metadata.Name),
 			Reason:         "FailedScheduling",
 			LastTimestamp:  timestamp,
 			FirstTimestamp: timestamp,
 			Type:           "Warning",
-			Source:         EventSource{Component: "hightower-scheduler"},
+			Source:         EventSource{Component: "epl-scheduler"},
 			InvolvedObject: ObjectReference{
 				Kind:      "Pod",
 				Name:      pod.Metadata.Name,
-				Namespace: "default",
+				Namespace: "epl",
 				Uid:       pod.Metadata.Uid,
 			},
 		}
@@ -365,7 +333,6 @@ func bind(pod *Pod, node Node) error {
 	event := Event{
 		Count:          1,
 		Message:        message,
-		Metadata:       Metadata{GenerateName: pod.Metadata.Name + "-"},
 		Reason:         "Scheduled",
 		LastTimestamp:  timestamp,
 		FirstTimestamp: timestamp,

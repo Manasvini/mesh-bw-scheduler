@@ -2,7 +2,6 @@
 FROM golang
 
 # Copy the required files
-COPY ./bestprice.go /app/bestprice.go
 COPY ./go.mod /app/go.mod
 COPY ./main.go /app/main.go
 COPY ./kubernetes.go /app/kubernetes.go
