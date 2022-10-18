@@ -2,7 +2,7 @@
 FROM golang
 
 # Copy the required files
-COPY ./* /app/*
+COPY ./ /app/
 
 # switch working directory
 WORKDIR /app
