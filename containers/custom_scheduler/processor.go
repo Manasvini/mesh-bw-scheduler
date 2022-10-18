@@ -63,6 +63,7 @@ func monitorUnscheduledPods(done chan struct{}, wg *sync.WaitGroup) {
 func schedulePod(pod *Pod) error {
 	nodes, err := fit(pod)
 	if err != nil {
+		logger(err)
 		return err
 	}
 	if len(nodes) == 0 {
@@ -70,6 +71,7 @@ func schedulePod(pod *Pod) error {
 	}
 	err = bind(pod, nodes[0])
 	if err != nil {
+		logger(err)
 		return err
 	}
 	return nil
@@ -80,6 +82,7 @@ func schedulePods() error {
 	defer processorLock.Unlock()
 	pods, err := getUnscheduledPods()
 	if err != nil {
+		logger(err)
 		return err
 	}
 	for _, pod := range pods {

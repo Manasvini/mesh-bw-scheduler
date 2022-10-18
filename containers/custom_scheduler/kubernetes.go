@@ -39,6 +39,7 @@ func postEvent(event Event) error {
 	body := bytes.NewBuffer(b)
 	err := json.NewEncoder(body).Encode(event)
 	if err != nil {
+		logger(err)
 		return err
 	}
 
@@ -57,9 +58,11 @@ func postEvent(event Event) error {
 
 	resp, err := http.DefaultClient.Do(request)
 	if err != nil {
+		logger(err)
 		return err
 	}
 	if resp.StatusCode != 201 {
+		logger(errors.New("Event: Unexpected HTTP status code" + resp.Status))
 		return errors.New("Event: Unexpected HTTP status code" + resp.Status)
 	}
 	return nil
@@ -302,6 +305,7 @@ func bind(pod *Pod, node Node) error {
 	body := bytes.NewBuffer(b)
 	err := json.NewEncoder(body).Encode(binding)
 	if err != nil {
+		logger(err)
 		return err
 	}
 
@@ -320,9 +324,11 @@ func bind(pod *Pod, node Node) error {
 
 	resp, err := http.DefaultClient.Do(request)
 	if err != nil {
+		logger(err)
 		return err
 	}
 	if resp.StatusCode != 201 {
+		logger(errors.New("Binding: Unexpected HTTP status code" + resp.Status))
 		return errors.New("Binding: Unexpected HTTP status code" + resp.Status)
 	}
 
