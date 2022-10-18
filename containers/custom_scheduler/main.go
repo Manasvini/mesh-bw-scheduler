@@ -14,7 +14,6 @@
 package main
 
 import (
-	"log"
 	"os"
 	"os/signal"
 	"sync"
@@ -24,7 +23,7 @@ import (
 const schedulerName = "epl-scheduler"
 
 func main() {
-	log.Println("Starting epl scheduler...")
+	logger("Starting epl scheduler...")
 
 	doneChan := make(chan struct{})
 	var wg sync.WaitGroup
@@ -40,7 +39,7 @@ func main() {
 	for {
 		select {
 		case <-signalChan:
-			log.Printf("Shutdown signal received, exiting...")
+			logger("Shutdown signal received, exiting...")
 			close(doneChan)
 			wg.Wait()
 			os.Exit(0)

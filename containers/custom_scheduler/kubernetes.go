@@ -19,7 +19,6 @@ import (
 	"errors"
 	"fmt"
 	"io/ioutil"
-	"log"
 	"net/http"
 	"net/url"
 	"time"
@@ -345,6 +344,6 @@ func bind(pod *Pod, node Node) error {
 			Uid:       pod.Metadata.Uid,
 		},
 	}
-	log.Println(message)
+	logger(message)
 	return postEvent(event)
 }

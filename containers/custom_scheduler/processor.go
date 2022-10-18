@@ -15,7 +15,6 @@ package main
 
 import (
 	"fmt"
-	"log"
 	"sync"
 	"time"
 )
@@ -28,11 +27,11 @@ func reconcileUnscheduledPods(interval int, done chan struct{}, wg *sync.WaitGro
 		case <-time.After(time.Duration(interval) * time.Second):
 			err := schedulePods()
 			if err != nil {
-				log.Println(err)
+				logger(err)
 			}
 		case <-done:
 			wg.Done()
-			log.Println("Stopped reconciliation loop.")
+			logger("Stopped reconciliation loop.")
 			return
 		}
 	}
@@ -44,18 +43,18 @@ func monitorUnscheduledPods(done chan struct{}, wg *sync.WaitGroup) {
 	for {
 		select {
 		case err := <-errc:
-			log.Println(err)
+			logger(err)
 		case pod := <-pods:
 			processorLock.Lock()
 			time.Sleep(2 * time.Second)
 			err := schedulePod(&pod)
 			if err != nil {
-				log.Println(err)
+				logger(err)
 			}
 			processorLock.Unlock()
 		case <-done:
 			wg.Done()
-			log.Println("Stopped scheduler.")
+			logger("Stopped scheduler.")
 			return
 		}
 	}
@@ -86,7 +85,7 @@ func schedulePods() error {
 	for _, pod := range pods {
 		err := schedulePod(pod)
 		if err != nil {
-			log.Println(err)
+			logger(err)
 		}
 	}
 	return nil
