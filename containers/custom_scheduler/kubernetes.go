@@ -34,6 +34,33 @@ var (
 	configEndpoint	  = "/apis/apps/v1/namespaces/epl/deployments/epl-scheduler"
 )
 
+func waitForProxy() int {
+	logger("Waiting for proxy to start")
+
+	for i := 1; i < 5; i++ {
+		time.Sleep(time.Second)
+
+		request := &http.Request{
+			Header: make(http.Header),
+			Method: http.MethodGet,
+			URL: &url.URL{
+				Host:   apiHost,
+				Path:   "",
+				Scheme: "http",
+			},
+		}
+
+		_, err := http.DefaultClient.Do(request)
+		if err != nil {
+			continue
+		}
+
+		return 1
+	}
+	
+	return 0
+}
+
 func postEvent(event Event) error {
 	var b []byte
 	body := bytes.NewBuffer(b)
@@ -328,8 +355,8 @@ func bind(pod *Pod, node Node) error {
 		return err
 	}
 	if resp.StatusCode != 201 {
-		logger(errors.New("Binding: Unexpected HTTP status code" + resp.Status))
-		return errors.New("Binding: Unexpected HTTP status code" + resp.Status)
+		logger(errors.New("Binding: Unexpected HTTP status code: " + resp.Status))
+		return errors.New("Binding: Unexpected HTTP status code: " + resp.Status)
 	}
 
 	// Emit a Kubernetes event that the Pod was scheduled successfully.

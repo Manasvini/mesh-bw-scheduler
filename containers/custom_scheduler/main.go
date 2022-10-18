@@ -17,13 +17,22 @@ import (
 	"os"
 	"os/signal"
 	"sync"
-	"syscall" 
+	"syscall"
 )
 
 const schedulerName = "epl-scheduler"
 
 func main() {
 	logger("Starting epl scheduler...")
+
+	done := waitForProxy()
+
+	if done == 0 {
+		logger("Failed to connect to proxy.")
+		os.Exit(0)
+	}
+
+	logger("Succeeded to connect to proxy.")
 
 	doneChan := make(chan struct{})
 	var wg sync.WaitGroup
