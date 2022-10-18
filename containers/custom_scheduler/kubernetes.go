@@ -31,7 +31,7 @@ var (
 	nodesEndpoint     = "/api/v1/nodes"
 	podsEndpoint      = "/api/v1/namespaces/epl/pods/"
 	watchPodsEndpoint = "/api/v1/watch/namespaces/epl/pods"
-	configEndpoint	  = "/apis/apps/v1/namespaces/epl/deployments/epl-scheduler"
+	configEndpoint	  = "/apis/apps/v1/namespaces/epl/deployments/custom-scheduler"
 )
 
 func waitForProxy() int {
@@ -258,10 +258,12 @@ func getConfig() (string, error) {
 
 	resp, err := http.DefaultClient.Do(request)
 	if err != nil {
+		logger(err)
 		return "", err
 	}
 	err = json.NewDecoder(resp.Body).Decode(&deployment)
 	if err != nil {
+		logger(err)
 		return "", err
 	}
 
@@ -275,13 +277,17 @@ func getConfig() (string, error) {
 func fit(pod *Pod) ([]Node, error) {
 	nodeList, err := getNodes()
 	if err != nil {
+		logger(err)
 		return nil, err
 	}
 
 	config, err := getConfig()
 	if err != nil {
+		logger(err)
 		return nil, err
 	}
+
+	logger("Found config: " + string(config))
 
 	var nodes []Node
 
