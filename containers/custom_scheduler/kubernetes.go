@@ -298,25 +298,26 @@ func fit(pod *Pod) ([]Node, error) {
 	}
 
 	if (len(nodes) == 0) || (config == "") {
+		logger("Failed to schedule pod " + pod.Metadata.Name)
 		// Emit a Kubernetes event that the Pod failed to be scheduled.
-		timestamp := time.Now().UTC().Format(time.RFC3339)
-		event := Event{
-			Count:          1,
-			Message:        fmt.Sprintf("pod (%s) failed to fit in any node\n", pod.Metadata.Name),
-			Reason:         "FailedScheduling",
-			LastTimestamp:  timestamp,
-			FirstTimestamp: timestamp,
-			Type:           "Warning",
-			Source:         EventSource{Component: "epl-scheduler"},
-			InvolvedObject: ObjectReference{
-				Kind:      "Pod",
-				Name:      pod.Metadata.Name,
-				Namespace: "epl",
-				Uid:       pod.Metadata.Uid,
-			},
-		}
+		// timestamp := time.Now().UTC().Format(time.RFC3339)
+		// event := Event{
+		// 	Count:          1,
+		// 	Message:        fmt.Sprintf("pod (%s) failed to fit in any node\n", pod.Metadata.Name),
+		// 	Reason:         "FailedScheduling",
+		// 	LastTimestamp:  timestamp,
+		// 	FirstTimestamp: timestamp,
+		// 	Type:           "Warning",
+		// 	Source:         EventSource{Component: "epl-scheduler"},
+		// 	InvolvedObject: ObjectReference{
+		// 		Kind:      "Pod",
+		// 		Name:      pod.Metadata.Name,
+		// 		Namespace: "epl",
+		// 		Uid:       pod.Metadata.Uid,
+		// 	},
+		// }
 
-		postEvent(event)
+		// postEvent(event)
 	}
 
 	return nodes, nil
@@ -365,24 +366,27 @@ func bind(pod *Pod, node Node) error {
 		return errors.New("Binding: Unexpected HTTP status code: " + resp.Status)
 	}
 
-	// Emit a Kubernetes event that the Pod was scheduled successfully.
 	message := fmt.Sprintf("Successfully assigned %s to %s", pod.Metadata.Name, node.Metadata.Name)
-	timestamp := time.Now().UTC().Format(time.RFC3339)
-	event := Event{
-		Count:          1,
-		Message:        message,
-		Reason:         "Scheduled",
-		LastTimestamp:  timestamp,
-		FirstTimestamp: timestamp,
-		Type:           "Normal",
-		Source:         EventSource{Component: "hightower-scheduler"},
-		InvolvedObject: ObjectReference{
-			Kind:      "Pod",
-			Name:      pod.Metadata.Name,
-			Namespace: "default",
-			Uid:       pod.Metadata.Uid,
-		},
-	}
 	logger(message)
-	return postEvent(event)
+
+	// // Emit a Kubernetes event that the Pod was scheduled successfully.
+	// timestamp := time.Now().UTC().Format(time.RFC3339)
+	// event := Event{
+	// 	Count:          1,
+	// 	Message:        message,
+	// 	Reason:         "Scheduled",
+	// 	LastTimestamp:  timestamp,
+	// 	FirstTimestamp: timestamp,
+	// 	Type:           "Normal",
+	// 	Source:         EventSource{Component: "hightower-scheduler"},
+	// 	InvolvedObject: ObjectReference{
+	// 		Kind:      "Pod",
+	// 		Name:      pod.Metadata.Name,
+	// 		Namespace: "default",
+	// 		Uid:       pod.Metadata.Uid,
+	// 	},
+	// }
+	// return postEvent(event)
+
+	return nil
 }
