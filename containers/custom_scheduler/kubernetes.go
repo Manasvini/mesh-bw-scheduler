@@ -25,7 +25,7 @@ import (
 )
 
 var (
-	apiHost           = "0.0.0.0:8001"
+	apiHost           = "127.0.0.1:8001"
 	bindingsEndpoint  = "/api/v1/namespaces/epl/pods/%s/binding/"
 	eventsEndpoint    = "/api/v1/watch/namespaces/epl/events"
 	nodesEndpoint     = "/api/v1/nodes"
