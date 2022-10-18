@@ -2,11 +2,7 @@
 FROM golang
 
 # Copy the required files
-COPY ./go.mod /app/go.mod
-COPY ./main.go /app/main.go
-COPY ./kubernetes.go /app/kubernetes.go
-COPY ./processor.go /app/processor.go
-COPY ./types.go /app/types.go
+COPY ./* /app/*
 
 # switch working directory
 WORKDIR /app
