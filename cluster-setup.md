@@ -20,7 +20,7 @@ sudo ./k3s kubectl get nodes
 It should list at least one node.  
 Now if you want to add nodes to the cluster, similarly install k3s on the other nodes. To start a node as a k3s agent, run  
 ```shell  
-sudo cat /var/lib/rancher/k3s/server/node-token
+sudo cat /var/lib/rancher/k3s/server/node-tokend
 sudo ./k3s agent --server https://server_ip:6443 --token [k3s_token]  
 ```  
 You can find the k3s server token in `/var/lib/rancher/k3s/server/node-token`. Et voila! We have a 2 node cluster. This can be verified by running the nodes command again. 
