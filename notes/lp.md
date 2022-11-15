@@ -49,7 +49,7 @@ An application is
 | $Y_k(t)$         | equals 1 iff at time $t$, all services of application $k$ are allocated. |
 | $E^{ab}_{ki}(t)$ | equals 1 iff from time $t-1$ to $t$, the service $i$ of application $k$ was moved from node $a$ to node $b$. |
 
-$$Y_k(t) = (\sum_{a,j}{} X^{a}_{kj}(t) == N_k)$$
+$$Y_k(t) = N_k == \sum_{a,j}{} X^{a}_{kj}(t)$$
 
 $$ E^{ab}_{ki}(t) = [X^{a}_{ki}(t-1) - X^{a}_{ki}(t)]X^{b}_{ki}(t) $$
 
@@ -67,7 +67,7 @@ $$maximize \ \sum_k Y_k(t)$$
 
 For active scheduling, we try to minimize the transfer time to move nodes from an initial placement $X(t-1)$ to $X(t)$. The objective function in this case would be
 
-$$ minimize \  \sum_k \sum_i \frac{1}{b^{ab}} \sum_a \sum_b E^{ab}_{ki}(t) S_{ki} $$
+$$ minimize \  \sum_k \sum_i \frac{1}{B^{ab}} \sum_a \sum_b E^{ab}_{ki}(t) S_{ki} $$
 
 ### Constraints
 
