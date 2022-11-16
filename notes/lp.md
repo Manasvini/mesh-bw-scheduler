@@ -82,7 +82,7 @@ $$ P^a \geq \sum_{k,i} p_{ki}X^a_{ki} $$
 $$ M^a \geq \sum_{k,i} m_{ki}X^a_{ki} $$
 $$B^{ab} \geq \sum_{k,i,j} b_{kij}X^a_{ki}X^b_{kj} + \sum_{l,k,i} \hat{b}_{ki} X^a_{ki} C^b_{lk}  $$
 $$ L^{ab} \leq l_{kij} X^a_{ki} X^b_{kj}  $$
-$$ L^{ab} \leq l_{kij} C^{a}_{lk} X^b_{ki} $$
+$$ L^{ab} \leq \hat{l}_{ki} C^{a}_{lk} X^b_{ki} $$
 
 ### Objective function
 
@@ -92,4 +92,4 @@ $$maximize \ \sum_k Y_k(t)$$
 
 For active scheduling, we try to minimize the transfer time to move nodes from an initial placement $X(t-1)$ to $X(t)$. The objective function in this case would be
 
-$$ minimize \ \sum_{a,b,k,i} \frac{1}{B^{ab}}  E^{ab}_{ki}(t) s_{ki} $$
+$$ minimize \   ( maximum_{a,b,k}  \ \sum_{i} \frac{1}{B^{ab}}  E^{ab}_{ki}(t) s_{ki} ) $$
