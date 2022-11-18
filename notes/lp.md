@@ -15,6 +15,8 @@ Scheduler outputs a placement that satisfies the following
 
 ## Notation
 
+
+
 ### Application Requirement Notation
 
 An application is
@@ -66,6 +68,24 @@ An application is
 $$Y_k(t) = [ N_k ==  \sum_{a,j}{} X^{a}_{kj}(t) ]$$
 
 $$ E^{ab}_{ki}(t) = [X^{a}_{ki}(t-1) - X^{a}_{ki}(t)]X^{b}_{ki}(t) $$
+
+### Example
+
+Time = 1
+
+<img src="img.png" width="300"/>
+
+$$ X^{4}_{1,1}(1) = X^{5}_{1,2}(1) = 1 $$
+$$ Y_k(1) = 2 $$
+
+$$ C^{8}_{1,1} = C^{8}_{2,1} = C^{9}_{3,1} = C^{3}_{4,1} = C^{7}_{5,1} = 1 $$
+
+Time = 2
+
+<img src="img2.png" width="300"/>
+
+$$ E^{5,6}_{1,2}(2) = 1 $$
+
 
 ## Modelling
 
