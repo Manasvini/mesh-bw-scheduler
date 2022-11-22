@@ -1,0 +1,7 @@
+{
+    "server_hostname": "geni1",
+    "agents": ["geni2", "geni3", "geni4", "geni5"],
+    "server_ip":"10.10.1.1",
+    "ssh_username":"msethura",
+    "ssh_config":"/home/epl/.ssh/geni_config_dir/geni_config"
+}
