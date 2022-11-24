@@ -55,6 +55,7 @@ An application is
 | ----------- | ----------- |
 | $C$         | Clients in the system |
 | $C_l$       | Client $l$ |
+| $\hat{B}^{a}_{l}$| Max bandwidth between client $l$ to node $a$ | 
 | $C^{a}_{lk}$| equals 1 iff client $l$ connects to application $k$ at node $a$ | 
 
 ### Assignment Notation
@@ -100,7 +101,8 @@ The following constraints restrict the total HW resources
 
 $$ P^a \geq \sum_{k,i} p_{ki}X^a_{ki} $$
 $$ M^a \geq \sum_{k,i} m_{ki}X^a_{ki} $$
-$$B^{ab} \geq \sum_{k,i,j} b_{kij}X^a_{ki}X^b_{kj} + \sum_{l,k,i} \hat{b}_{ki} X^a_{ki} C^b_{lk}  $$
+$$ B^{ab} \geq \sum_{k,i,j} b_{kij}X^a_{ki}X^b_{kj} + \sum_{l,k,i} \hat{b}_{ki} X^a_{ki} C^b_{lk}  $$
+$$ \hat{B}^{a}_{l} \geq \sum_{k,i} \hat{b}_{ki} C^{a}_{lk} $$
 $$ L^{ab} \leq l_{kij} X^a_{ki} X^b_{kj}  $$
 $$ L^{ab} \leq \hat{l}_{ki} C^{a}_{lk} X^b_{ki} $$
 
