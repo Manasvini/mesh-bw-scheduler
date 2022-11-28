@@ -124,16 +124,19 @@ $$ minimize \   ( maximum_{a,b,k}  \ \sum_{i} \frac{1}{B^{ab}}  E^{ab}_{ki}(t) s
    2. Need 4MBps from client to server with less than 100ms latency.
    3. Need 4vcpus and 2GB memory to load and process video, audio streams.
 
-### IOT
+### IOT - Security System
 
 <img src="app-iot.drawio.png" width="300"/>
 
-1. Realtime data collections
+1. Realtime data collections. Every client is a camera.
    1. High bandwidth, low latency.
-2. Control server.
-   1. Takes decisions from the data collected
-   2. Low bandwidth, low latency.
-
+2. Data server.
+   1. Collects data streams from camera and preprocesses it.
+   2. Needs lot of CPU to process camera streams and generate metrics. Number of faces? Actions? etc.
+3. Control server.
+   1. Takes metrics collected from data server and processes them to generate actions in the system.
+   2. Lock doors, Increase data quality? Enable other sensors? etc
+   3. Low bandwidth, low latency with the clients. High bandwidth, low latency with the data server.
 
 ### Social media
 
@@ -153,7 +156,7 @@ $$ minimize \   ( maximum_{a,b,k}  \ \sum_{i} \frac{1}{B^{ab}}  E^{ab}_{ki}(t) s
    4. Needs some cpu and memory but not so much. 
    5. Talks with external DB.
 4. DB.
-   1. Stores posts and timelines.
+   1. Stores posts, timelines, chats etc.
    2. Only talks with (3). High bandwidth, low latency. (20MBPS, 10ms).
    3. Needs cpu + Memory + storage. 12vcpus, 16GB, 1TB storage.
 

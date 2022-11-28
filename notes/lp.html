@@ -366,18 +366,25 @@ aside > *:last-child {
 </ol>
 </li>
 </ol>
-<h3 id="iot">IOT</h3>
+<h3 id="iot---security-system">IOT - Security System</h3>
 <img src="file:////Users/abauskar/Workspaces/mesh-bw-scheduler/notes/app-iot.drawio.png" width="300"/>
 <ol>
-<li>Realtime data collections
+<li>Realtime data collections. Every client is a camera.
 <ol>
 <li>High bandwidth, low latency.</li>
 </ol>
 </li>
+<li>Data server.
+<ol>
+<li>Collects data streams from camera and preprocesses it.</li>
+<li>Needs lot of CPU to process camera streams and generate metrics. Number of faces? Actions? etc.</li>
+</ol>
+</li>
 <li>Control server.
 <ol>
-<li>Takes decisions from the data collected</li>
-<li>Low bandwidth, low latency.</li>
+<li>Takes metrics collected from data server and processes them to generate actions in the system.</li>
+<li>Lock doors, Increase data quality? Enable other sensors? etc</li>
+<li>Low bandwidth, low latency with the clients. High bandwidth, low latency with the data server.</li>
 </ol>
 </li>
 </ol>
@@ -408,7 +415,7 @@ aside > *:last-child {
 </li>
 <li>DB.
 <ol>
-<li>Stores posts and timelines.</li>
+<li>Stores posts, timelines, chats etc.</li>
 <li>Only talks with (3). High bandwidth, low latency. (20MBPS, 10ms).</li>
 <li>Needs cpu + Memory + storage. 12vcpus, 16GB, 1TB storage.</li>
 </ol>
