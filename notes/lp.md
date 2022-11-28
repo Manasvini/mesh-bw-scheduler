@@ -115,3 +115,47 @@ $$maximize \ \sum_k Y_k(t)$$
 For active scheduling, we try to minimize the transfer time to move nodes from an initial placement $X(t-1)$ to $X(t)$. The objective function in this case would be
 
 $$ minimize \   ( maximum_{a,b,k}  \ \sum_{i} \frac{1}{B^{ab}}  E^{ab}_{ki}(t) s_{ki} ) $$
+
+## Example
+
+### Video calls
+1. Centralized video calling app
+   1. Unforgiving. High bandwidth + low latency. Supports 20 clients.
+   2. Need 4MBps from client to server with less than 100ms latency.
+   3. Need 4vcpus and 2GB memory to load and process video, audio streams.
+
+### IOT
+
+<img src="app-iot.drawio.png" width="300"/>
+
+1. Realtime data collections
+   1. High bandwidth, low latency.
+2. Control server.
+   1. Takes decisions from the data collected
+   2. Low bandwidth, low latency.
+
+
+### Social media
+
+<img src="app-social media.drawio.png" width="500"/>
+
+1. Auth
+   1. Forgiving. Low bandwidth + high latency between client-server, server-server.
+   2. 256kbps, 10ms.
+2. Set of chat related services.
+   1. Chats through this server. low bandwidth + low latency from clients. 
+   2. Talks with auth service to refresh sessions to the chat server. Low bandwidth + low latency.
+   3. Stores chats locally (no external DB needed).
+3. Posting + timeline + Friends services
+   1. All posts are made into this server. High bandwidth + high latency from clients.
+   2. Timeline requests. High bandwidth + high latency.
+   3. Client-client. High bandwidth, low latency.
+   4. Needs some cpu and memory but not so much. 
+   5. Talks with external DB.
+4. DB.
+   1. Stores posts and timelines.
+   2. Only talks with (3). High bandwidth, low latency. (20MBPS, 10ms).
+   3. Needs cpu + Memory + storage. 12vcpus, 16GB, 1TB storage.
+
+
+
