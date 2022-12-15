@@ -74,7 +74,7 @@ $$ E^{ab}_{ki}(t) = [X^{a}_{ki}(t-1) - X^{a}_{ki}(t)]X^{b}_{ki}(t) $$
 
 Time = 1
 
-<img src="img.png" width="300"/>
+<img src="images/img.png" width="300"/>
 
 $$ X^{4}_{1,1}(1) = X^{5}_{1,2}(1) = 1 $$
 $$ Y_k(1) = 2 $$
@@ -83,7 +83,7 @@ $$ C^{8}_{1,1} = C^{8}_{2,1} = C^{9}_{3,1} = C^{3}_{4,1} = C^{7}_{5,1} = 1 $$
 
 Time = 2
 
-<img src="img2.png" width="300"/>
+<img src="images/img2.png" width="300"/>
 
 $$ E^{5,6}_{1,2}(2) = 1 $$
 
@@ -119,14 +119,17 @@ $$ minimize \   ( maximum_{a,b,k}  \ \sum_{i} \frac{1}{B^{ab}}  E^{ab}_{ki}(t) s
 ## Example
 
 ### Video calls
+
+<img src="images/app-video.drawio.png" width="100"/>
+
 1. Centralized video calling app
-   1. Unforgiving. High bandwidth + low latency. Supports 20 clients.
-   2. Need 4MBps from client to server with less than 100ms latency.
-   3. Need 4vcpus and 2GB memory to load and process video, audio streams.
+   1. Unforgiving. High bandwidth + low latency.
+   2. Need 2MBps from client to server with less than 100ms latency.
+   3. Need 8vcpus and 16GB memory to load and process video, audio streams.
 
 ### IOT - Security System
 
-<img src="app-iot.drawio.png" width="300"/>
+<img src="images/app-iot.drawio.png" width="300"/>
 
 1. Realtime data collections. Every client is a camera.
    1. High bandwidth, low latency.
@@ -140,7 +143,7 @@ $$ minimize \   ( maximum_{a,b,k}  \ \sum_{i} \frac{1}{B^{ab}}  E^{ab}_{ki}(t) s
 
 ### Social media
 
-<img src="app-social media.drawio.png" width="500"/>
+<img src="images/app-social media.drawio.png" width="500"/>
 
 1. Auth
    1. Forgiving. Low bandwidth + high latency between client-server, server-server.
@@ -159,6 +162,3 @@ $$ minimize \   ( maximum_{a,b,k}  \ \sum_{i} \frac{1}{B^{ab}}  E^{ab}_{ki}(t) s
    1. Stores posts, timelines, chats etc.
    2. Only talks with (3). High bandwidth, low latency. (20MBPS, 10ms).
    3. Needs cpu + Memory + storage. 12vcpus, 16GB, 1TB storage.
-
-
-
