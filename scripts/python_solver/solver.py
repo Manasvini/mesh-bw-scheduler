@@ -1,6 +1,7 @@
 from input import get_input
 from itertools import combinations_with_replacement, combinations
 from unionfind import UnionFind
+from copy import deepcopy
 
 def get_solutions(topology, application):
     ret = []
@@ -8,7 +9,7 @@ def get_solutions(topology, application):
     for selection in combinations(topology.keys(), len(application)):
         assignment = dict(zip(application.keys(), selection))
         
-        topology_ = topology
+        topology_ = deepcopy(topology)
 
         poss = True
         for parent, childset in application.items():
