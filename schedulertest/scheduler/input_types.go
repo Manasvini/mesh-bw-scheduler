@@ -18,3 +18,16 @@ type InputPath struct {
     Dst         string  `csv:"dst"`
     NextHop     string  `csv:"next_hop"`
 }
+
+type InputComponent struct {
+    Name        string  `csv:"name"`
+    Cpu         int     `csv:"cpu"`
+    Memory      int     `csv:"memory"`
+}
+
+type InputComponentDependency struct {
+    Src        string   `csv:"src"`
+    Dst        string   `csv:"dst"`
+    Bandwidth   int     `csv:"bandwidth"`
+}
+

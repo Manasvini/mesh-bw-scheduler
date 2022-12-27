@@ -40,9 +40,9 @@ type Route struct {
 }
 
 func (r *Route) FindBottleneckBw() (int, *LinkBandwidth) {
-    if len(r.PathBw) == 0{
-        return r.BwCapacity - r.BwInUse, &LinkBandwidth{Src:r.Src, Dst: r.Dst, BwInUse: r.BwInUse, BwCapacity:r.BwCapacity}
-    }
+    //if len(r.PathBw) == 0{
+    //    return r.BwCapacity - r.BwInUse, &LinkBandwidth{Src:r.Src, Dst: r.Dst, BwInUse: r.BwInUse, BwCapacity:r.BwCapacity}
+    //}
     minBw := r.PathBw[0].BwCapacity - r.PathBw[0].BwInUse 
     minBwIdx := 0
     for i := 1; i < len(r.PathBw); i++{

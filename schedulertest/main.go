@@ -4,8 +4,77 @@ import (
     meshscheduler "github.gatech.edu/cs-epl/mesh-bw-scheduler/meshscheduler" 
 	gocsv "github.com/gocarina/gocsv"
     "os"
+    "flag"
     "fmt"
+    "github.com/google/uuid"
+	"github.com/golang/glog"
+    "time"
 )
+
+func usage() {
+	fmt.Fprintf(os.Stderr, "usage: example -stderrthreshold=[INFO|WARNING|FATAL] -log_dir=[string]\n", )
+	flag.PrintDefaults()
+	os.Exit(2)
+}
+
+func init() {
+	flag.Usage = usage
+	// NOTE: This next line is key you have to call flag.Parse() for the command line 
+	// options or "flags" that are defined in the glog module to be picked up.
+	flag.Parse()
+}
+
+
+func readApp(appFilename string, depsFilename string) meshscheduler.Application {
+	in, err := os.Open(appFilename)
+    if err != nil {
+        panic(err)
+    }
+    defer in.Close()
+
+    app := meshscheduler.Application{}
+    componentsMap := make(map[string]meshscheduler.Component, 0)
+    components := []*meshscheduler.InputComponent{}
+    if err := gocsv.UnmarshalFile(in, &components); err != nil {
+        panic(err)
+    }
+
+	for _, c := range components {
+		comp := meshscheduler.Component{ComponentId:c.Name, Cpu:c.Cpu, Memory:c.Memory}
+		componentsMap[c.Name] = comp
+	}
+	
+    in, err = os.Open(depsFilename)
+    if err != nil {
+        panic(err)
+    }
+    defer in.Close()
+
+
+    deps := []*meshscheduler.InputComponentDependency{}
+    if err = gocsv.UnmarshalFile(in, &deps); err != nil {
+        panic(err)
+    }
+    
+    for _, d :=  range deps {
+        srcComp, exists:= componentsMap[d.Src]
+        if !exists {
+            panic("source for dependency " + d.Src + " not found")
+        }
+        if len(srcComp.Bandwidth) == 0 {
+            srcComp.Bandwidth = make(map[string]int, 0)
+        }
+        srcComp.Bandwidth[d.Dst] = d.Bandwidth
+        componentsMap[d.Src] = srcComp
+    }
+    app.Components = componentsMap
+    for cid, comp := range componentsMap {
+        glog.Infof("comp %s has %d deps\n", cid, len(comp.Bandwidth))
+    }
+    id := uuid.New()
+    app.AppId = id.String()
+    return app
+}
 
 func readNodes(filename string) map[string]meshscheduler.Node {
 	in, err := os.Open(filename)
@@ -60,7 +129,6 @@ func readPaths(filename string, linksMap map[string]map[string]*meshscheduler.Li
 			pathsMap[p.Src] = make(map[string]meshscheduler.Route, 0)	
 	    }
         pathsMap[p.Src][p.Dst] = meshscheduler.Route{Src:p.Src, Dst:p.Dst}
-		fmt.Printf("add src=%s dst=%s\n", p.Src,p.Dst)
 	    r := pathsMap[p.Src][p.Dst]
 
 		if p.NextHop != p.Dst {
@@ -76,10 +144,8 @@ func readPaths(filename string, linksMap map[string]map[string]*meshscheduler.Li
 		    }
         }
         pathsMap[p.Src][p.Dst]=r
-        fmt.Printf("src= %s dst = %s,  hop path len is %d\n", p.Src, p.Dst, len(pathsMap[p.Src][p.Dst].PathBw))
 	
 	}
-    fmt.Printf("Have %d paths\n", len(paths)) 
 	completedCount := 0
 	completedPaths := make(map[string]map[string]bool, 0)
 	for {
@@ -100,27 +166,23 @@ func readPaths(filename string, linksMap map[string]map[string]*meshscheduler.Li
                     _, exists = completedPaths[src][dst]
                     if !exists{
 						completedPaths[src][dst] = true
-                        fmt.Printf("add src = %s dst=%s\n", src, dst)
 						completedCount += 1
 					}
 					continue
 				}
 				link, linkExists := linksMap[path.PathBw[hoplen-1].Dst][dst]
-				fmt.Printf("cc=%d src = %s dst = %s hop = %s, exists=%d\n", completedCount, src, dst, path.PathBw[hoplen-1].Dst, linkExists)
 				if  linkExists {
 					path.PathBw = append(path.PathBw, link)
-                    fmt.Printf("Path added %s %s link\n", link.Src, link.Dst)
-				
                     pathsMap[src][dst] =path
                 }
 			}	
 			
 		}
 	}
-    fmt.Printf("Finished processing paths\n")
+    glog.Infof("Finished processing paths\n")
     for src, pathDist := range pathsMap{
         for dst, path:= range pathDist {
-            fmt.Printf("src = %s dst=%s plen = %d\n", src, dst, len(path.PathBw))
+            glog.Infof("src = %s dst=%s plen = %d\n", src, dst, len(path.PathBw))
         }
     }
 	return pathsMap
@@ -156,12 +218,17 @@ func readLinks(filename string) map[string]map[string]*meshscheduler.LinkBandwid
 } 
 
 func main() {
+	defer glog.Flush()
+
     opt := meshscheduler.NewOptimalScheduler()
     
     links := readLinks("links.csv")
     nodes := readNodes("nodes.csv")
     paths := readPaths("paths.csv", links)
-
+    app := readApp("app.csv", "deps.csv")
     opt.InitScheduler(nodes, paths, links)
-
+    s := time.Now()
+    opt.Schedule(app)
+    dur := time.Since(s)
+    fmt.Printf("Scheduling took %d to execute", dur.Milliseconds())
 }
