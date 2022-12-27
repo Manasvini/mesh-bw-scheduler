@@ -162,3 +162,25 @@ $$ minimize \   ( maximum_{a,b,k}  \ \sum_{i} \frac{1}{B^{ab}}  E^{ab}_{ki}(t) s
    1. Stores posts, timelines, chats etc.
    2. Only talks with (3). High bandwidth, low latency. (20MBPS, 10ms).
    3. Needs cpu + Memory + storage. 12vcpus, 16GB, 1TB storage.
+
+## Complexity Modelling
+
+1. Routing tables
+   1. This information can be assumed to be passed to central scheduler.
+   2. Scheduler can then tie up the entire graph and routing paths.
+   3. So the scheduler is aware of the system.
+   4. **The scheduler does not change the routing tables (we do not control the network layer).**
+   5. But we assume that the routing is fixed otherwise we migrate.
+   6. **Can we have application specific routing tables by using existing network protocols?**
+   7. For theoretical modelling we can safely assume that we know the graph.
+2. Simplification 1 (S1):
+   1. Assume that path are not considered as well as components are 1 to 1 map.
+   2. Problem: Find a graph isomorphism (C -> T) ... (where the weights in T are upper bounded by the mapped weights in C).
+   3. Reduce graph isomorphism to this prob. (trivial, weight = 1)
+   4. Reverse (unecessary) : Take a weighted C, T. For every edge, replace it with V edges where V is the value of the edge.
+3. Simplification 2 (S2):
+   1. Assume that only components are 1 to 1 mapped.
+   2. Now we can convert the input topology to a complete graph in O(n^2) time. 
+   3. So let us consider the input to the problem as a complete graph. 
+   4. Problem: Find a graph isomorphism (C -> K) where the weights in T are K are upper bounded by mapped weights in C and K is a complete graph.
+   5. Generate complete graph using the path bw and then on this use the clique.

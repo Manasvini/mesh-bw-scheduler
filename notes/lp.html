@@ -422,6 +422,37 @@ aside > *:last-child {
 </ol>
 </li>
 </ol>
+<h2 id="complexity-modelling">Complexity Modelling</h2>
+<ol>
+<li>Routing tables
+<ol>
+<li>This information can be assumed to be passed to central scheduler.</li>
+<li>Scheduler can then tie up the entire graph and routing paths.</li>
+<li>So the scheduler is aware of the system.</li>
+<li><strong>The scheduler does not change the routing tables (we do not control the network layer).</strong></li>
+<li>But we assume that the routing is fixed otherwise we migrate.</li>
+<li><strong>Can we have application specific routing tables by using existing network protocols?</strong></li>
+<li>For theoretical modelling we can safely assume that we know the graph.</li>
+</ol>
+</li>
+<li>Simplification 1 (S1):
+<ol>
+<li>Assume that path are not considered as well as components are 1 to 1 map.</li>
+<li>Problem: Find a graph isomorphism (C -&gt; T) ... (where the weights in T are upper bounded by the mapped weights in C).</li>
+<li>Reduce graph isomorphism to this prob. (trivial, weight = 1)</li>
+<li>Reverse (unecessary) : Take a weighted C, T. For every edge, replace it with V edges where V is the value of the edge.</li>
+</ol>
+</li>
+<li>Simplification 2 (S2):
+<ol>
+<li>Assume that only components are 1 to 1 mapped.</li>
+<li>Now we can convert the input topology to a complete graph in O(n^2) time.</li>
+<li>So let us consider the input to the problem as a complete graph.</li>
+<li>Problem: Find a graph isomorphism (C -&gt; K) where the weights in T are K are upper bounded by mapped weights in C and K is a complete graph.</li>
+<li>Generate complete graph using the path bw and then on this use the clique.</li>
+</ol>
+</li>
+</ol>
 
         <script async src="https://cdn.jsdelivr.net/npm/katex-copytex@latest/dist/katex-copytex.min.js"></script>
         
