@@ -9,3 +9,5 @@ prometheus-client/main
 containers/custom_scheduler/custom_scheduler
 
 containers/temp
+
+*.pyc
