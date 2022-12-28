@@ -4,12 +4,12 @@ from copy import deepcopy
 from pprint import PrettyPrinter
 from itertools import combinations_with_replacement, combinations
 
-from input import *
+from hardcoded_inputs import *
 from topo_parse import parse_topo
 
 pp = PrettyPrinter(indent=4)
 
-def get_solutions(topology, application):
+def get_solutions(topology, application, first=False):
     ret = []
 
     assignments = 0
@@ -42,6 +42,9 @@ def get_solutions(topology, application):
 
         if poss:
             ret.append(assignment)
+
+            if first:
+                return ret
 
     print(f"{assignments} assignments")
     
@@ -81,7 +84,8 @@ def get_path_with_min_weight(topology, n1, n2, w):
 start = time()
 out = get_solutions(
     parse_topo("/Users/abauskar/Workspaces/mesh-bw-scheduler/scripts/python_solver/topo/qmp_2022-11-14_09.json"), 
-    fill(application)
+    fill(application),
+    True
 )
 end = time()
 print(f"{len(out)} solutions")

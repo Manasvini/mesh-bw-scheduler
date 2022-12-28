@@ -28,5 +28,3 @@ def parse_topo(fname):
             topo[adjacencies["nodeTo"]][node["id"]] = adjacencies["data"]["bw"]
 
     return topo
-
-print(parse_topo("/Users/abauskar/Workspaces/mesh-bw-scheduler/scripts/python_solver/topo/qmp_2022-11-14_09.json"))
