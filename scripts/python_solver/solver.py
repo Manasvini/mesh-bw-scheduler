@@ -1,13 +1,18 @@
 from input import get_input
 from itertools import combinations_with_replacement, combinations
-from unionfind import UnionFind
+from pprint import PrettyPrinter
 from copy import deepcopy
+
+pp = PrettyPrinter(indent=4)
 
 def get_solutions(topology, application):
     ret = []
 
+    assignments = 0
     for selection in combinations(topology.keys(), len(application)):
         assignment = dict(zip(application.keys(), selection))
+        #print(assignment)
+        assignments += 1
         
         topology_ = deepcopy(topology)
 
@@ -16,7 +21,7 @@ def get_solutions(topology, application):
             for child, value in childset.items():
                 nodep, nodec = [assignment[comp] for comp in (parent, child)]
 
-                if(nodep < nodec):
+                if(parent < child):
                     continue
 
                 path = get_path_with_min_weight(topology_, nodep, nodec, value)
@@ -33,6 +38,8 @@ def get_solutions(topology, application):
 
         if poss:
             ret.append(assignment)
+
+    print(f"{assignments} assignments")
     
     return ret
 
@@ -66,4 +73,6 @@ def get_path_with_min_weight(topology, n1, n2, w):
     ret.append(n2)
     return ret
 
-print(get_solutions(get_input()[0], get_input()[1]))
+out = get_solutions(get_input()[0], get_input()[1])
+print(f"{len(out)} solutions")
+pp.pprint(out)
