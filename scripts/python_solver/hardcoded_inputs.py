@@ -89,5 +89,5 @@ def get_edges(inp):
     ret.sort(reverse=True)
     return ret
 
-with open("sample.json", "w") as outfile:
-    json.dump(fill(topology), outfile)
+# with open("sample.json", "w") as outfile:
+#     json.dump(fill(topology), outfile)
