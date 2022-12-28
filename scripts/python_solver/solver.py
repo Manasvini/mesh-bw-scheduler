@@ -1,4 +1,5 @@
 from input import get_input
+from time import time
 from itertools import combinations_with_replacement, combinations
 from pprint import PrettyPrinter
 from copy import deepcopy
@@ -9,7 +10,7 @@ def get_solutions(topology, application):
     ret = []
 
     assignments = 0
-    for selection in combinations(topology.keys(), len(application)):
+    for selection in combinations_with_replacement(topology.keys(), len(application)):
         assignment = dict(zip(application.keys(), selection))
         #print(assignment)
         assignments += 1
@@ -73,6 +74,10 @@ def get_path_with_min_weight(topology, n1, n2, w):
     ret.append(n2)
     return ret
 
+
+start = time()
 out = get_solutions(get_input()[0], get_input()[1])
+end = time()
 print(f"{len(out)} solutions")
 pp.pprint(out)
+print(f"elapsed {end-start}")
