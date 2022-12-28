@@ -1,4 +1,6 @@
 package meshscheduler
+import ("github.com/golang/glog"
+        )
 
 type Node struct {
     NodeId              string
@@ -51,12 +53,14 @@ func (r *Route) FindBottleneckBw() (int, *LinkBandwidth) {
             minBwIdx = i
         }
     }
+    //glog.Infof("min = %d at idx %d src=%s dst=%s\n", minBw, minBwIdx, r.PathBw[minBwIdx].Src, r.PathBw[minBwIdx].Dst)    
     linkBw := r.PathBw[minBwIdx]
     return minBw, linkBw
 }
 
 
 func (r *Route) SetPathBw(bw int) {
+    r.BwInUse = bw
     for i := 0; i < len(r.PathBw); i++ {
         r.PathBw[i].BwInUse = bw
     }
@@ -65,14 +69,14 @@ func (r *Route) SetPathBw(bw int) {
 func (r *Route) RecomputeBw(bottleneckLink *LinkBandwidth) {
     usesLink := false
     for i := 0; i < len(r.PathBw); i++ {
-        if r.PathBw[i].Src == bottleneckLink.Src && r.PathBw[i].Dst == bottleneckLink.Dst {
+        if (r.PathBw[i].Src == bottleneckLink.Src && r.PathBw[i].Dst == bottleneckLink.Dst)  {
             usesLink = true
             break
         }
     }
     if usesLink == true{
-        bbw, _ := r.FindBottleneckBw()
-        r.BwInUse = bbw
+        r.BwInUse =bottleneckLink.BwInUse
+        glog.Infof("Updated src %s dst %s bw to %d\n", r.Src, r.Dst, r.BwInUse)
     }
 
 }

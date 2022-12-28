@@ -13,9 +13,6 @@ type BaseScheduler struct {
     Links               map[string]map[string]*LinkBandwidth  // src -> dst -> link bw
 }
 
-
-
-
 func (opt *BaseScheduler) InitScheduler(nodes map[string]Node, routes map[string]map[string]Route, links map[string]map[string]*LinkBandwidth) {
     opt.ResetState( nodes, routes, links)
     for src, dstPath := range opt.Routes {
@@ -52,7 +49,13 @@ func (opt *BaseScheduler) LogState() {
     for nodeId, n := range opt.Nodes {
         glog.Infof("%s,%d,%d,%d,%d\n", nodeId, n.CpuCapacity, n.CpuInUse, n.MemoryCapacity, n.MemoryInUse)
     }
-    glog.Infof("\nSrc,Dst,BwCapacity,BwInUse\n")
+    glog.Infof("Links\nSrc,Dst,BwCapacity,BwInUse\n")
+    for _, dstLink := range opt.Links {
+        for _, link := range dstLink {
+            glog.Infof("%s,%s,%d,%d\n",(*link).Src, (*link).Dst, (*link).BwCapacity, (*link).BwInUse)
+        }
+    }
+    glog.Infof("Paths\nSrc,Dst,BwCapacity,BwInUse\n")
     for _, dstPath := range opt.Routes {
         for _, path := range dstPath {
             glog.Infof("%s,%s,%d,%d\n",path.Src, path.Dst, path.BwCapacity, path.BwInUse)
@@ -64,7 +67,13 @@ func (opt *BaseScheduler) PrintState() {
     for nodeId, n := range opt.Nodes {
         fmt.Printf("%s,%d,%d,%d,%d\n", nodeId, n.CpuCapacity, n.CpuInUse, n.MemoryCapacity, n.MemoryInUse)
     }
-    fmt.Printf("\nSrc,Dst,BwCapacity,BwInUse\n")
+    fmt.Printf("Links\nSrc,Dst,BwCapacity,BwInUse\n")
+    for _, dstLink := range opt.Links {
+        for _, link := range dstLink {
+            fmt.Printf("%s,%s,%d,%d\n",(*link).Src, (*link).Dst, (*link).BwCapacity, (*link).BwInUse)
+        }
+    }
+    fmt.Printf("Paths\nSrc,Dst,BwCapacity,BwInUse\n")
     for _, dstPath := range opt.Routes {
         for _, path := range dstPath {
             fmt.Printf("%s,%s,%d,%d\n",path.Src, path.Dst, path.BwCapacity, path.BwInUse)
@@ -113,63 +122,90 @@ func (opt *BaseScheduler) CopyState() (map[string]Node, map[string]map[string]Ro
     }
     oldLinks := make(map[string]map[string]*LinkBandwidth, 0)
     for src, dstLink := range opt.Links{
-        curDstLink := make(map[string]*LinkBandwidth, 0)
+        _, exists := oldLinks[src]
+        if !exists {
+            oldLinks[src] = make(map[string]*LinkBandwidth, 0)
+        }
         for dst, link := range dstLink {
 
-            curDstLink[dst] = &LinkBandwidth{Src:link.Src, Dst:link.Dst, BwCapacity:link.BwCapacity, BwInUse:link.BwInUse}
+            oldLinks[src][dst] = &LinkBandwidth{Src:(*link).Src, Dst:(*link).Dst, BwCapacity:(*link).BwCapacity, BwInUse:(*link).BwInUse}
 
         }
-        oldLinks[src] = curDstLink
     }
     oldRoutes := make(map[string]map[string]Route, 0)
     for src, dstRoute := range opt.Routes{
-        curDstRoute := make(map[string]Route, 0)
+        _, exists := oldRoutes[src]
+        if !exists{
+            oldRoutes[src] = make(map[string]Route, 0)
+        }
         for dst, route := range dstRoute {
 
-            curDstRoute[dst] = route
-            for idx, pbw := range curDstRoute[dst].PathBw{
+            pathBw := make([]*LinkBandwidth, 0)
+            for _, pbw := range opt.Routes[src][dst].PathBw{
                 oldLink, _ := oldLinks[pbw.Src][pbw.Dst]
-                curDstRoute[dst].PathBw[idx] = oldLink
+                pathBw = append(pathBw, oldLink)
             }
-
+             oldRoutes[src][dst] = Route{Src:route.Src, Dst:route.Dst, BwCapacity:route.BwCapacity, BwInUse:route.BwInUse, PathBw:pathBw}
+ 
         }
-        oldRoutes[src] = curDstRoute
+        //oldRoutes[src] = curDstRoute
     }
     return oldState, oldRoutes, oldLinks
 }
 
 func (opt *BaseScheduler) ResetState(nodes map[string]Node, routes map[string]map[string]Route, links map[string]map[string]*LinkBandwidth) {
     opt.Nodes = nodes
-    opt.Links = links
+    opt.Links = make(map[string]map[string]*LinkBandwidth, 0)
     opt.Routes = make(map[string]map[string]Route, 0)
+    for src, dstLink := range links {
+        _, exists := opt.Links[src]
+        if !exists {
+            opt.Links[src] = make(map[string]*LinkBandwidth, 0)
+        }
+        for dst, link := range dstLink {
+            glog.Infof("Link src = %s dst = %s bw in use = %d\n", src, dst, link.BwInUse)
+            opt.Links[src][dst] = &LinkBandwidth{Src:(*link).Src, Dst:(*link).Dst, BwCapacity:(*link).BwCapacity, BwInUse:(*link).BwInUse}
+        }
+    }
     for src, dstRoute := range routes{
         _, exists := opt.Routes[src]
         if !exists {
             opt.Routes[src] = make(map[string]Route, 0)
         }
         for dst, route := range dstRoute {
-            //fmt.Printf("src = %s dst = %s\n", src,dst)
             opt.Routes[src][dst] = route
             for idx, pbw := range opt.Routes[src][dst].PathBw {
-                oldLink, _ := links[pbw.Src][pbw.Dst]
-                opt.Routes[src][dst].PathBw[idx] = oldLink
-            }
+                oldLink, _ := opt.Links[pbw.Src][pbw.Dst]
+                route.PathBw[idx] = oldLink
 
+            }
+            _, link := route.FindBottleneckBw()
+            route.RecomputeBw(link)
+            opt.Routes[src][dst] = route
         }
     }
  
 }
 
-func (opt *BaseScheduler) UpdatePaths(bottleneckLink *LinkBandwidth) {
+func (opt *BaseScheduler) UpdatePaths() {
+    
     for src, dstMap := range opt.Routes {
         for dst, path :=  range dstMap {
-            path.RecomputeBw(bottleneckLink)
+            _, blink := path.FindBottleneckBw()
+            path.RecomputeBw(blink)
             opt.Routes[src][dst] = path
+            for _, link := range path.PathBw {
+                optLink, exists := opt.Links[link.Src][link.Dst]
+                if exists {
+                    if optLink.BwInUse != link.BwInUse {
+                        optLink.BwInUse = link.BwInUse
+                    }
+                }
+            } 
         }
     }    
+
 }
-
-
 
 func (opt *BaseScheduler) Schedule(app Application) {
 }

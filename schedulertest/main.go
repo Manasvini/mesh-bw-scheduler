@@ -17,13 +17,6 @@ func usage() {
 	os.Exit(2)
 }
 
-func init() {
-	flag.Usage = usage
-	// NOTE: This next line is key you have to call flag.Parse() for the command line 
-	// options or "flags" that are defined in the glog module to be picked up.
-	flag.Parse()
-}
-
 
 func readApp(appFilename string, depsFilename string) meshscheduler.Application {
 	in, err := os.Open(appFilename)
@@ -220,15 +213,19 @@ func readLinks(filename string) map[string]map[string]*meshscheduler.LinkBandwid
 func main() {
 	defer glog.Flush()
 
-    opt := meshscheduler.NewOptimalScheduler()
+    inputDir := flag.String("i", "./", "input directory containing app and network configs")
     
-    links := readLinks("links.csv")
-    nodes := readNodes("nodes.csv")
-    paths := readPaths("paths.csv", links)
-    app := readApp("app.csv", "deps.csv")
+    flag.Parse()
+    opt := meshscheduler.NewOptimalScheduler()
+   
+    
+    links := readLinks(*inputDir + "/links.csv")
+    nodes := readNodes(*inputDir + "/nodes.csv")
+    paths := readPaths(*inputDir + "/paths.csv", links)
+    app := readApp(*inputDir + "/app.csv", *inputDir + "/deps.csv")
     opt.InitScheduler(nodes, paths, links)
     s := time.Now()
     opt.Schedule(app)
     dur := time.Since(s)
-    fmt.Printf("Scheduling took %d to execute", dur.Milliseconds())
+    fmt.Printf("Scheduling took %.3f ms to execute", float64(dur.Microseconds())/1000.0)
 }
