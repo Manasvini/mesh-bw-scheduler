@@ -88,6 +88,3 @@ def get_edges(inp):
     ret.sort(reverse=True)
     return ret
 
-def get_input():
-    #return fill(topology), get_edges(topology), fill(application), get_edges(application)   
-    return fill(topology), fill(application)
