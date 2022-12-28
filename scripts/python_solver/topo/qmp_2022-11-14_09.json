@@ -1,0 +1,6638 @@
+[
+  {
+    "id": "node0",
+    "name": "",
+    "data": {
+      "$type": "none"
+    },
+    "adjacencies": [
+      {
+        "data": {
+          "$type": "none"
+        },
+        "nodeTo": "n0019"
+      },
+      {
+        "data": {
+          "$type": "none"
+        },
+        "nodeTo": "n0020"
+      },
+      {
+        "data": {
+          "$type": "none"
+        },
+        "nodeTo": "n0021"
+      },
+      {
+        "data": {
+          "$type": "none"
+        },
+        "nodeTo": "n0022"
+      },
+      {
+        "data": {
+          "$type": "none"
+        },
+        "nodeTo": "n0023"
+      },
+      {
+        "data": {
+          "$type": "none"
+        },
+        "nodeTo": "n0024"
+      },
+      {
+        "data": {
+          "$type": "none"
+        },
+        "nodeTo": "n0025"
+      },
+      {
+        "data": {
+          "$type": "none"
+        },
+        "nodeTo": "n0026"
+      },
+      {
+        "data": {
+          "$type": "none"
+        },
+        "nodeTo": "n0027"
+      },
+      {
+        "data": {
+          "$type": "none"
+        },
+        "nodeTo": "n0028"
+      },
+      {
+        "data": {
+          "$type": "none"
+        },
+        "nodeTo": "n0029"
+      },
+      {
+        "data": {
+          "$type": "none"
+        },
+        "nodeTo": "n0030"
+      },
+      {
+        "data": {
+          "$type": "none"
+        },
+        "nodeTo": "n0031"
+      },
+      {
+        "data": {
+          "$type": "none"
+        },
+        "nodeTo": "n0032"
+      },
+      {
+        "data": {
+          "$type": "none"
+        },
+        "nodeTo": "n0033"
+      },
+      {
+        "data": {
+          "$type": "none"
+        },
+        "nodeTo": "n0034"
+      },
+      {
+        "data": {
+          "$type": "none"
+        },
+        "nodeTo": "n0035"
+      },
+      {
+        "data": {
+          "$type": "none"
+        },
+        "nodeTo": "n0036"
+      },
+      {
+        "data": {
+          "$type": "none"
+        },
+        "nodeTo": "n0037"
+      },
+      {
+        "data": {
+          "$type": "none"
+        },
+        "nodeTo": "n0038"
+      },
+      {
+        "data": {
+          "$type": "none"
+        },
+        "nodeTo": "n0039"
+      },
+      {
+        "data": {
+          "$type": "none"
+        },
+        "nodeTo": "n0040"
+      },
+      {
+        "data": {
+          "$type": "none"
+        },
+        "nodeTo": "n0041"
+      },
+      {
+        "data": {
+          "$type": "none"
+        },
+        "nodeTo": "n0042"
+      },
+      {
+        "data": {
+          "$type": "none"
+        },
+        "nodeTo": "n0043"
+      },
+      {
+        "data": {
+          "$type": "none"
+        },
+        "nodeTo": "n0044"
+      },
+      {
+        "data": {
+          "$type": "none"
+        },
+        "nodeTo": "n0045"
+      },
+      {
+        "data": {
+          "$type": "none"
+        },
+        "nodeTo": "n0046"
+      },
+      {
+        "data": {
+          "$type": "none"
+        },
+        "nodeTo": "n0047"
+      },
+      {
+        "data": {
+          "$type": "none"
+        },
+        "nodeTo": "n0048"
+      },
+      {
+        "data": {
+          "$type": "none"
+        },
+        "nodeTo": "n0002"
+      },
+      {
+        "data": {
+          "$type": "none"
+        },
+        "nodeTo": "n0003"
+      },
+      {
+        "data": {
+          "$type": "none"
+        },
+        "nodeTo": "n0004"
+      },
+      {
+        "data": {
+          "$type": "none"
+        },
+        "nodeTo": "n0005"
+      },
+      {
+        "data": {
+          "$type": "none"
+        },
+        "nodeTo": "n0006"
+      },
+      {
+        "data": {
+          "$type": "none"
+        },
+        "nodeTo": "n0007"
+      },
+      {
+        "data": {
+          "$type": "none"
+        },
+        "nodeTo": "n0008"
+      },
+      {
+        "data": {
+          "$type": "none"
+        },
+        "nodeTo": "n0001"
+      },
+      {
+        "data": {
+          "$type": "none"
+        },
+        "nodeTo": "n0009"
+      },
+      {
+        "data": {
+          "$type": "none"
+        },
+        "nodeTo": "n0010"
+      },
+      {
+        "data": {
+          "$type": "none"
+        },
+        "nodeTo": "n0011"
+      },
+      {
+        "data": {
+          "$type": "none"
+        },
+        "nodeTo": "n0049"
+      },
+      {
+        "data": {
+          "$type": "none"
+        },
+        "nodeTo": "n0012"
+      },
+      {
+        "data": {
+          "$type": "none"
+        },
+        "nodeTo": "n0013"
+      },
+      {
+        "data": {
+          "$type": "none"
+        },
+        "nodeTo": "n0014"
+      },
+      {
+        "data": {
+          "$type": "none"
+        },
+        "nodeTo": "n0015"
+      },
+      {
+        "data": {
+          "$type": "none"
+        },
+        "nodeTo": "n0016"
+      },
+      {
+        "data": {
+          "$type": "none"
+        },
+        "nodeTo": "n0017"
+      },
+      {
+        "data": {
+          "$type": "none"
+        },
+        "nodeTo": "n0018"
+      }
+    ]
+  },
+  {
+    "lat": 41.383709,
+    "x": 1634.8910599203082,
+    "name": "BCCanBruixa20Rd6-4524",
+    "id": "n0019",
+    "y": 2447.348488656804,
+    "lon": 2.131892,
+    "uid": 79,
+    "adjacencies": [
+      {
+        "data": {
+          "channel": "eth",
+          "rtt": 8.6,
+          "bw": 75.2,
+          "$color": "#F97A6D"
+        },
+        "nodeTo": "n0022",
+        "nodeTouid": 39,
+        "nodeFrom": "n0019"
+      },
+      {
+        "data": {
+          "bw": 254.6,
+          "rtt": 2.4,
+          "channel": "eth",
+          "$color": "#F97A6D"
+        },
+        "nodeTo": "n0044",
+        "nodeTouid": 91,
+        "nodeFrom": "n0019"
+      },
+      {
+        "nodeTouid": 217,
+        "nodeTo": "n0040",
+        "data": {
+          "rtt": 2,
+          "bw": 134.1,
+          "channel": "eth",
+          "$color": "#F97A6D"
+        },
+        "nodeFrom": "n0019"
+      },
+      {
+        "nodeTouid": 101,
+        "data": {
+          "channel": "eth",
+          "bw": 85.2,
+          "rtt": 5.7,
+          "$color": "#F97A6D"
+        },
+        "nodeTo": "n0024",
+        "nodeFrom": "n0019"
+      },
+      {
+        "nodeTouid": 30,
+        "nodeTo": "n0020",
+        "data": {
+          "bw": 92.4,
+          "rtt": 0.8,
+          "channel": "eth",
+          "$color": "#F97A6D"
+        },
+        "nodeFrom": "n0019"
+      },
+      {
+        "nodeTouid": 221,
+        "nodeTo": "n0010",
+        "data": {
+          "channel": "eth",
+          "rtt": 10.6,
+          "bw": 71.5,
+          "$color": "#F97A6D"
+        },
+        "nodeFrom": "n0019"
+      },
+      {
+        "nodeTouid": 24,
+        "nodeTo": "n0021",
+        "data": {
+          "rtt": 0.9,
+          "bw": 91.9,
+          "channel": "eth",
+          "$color": "#F97A6D"
+        },
+        "nodeFrom": "n0019"
+      },
+      {
+        "nodeTouid": 17,
+        "data": {
+          "channel": "eth",
+          "bw": 89.8,
+          "rtt": 21.9,
+          "$color": "#F97A6D"
+        },
+        "nodeTo": "n0045",
+        "nodeFrom": "n0019"
+      },
+      {
+        "nodeTouid": 35,
+        "nodeTo": "n0046",
+        "data": {
+          "bw": 55.7,
+          "rtt": 23.2,
+          "channel": "eth",
+          "$color": "#F97A6D"
+        },
+        "nodeFrom": "n0019"
+      }
+    ],
+    "data": {
+      "ipv4": [
+        "10.1.9.72/27",
+        "10.1.9.72/32",
+        "172.25.36.82/30",
+        "172.25.40.66/30"
+      ],
+      "gdev": "84460",
+      "qmpversion": "OpenWrt 19.07.7 r11306-c4a6851c72\n",
+      "ipv6gl": [
+        "fd66:66:66:8:feec:daff:fe7b:4524",
+        "fd66:66:66:b:feec:daff:fe7b:4524",
+        "fd66:66:66:9:feec:daff:fe7b:4524"
+      ],
+      "system": "UBNT-ERX",
+      "bmxversion": "BMX6-0.1-alpha comPatibility=16 revision=0312168aaa384379ccbefd4b2d936fc698664d5b\n",
+      "gwbw": 188.3,
+      "internetbw": 72.6,
+      "gwuid": 91,
+      "gwpath": [
+        "BCNevaristoarnus5Rd3-Apu"
+      ],
+      "gwpath_uid": [
+        91
+      ],
+      "load_average": "0.97, 0.91, 0.93",
+      "gwrtt": 2.6,
+      "gw": "BCNevaristoarnus5Rd3-Apu",
+      "ipv6ll": [
+        "fe80::feec:daff:fe7b:4524",
+        "fe80::feec:daff:fe7b:4524",
+        "fe80::feec:daff:fe7b:4524"
+      ],
+      "gnode": "/ca/bcncanbruixa20",
+      "gwid": "n0044",
+      "internetrtt": 238.8,
+      "uptime": "13:13:43 up 4 days,  6:26",
+      "cgwguest": [
+        "BCN-GS-CanBruixa20-RKM5-7bbd",
+        "BCN-GS-CanBruixa20NSM5",
+        "BCN-GS-JpTarradellas40-6a5f",
+        "BCN-Sagunt66-8971",
+        "BCNBerlin20-1edf",
+        "BCNPisuerga17-EPR6",
+        "BCNSagunt62",
+        "BCNSantaCatalina59Rd3-805c",
+        "BCNSantaCaterina59Rd2-50b4",
+        "BCNSants186-EdgePointR6",
+        "BCNSants186Rd1-993d",
+        "BCNSants186Rd2",
+        "BCNevaristoarnus5Rd3-Apu",
+        "BCNevaristoarnus5Rd4-988e",
+        "BCNevaristoarnus5Rd9-c239",
+        "BcnGranVia146-b233",
+        "GS-BCNEusebiPlanes4-f0b2",
+        "GS-UPC-CN-C6-E208-TL-WDR4300-Mi",
+        "GS26gener10-8710",
+        "GSgV-ns-a4a7",
+        "GSgranVia255-ERX-b66c",
+        "GSgranVia255-db37",
+        "UPC-CN-C6-E206-Alix",
+        "UPC-CN-C6-E208-TL-WDR4300-Proxm"
+      ],
+      "$color": "#956000",
+      "forwardings": [
+        "BCN-GS-CanBruixa20-RKM5-7bbd",
+        "BCN-GS-CanBruixa20NSM5",
+        "BCN-GS-JpTarradellas40-6a5f",
+        "BCN-Sagunt66-8971",
+        "BCNBerlin20-1edf",
+        "BCNCanViesRd1",
+        "BCNEntenca239-0f6b",
+        "BCNJardiBotanicSants186-ba35",
+        "BCNPisuerga17-EPR6",
+        "BCNSagunt62",
+        "BCNSantaCatalina59Rd3-805c",
+        "BCNSantaCaterina59Rd2-50b4",
+        "BCNSants186-EdgePointR6",
+        "BCNSants186Rd1-993d",
+        "BCNSants186Rd2",
+        "BCNevaristoarnus5Rd3-Apu",
+        "BCNevaristoarnus5Rd4-988e",
+        "BCNevaristoarnus5Rd9-c239",
+        "BcnGranVia146-b233",
+        "BcnGranVia146Rd2-345f",
+        "GS-BCNEusebiPlanes4-f0b2",
+        "GS-UPC-CN-C6-E208-TL-WDR4300-Mi",
+        "GS26gener10-8710",
+        "GSConstitucio174-02ed",
+        "GSgV-ns-a4a7",
+        "GSgranVia255-ERX-b66c",
+        "GSgranVia255-db37",
+        "UPC-CN-C6-E206-Alix",
+        "UPC-CN-C6-E208-TL-WDR4300-Proxm"
+      ]
+    }
+  },
+  {
+    "data": {
+      "uptime": "07:00:12 up 57 days,  3:20",
+      "ipv6ll": [
+        "fe80::227:22ff:fec3:7bbd",
+        "fe80::227:22ff:fec2:7bbd"
+      ],
+      "gnode": "/ca/bcncanbruixa20",
+      "wifi": {
+        "wlan0": {
+          "addr": "00:bd",
+          "ch": "60",
+          "type": "IBSS",
+          "center": "5310",
+          "width": "40",
+          "txpower": "21.00 dBm"
+        }
+      },
+      "load_average": "0.15, 0.07, 0.05",
+      "system": "Ubiquiti Rocket M",
+      "internetbw": 11.6,
+      "gwbw": 90.1,
+      "community_gwpath": [
+        "BCCanBruixa20Rd6-4524"
+      ],
+      "internetrtt": 237,
+      "gw": "BCNevaristoarnus5Rd3-Apu",
+      "ssid": "guifi.net-qMp-CanBruixa-RK",
+      "gwid": "n0044",
+      "community_gwpath_uid": [
+        79
+      ],
+      "community_gwbw": 91.3,
+      "community_gwuid": 79,
+      "gwuid": 91,
+      "gwrtt": 1.5,
+      "gwpath_uid": [
+        91
+      ],
+      "gwpath": [
+        "BCNevaristoarnus5Rd3-Apu"
+      ],
+      "gdev": "76327",
+      "ipv4": [
+        "169.254.189.1/29",
+        "10.2.8.225/32"
+      ],
+      "bmxversion": "BMX6-0.1-alpha comPatibility=16 revision=2a87b770d3f9c254e3927dc159e2f425f2e0e83a\n",
+      "ipv6gl": [
+        "fd66:66:66:8:227:22ff:fec3:7bbd",
+        "fd66:66:66:a:227:22ff:fec2:7bbd"
+      ],
+      "community_gwrtt": 0.6,
+      "qmpversion": "qMp Clearance 3.2 - qMp Clearance 3.2, master rev.9487eae-20160408_2339\n",
+      "community_gw": "BCCanBruixa20Rd6-4524"
+    },
+    "adjacencies": [
+      {
+        "nodeTouid": 91,
+        "nodeTo": "n0044",
+        "data": {
+          "channel": "eth0",
+          "rtt": 2.6,
+          "bw": 90.7,
+          "$color": "#8F463F"
+        },
+        "nodeFrom": "n0020"
+      },
+      {
+        "nodeTouid": 46,
+        "nodeTo": "n0006",
+        "data": {
+          "rtt": 30.9,
+          "bw": 21.4,
+          "powerav": -51,
+          "channel": "60",
+          "$color": "#6D0D03"
+        },
+        "nodeFrom": "n0020"
+      },
+      {
+        "nodeTouid": 221,
+        "data": {
+          "rtt": 4.1,
+          "bw": 87.2,
+          "channel": "eth0",
+          "$color": "#8F463F"
+        },
+        "nodeTo": "n0010",
+        "nodeFrom": "n0020"
+      },
+      {
+        "data": {
+          "channel": "eth",
+          "rtt": 0.7,
+          "bw": 89.3,
+          "$color": "#F97A6D"
+        },
+        "nodeTo": "n0019",
+        "nodeTouid": 79,
+        "nodeFrom": "n0020"
+      },
+      {
+        "nodeTouid": 19,
+        "data": {
+          "channel": "60",
+          "powerav": -78,
+          "bw": 0.6,
+          "rtt": 30.7,
+          "$color": "#6D0D03"
+        },
+        "nodeTo": "n0011",
+        "nodeFrom": "n0020"
+      },
+      {
+        "nodeTo": "n0045",
+        "data": {
+          "channel": "eth0",
+          "rtt": 3.1,
+          "bw": 48.2,
+          "$color": "#8F463F"
+        },
+        "nodeTouid": 17,
+        "nodeFrom": "n0020"
+      },
+      {
+        "nodeTo": "n0046",
+        "data": {
+          "powerav": -64,
+          "bw": 70.8,
+          "rtt": 183.3,
+          "channel": "60",
+          "$color": "#6D0D03"
+        },
+        "nodeTouid": 35,
+        "nodeFrom": "n0020"
+      },
+      {
+        "nodeTo": "n0021",
+        "data": {
+          "channel": "eth0",
+          "bw": 90.5,
+          "rtt": 0.6,
+          "$color": "#8F463F"
+        },
+        "nodeTouid": 24,
+        "nodeFrom": "n0020"
+      }
+    ],
+    "uid": 30,
+    "y": 2447.348488656804,
+    "id": "n0020",
+    "lat": 41.383709,
+    "name": "BCN-GS-CanBruixa20-RKM5-7bbd",
+    "x": 1634.8910599203082,
+    "lon": 2.131892
+  },
+  {
+    "lon": 2.131892,
+    "x": 1634.8910599203082,
+    "lat": 41.383709,
+    "name": "BCN-GS-CanBruixa20NSM5",
+    "id": "n0021",
+    "y": 2447.348488656804,
+    "uid": 24,
+    "adjacencies": [
+      {
+        "nodeTouid": 69,
+        "nodeTo": "n0033",
+        "data": {
+          "powerav": -63,
+          "rtt": 18.4,
+          "bw": 2.6,
+          "channel": "52",
+          "$color": "#F9B7B0"
+        },
+        "nodeFrom": "n0021"
+      },
+      {
+        "nodeTo": "n0044",
+        "data": {
+          "channel": "eth0",
+          "bw": 58.8,
+          "rtt": 2.4,
+          "$color": "#8F463F"
+        },
+        "nodeTouid": 91,
+        "nodeFrom": "n0021"
+      },
+      {
+        "nodeTouid": 17,
+        "data": {
+          "channel": "52",
+          "rtt": 20.8,
+          "bw": 0.6,
+          "powerav": -68,
+          "$color": "#F9B7B0"
+        },
+        "nodeTo": "n0045",
+        "nodeFrom": "n0021"
+      },
+      {
+        "data": {
+          "rtt": 47.9,
+          "bw": 60.5,
+          "channel": "eth0",
+          "$color": "#8F463F"
+        },
+        "nodeTo": "n0046",
+        "nodeTouid": 35,
+        "nodeFrom": "n0021"
+      },
+      {
+        "nodeTouid": 79,
+        "nodeTo": "n0019",
+        "data": {
+          "channel": "eth",
+          "bw": 65.3,
+          "rtt": 0.9,
+          "$color": "#F97A6D"
+        },
+        "nodeFrom": "n0021"
+      },
+      {
+        "nodeTouid": 39,
+        "nodeTo": "n0022",
+        "data": {
+          "channel": "52",
+          "powerav": -62,
+          "rtt": 28.2,
+          "bw": 2.6,
+          "$color": "#F9B7B0"
+        },
+        "nodeFrom": "n0021"
+      },
+      {
+        "nodeTouid": 30,
+        "data": {
+          "bw": 67.9,
+          "rtt": 0.9,
+          "channel": "eth0",
+          "$color": "#8F463F"
+        },
+        "nodeTo": "n0020",
+        "nodeFrom": "n0021"
+      },
+      {
+        "nodeTo": "n0024",
+        "data": {
+          "rtt": 4.7,
+          "bw": 0.2,
+          "powerav": -74,
+          "channel": "52",
+          "$color": "#F9B7B0"
+        },
+        "nodeTouid": 101,
+        "nodeFrom": "n0021"
+      },
+      {
+        "nodeTo": "n0007",
+        "data": {
+          "powerav": -84,
+          "$lineWidth": "0.5",
+          "channel": "52",
+          "$color": "#F9B7B0"
+        },
+        "nodeTouid": 13,
+        "nodeFrom": "n0021"
+      },
+      {
+        "nodeTouid": 221,
+        "nodeTo": "n0010",
+        "data": {
+          "rtt": 3,
+          "bw": 85.8,
+          "channel": "eth0",
+          "$color": "#8F463F"
+        },
+        "nodeFrom": "n0021"
+      },
+      {
+        "data": {
+          "channel": "52",
+          "$color": "#F9B7B0",
+          "miss": 1
+        },
+        "nodeTo": "n0026",
+        "nodeTouid": 112,
+        "nodeFrom": 3
+      }
+    ],
+    "data": {
+      "load_average": "0.11, 0.08, 0.08",
+      "wifi": {
+        "wif0": {
+          "addr": "00:8b",
+          "ch": "52",
+          "type": "mesh point",
+          "txpower": "22.00 dBm",
+          "width": "40",
+          "center": "5270"
+        },
+        "wif1": {
+          "type": "IBSS",
+          "addr": "02:8b",
+          "ch": "52",
+          "width": "40",
+          "center": "5270",
+          "txpower": "22.00 dBm"
+        }
+      },
+      "internetbw": 6.5,
+      "gwbw": 79.9,
+      "system": "Ubiquiti Nanostation M",
+      "uptime": "14:15:03 up 57 days,  3:21",
+      "ipv6ll": [
+        "fe80::227:22ff:feb9:e48b",
+        "fe80::227:22ff:feb8:e48b",
+        "fe80::27:22ff:feb8:e48b"
+      ],
+      "gnode": "/ca/bcncanbruixa20",
+      "gwpath_uid": [
+        91
+      ],
+      "gwrtt": 69.5,
+      "gwpath": [
+        "BCNevaristoarnus5Rd3-Apu"
+      ],
+      "gwuid": 91,
+      "community_gwuid": 79,
+      "community_gw": "BCCanBruixa20Rd6-4524",
+      "gdev": "76326",
+      "ipv4": [
+        "169.254.139.1/29",
+        "10.2.8.193/27",
+        "10.2.8.193/32"
+      ],
+      "bmxversion": "BMX6-0.1-alpha comPatibility=16 revision=d8869ec69797be0ca2da06abb344e60198a8a275\n",
+      "ipv6gl": [
+        "fd66:66:66:7:227:22ff:feb9:e48b",
+        "fd66:66:66:8:227:22ff:feb8:e48b",
+        "fd66:66:66:b:227:22ff:feb8:e48b"
+      ],
+      "qmpversion": "OpenWrt 19.07.5 r11257-5090152ae3 - temba d9d1f77\n",
+      "community_gwrtt": 0.8,
+      "community_gwpath": [
+        "BCCanBruixa20Rd6-4524"
+      ],
+      "internetrtt": 119,
+      "community_gwbw": 67.5,
+      "community_gwpath_uid": [
+        79
+      ],
+      "gw": "BCNevaristoarnus5Rd3-Apu",
+      "ssid": "guifi.net/BCN-GS-CanBruixa20NSM5",
+      "gwid": "n0044"
+    }
+  },
+  {
+    "y": 2413.25632603094,
+    "lat": 41.3834842,
+    "x": 2552.314913492708,
+    "name": "BCN-GS-JpTarradellas40-6a5f",
+    "id": "n0022",
+    "lon": 2.1428667,
+    "uid": 39,
+    "data": {
+      "community_gwpath_uid": [
+        79
+      ],
+      "community_gwbw": 69.6,
+      "gwid": "n0044",
+      "ssid": "guifi.net/BCN-GS-JpTarradellas40",
+      "gw": "BCNevaristoarnus5Rd3-Apu",
+      "internetrtt": 84.1,
+      "community_gwpath": [
+        "BCCanBruixa20Rd6-4524"
+      ],
+      "community_gw": "BCCanBruixa20Rd6-4524",
+      "community_gwrtt": 7.3,
+      "ipv6gl": [
+        "fd66:66:66:9:de9f:dbff:fe1e:883c",
+        "fd66:66:66:3:de9f:dbff:fe1f:883c"
+      ],
+      "qmpversion": "OpenWrt 19.07.5 r11257-5090152ae3 - temba d9d1f77\n",
+      "bmxversion": "BMX6-0.1-alpha comPatibility=16 revision=d8869ec69797be0ca2da06abb344e60198a8a275\n",
+      "ipv4": [
+        "10.1.13.49/28",
+        "10.1.13.33/28",
+        "10.1.13.33/32"
+      ],
+      "gdev": "51951",
+      "gwpath": [
+        "BCCanBruixa20Rd6-4524",
+        "BCNevaristoarnus5Rd3-Apu"
+      ],
+      "gwpath_uid": [
+        79,
+        91
+      ],
+      "gwrtt": 11,
+      "community_gwuid": 79,
+      "gwuid": 91,
+      "gnode": "/ca/node/57374",
+      "ipv6ll": [
+        "fe80::dc9f:dbff:fe1f:883c",
+        "fe80::de9f:dbff:fe1e:883c"
+      ],
+      "uptime": "14:16:04 up 16 days, 13:01",
+      "internetbw": 10.8,
+      "gwbw": 60.6,
+      "system": "Ubiquiti Nanostation M",
+      "load_average": "0.01, 0.02, 0.00",
+      "wifi": {
+        "wlan0": {
+          "type": "IBSS",
+          "addr": "dc:3c",
+          "ch": "52",
+          "center": "5270",
+          "txpower": "20.00 dBm",
+          "width": "40"
+        }
+      },
+      "forwardings": [
+        "BCNEntenca239-0f6b"
+      ],
+      "$color": "#b7b7a7"
+    },
+    "adjacencies": [
+      {
+        "data": {
+          "powerav": -85,
+          "bw": 0.1,
+          "rtt": 17.7,
+          "channel": "52",
+          "$color": "#F9B7B0"
+        },
+        "nodeTo": "n0033",
+        "nodeTouid": 69,
+        "nodeFrom": "n0022"
+      },
+      {
+        "data": {
+          "powerav": -78,
+          "bw": 7.6,
+          "rtt": 22.8,
+          "channel": "52",
+          "$color": "#F9B7B0"
+        },
+        "nodeTo": "n0026",
+        "nodeTouid": 112,
+        "nodeFrom": "n0022"
+      },
+      {
+        "nodeTouid": 101,
+        "data": {
+          "bw": 13.5,
+          "rtt": 13,
+          "powerav": -71,
+          "channel": "52",
+          "$color": "#F9B7B0"
+        },
+        "nodeTo": "n0024",
+        "nodeFrom": "n0022"
+      },
+      {
+        "nodeTo": "n0007",
+        "data": {
+          "channel": "52",
+          "$lineWidth": "0.5",
+          "powerav": -83,
+          "$color": "#F9B7B0"
+        },
+        "nodeTouid": 13,
+        "nodeFrom": "n0022"
+      },
+      {
+        "nodeTouid": 24,
+        "nodeTo": "n0021",
+        "data": {
+          "powerav": -62,
+          "bw": 19.9,
+          "rtt": 6.3,
+          "channel": "52",
+          "$color": "#F9B7B0"
+        },
+        "nodeFrom": "n0022"
+      },
+      {
+        "data": {
+          "channel": "52",
+          "rtt": 10.8,
+          "bw": 13.2,
+          "powerav": -65,
+          "$color": "#F9B7B0"
+        },
+        "nodeTo": "n0045",
+        "nodeTouid": 17,
+        "nodeFrom": "n0022"
+      },
+      {
+        "nodeTo": "n0019",
+        "data": {
+          "bw": 73.9,
+          "rtt": 6.3,
+          "channel": "eth",
+          "$color": "#F97A6D"
+        },
+        "nodeTouid": 79,
+        "nodeFrom": "n0022"
+      }
+    ]
+  },
+  {
+    "y": 1128.727455121465,
+    "name": "BCN-Sagunt66-8971",
+    "id": "n0023",
+    "x": 1897.6804975490086,
+    "lat": 41.3718567,
+    "lon": 2.1351918,
+    "data": {
+      "gdev": "89740",
+      "ipv4": [
+        "10.1.13.161/27",
+        "10.1.13.161/32"
+      ],
+      "bmxversion": "BMX6-0.1-alpha comPatibility=16 revision=2a87b770d3f9c254e3927dc159e2f425f2e0e83a\n",
+      "community_gwrtt": 10,
+      "qmpversion": "OpenWrt 18.06.4 r7808-ef686b7292 - temba 6bfa17a\n",
+      "ipv6gl": [
+        "fd66:66:66:a:de9f:dbff:fe08:8971"
+      ],
+      "community_gwpath_down": [
+        "BCNSants186-EdgePointR6",
+        "BCNSants186Rd1-993d",
+        "BCN-Sagunt66-8971"
+      ],
+      "community_gw": "BCCanBruixa20Rd6-4524",
+      "community_gwuid": 79,
+      "gwuid": 91,
+      "gwpath_down_uid": [
+        79,
+        217,
+        29,
+        3
+      ],
+      "gwpath_down": [
+        "BCCanBruixa20Rd6-4524",
+        "BCNSants186-EdgePointR6",
+        "BCNSants186Rd1-993d",
+        "BCN-Sagunt66-8971"
+      ],
+      "gwpath_uid": [
+        7,
+        38,
+        81,
+        221,
+        91
+      ],
+      "gwrtt": 11.1,
+      "gwpath": [
+        "BCNMVictoria5Rd3",
+        "BCNMVictoria5Rd2",
+        "GSgV-ns-a4a7",
+        "GSgranVia255-ERX-b66c",
+        "BCNevaristoarnus5Rd3-Apu"
+      ],
+      "gw": "BCNevaristoarnus5Rd3-Apu",
+      "ssid": "guifi.net/BCN-Sagunt66-8971",
+      "gwid": "n0044",
+      "community_gwpath_uid": [
+        7,
+        38,
+        81,
+        221,
+        79
+      ],
+      "community_gwbw": 15,
+      "community_gwpath": [
+        "BCNMVictoria5Rd3",
+        "BCNMVictoria5Rd2",
+        "GSgV-ns-a4a7",
+        "GSgranVia255-ERX-b66c",
+        "BCCanBruixa20Rd6-4524"
+      ],
+      "internetrtt": 124.6,
+      "community_gwpath_down_uid": [
+        217,
+        29,
+        3
+      ],
+      "system": "Ubiquiti Bullet M",
+      "gwbw": 10.3,
+      "internetbw": 6.2,
+      "wifi": {
+        "wlan0": {
+          "ch": "112",
+          "addr": "dc:71",
+          "type": "IBSS",
+          "width": "40",
+          "center": "5550",
+          "txpower": "22.00 dBm"
+        }
+      },
+      "load_average": "0.23, 0.07, 0.01",
+      "ipv6ll": [
+        "fe80::de9f:dbff:fe08:8971"
+      ],
+      "gnode": "/ca/node/35378",
+      "uptime": "14:16:52 up 63 days, 22:31",
+      "forwardings": [
+        "BCNSagunt62"
+      ],
+      "$color": "#b7b7a7"
+    },
+    "adjacencies": [
+      {
+        "nodeTouid": 37,
+        "nodeTo": "n0025",
+        "data": {
+          "powerav": -81,
+          "channel": "112",
+          "$color": "#A9BDE6"
+        },
+        "nodeFrom": "n0023"
+      },
+      {
+        "nodeTouid": 29,
+        "data": {
+          "channel": "112",
+          "powerav": -67,
+          "bw": 1.4,
+          "rtt": 3.3,
+          "$color": "#A9BDE6"
+        },
+        "nodeTo": "n0041",
+        "nodeFrom": "n0023"
+      },
+      {
+        "data": {
+          "rtt": 15.3,
+          "bw": 0.1,
+          "powerav": -75,
+          "channel": "112",
+          "$color": "#A9BDE6"
+        },
+        "nodeTo": "n0008",
+        "nodeTouid": 34,
+        "nodeFrom": "n0023"
+      },
+      {
+        "nodeTouid": 104,
+        "data": {
+          "bw": 48.8,
+          "rtt": 1.7,
+          "powerav": -53,
+          "channel": "112",
+          "$color": "#A9BDE6"
+        },
+        "nodeTo": "n0037",
+        "nodeFrom": "n0023"
+      },
+      {
+        "nodeTo": "n0032",
+        "data": {
+          "channel": "112",
+          "powerav": -62,
+          "bw": 37.6,
+          "rtt": 2.5,
+          "$color": "#A9BDE6"
+        },
+        "nodeTouid": 7,
+        "nodeFrom": "n0023"
+      }
+    ],
+    "uid": 3
+  },
+  {
+    "lat": 41.382753,
+    "x": 2162.3782518112566,
+    "id": "n0024",
+    "name": "BCNBerlin20-1edf",
+    "y": 2335.9363765204325,
+    "lon": 2.138213,
+    "adjacencies": [
+      {
+        "data": {
+          "channel": "52",
+          "rtt": 13.1,
+          "bw": 32,
+          "powerav": -67,
+          "$color": "#F9B7B0"
+        },
+        "nodeTo": "n0022",
+        "nodeTouid": 39,
+        "nodeFrom": "n0024"
+      },
+      {
+        "nodeTouid": 79,
+        "nodeTo": "n0019",
+        "data": {
+          "channel": "eth",
+          "bw": 80.9,
+          "rtt": 6.9,
+          "$color": "#F97A6D"
+        },
+        "nodeFrom": "n0024"
+      },
+      {
+        "nodeTo": "n0021",
+        "data": {
+          "channel": "52",
+          "powerav": -71,
+          "rtt": 7.4,
+          "bw": 1.5,
+          "$color": "#F9B7B0"
+        },
+        "nodeTouid": 24,
+        "nodeFrom": "n0024"
+      },
+      {
+        "nodeTouid": 17,
+        "nodeTo": "n0045",
+        "data": {
+          "powerav": -79,
+          "channel": "52",
+          "$color": "#F9B7B0"
+        },
+        "nodeFrom": "n0024"
+      }
+    ],
+    "data": {
+      "wifi": {
+        "wlan0": {
+          "txpower": "22.00 dBm",
+          "width": "40",
+          "center": "5270",
+          "type": "IBSS",
+          "ch": "52",
+          "addr": "44:df"
+        }
+      },
+      "load_average": "0.03, 0.05, 0.00",
+      "system": "Ubiquiti Nanostation M XW",
+      "internetbw": 20.2,
+      "gwbw": 85.5,
+      "uptime": "14:17:32 up 252 days, 21:19",
+      "ipv6ll": [
+        "fe80::46d9:e7ff:feaf:1edf",
+        "fe80::46d9:e7ff:feae:1edf"
+      ],
+      "gnode": "/ca/node/101600",
+      "gwuid": 91,
+      "community_gwuid": 79,
+      "gwpath": [
+        "BCCanBruixa20Rd6-4524",
+        "BCNevaristoarnus5Rd3-Apu"
+      ],
+      "gwpath_uid": [
+        79,
+        91
+      ],
+      "gwrtt": 8.3,
+      "ipv4": [
+        "10.1.15.193/28",
+        "10.1.15.209/28",
+        "10.1.15.193/32"
+      ],
+      "gdev": "97040",
+      "qmpversion": "OpenWrt 18.06.4 r7808-ef686b7292 - temba 87e188e\n",
+      "community_gwrtt": 5.9,
+      "ipv6gl": [
+        "fd66:66:66:a:46d9:e7ff:feaf:1edf",
+        "fd66:66:66:d:46d9:e7ff:feae:1edf"
+      ],
+      "bmxversion": "BMX6-0.1-alpha comPatibility=16 revision=2a87b770d3f9c254e3927dc159e2f425f2e0e83a\n",
+      "community_gw": "BCCanBruixa20Rd6-4524",
+      "community_gwpath": [
+        "BCCanBruixa20Rd6-4524"
+      ],
+      "internetrtt": 82,
+      "gw": "BCNevaristoarnus5Rd3-Apu",
+      "gwid": "n0044",
+      "ssid": "guifi.net/BCNBerlin20-1edf",
+      "community_gwpath_uid": [
+        79
+      ],
+      "community_gwbw": 87.4
+    },
+    "uid": 101
+  },
+  {
+    "y": 1378.2761615216732,
+    "lat": 41.3741,
+    "id": "n0025",
+    "name": "BCNCanViesRd1",
+    "x": 1850.67355320137,
+    "lon": 2.1346,
+    "uid": 37,
+    "data": {
+      "community_gw": "UPC-CN-C6-E104-ER-X",
+      "ipv6gl": [
+        "fd66:66:66:8:de9f:dbff:fe48:b840"
+      ],
+      "qmpversion": "OpenWrt 19.07.5 r11257-5090152ae3 - temba d9d1f77\n",
+      "community_gwrtt": 42.3,
+      "bmxversion": "BMX6-0.1-alpha comPatibility=16 revision=d8869ec69797be0ca2da06abb344e60198a8a275\n",
+      "ipv4": [
+        "10.1.10.33/27",
+        "10.1.10.33/32"
+      ],
+      "gdev": "81095",
+      "gwpath": [
+        "BCNSants186Rd1-993d",
+        "BCNSants186-EdgePointR6",
+        "BCCanBruixa20Rd6-4524",
+        "GSgranVia255-ERX-b66c",
+        "GSgV-kvm-463d",
+        "UPC-CN-C6-E104-ER-X"
+      ],
+      "gwpath_uid": [
+        29,
+        217,
+        79,
+        221,
+        67,
+        186
+      ],
+      "gwrtt": 723.3,
+      "community_gwuid": 186,
+      "gwuid": 186,
+      "community_gwbw": 3.7,
+      "community_gwpath_uid": [
+        29,
+        217,
+        79,
+        221,
+        67,
+        186
+      ],
+      "gwid": "n0014",
+      "ssid": "guifi.net/BCNCanViesRd1, elracodesants",
+      "gw": "UPC-CN-C6-E104-ER-X",
+      "community_gwpath": [
+        "BCNSants186Rd1-993d",
+        "BCNSants186-EdgePointR6",
+        "BCCanBruixa20Rd6-4524",
+        "GSgranVia255-ERX-b66c",
+        "GSgV-kvm-463d",
+        "UPC-CN-C6-E104-ER-X"
+      ],
+      "gwbw": 2.6,
+      "system": "Ubiquiti Nanostation M",
+      "load_average": "0.03, 0.02, 0.00",
+      "wifi": {
+        "wif1": {
+          "center": "5550",
+          "width": "40",
+          "txpower": "22.00 dBm",
+          "type": "IBSS",
+          "addr": "dc:40",
+          "ch": "112"
+        }
+      },
+      "gnode": "/ca/node/82357",
+      "ipv6ll": [
+        "fe80::de9f:dbff:fe48:b840"
+      ],
+      "uptime": "14:18:05 up 10:47"
+    },
+    "adjacencies": [
+      {
+        "nodeTo": "n0041",
+        "data": {
+          "channel": "112",
+          "rtt": 125.6,
+          "bw": 0.6,
+          "powerav": -68,
+          "$color": "#A9BDE6"
+        },
+        "nodeTouid": 29,
+        "nodeFrom": "n0025"
+      },
+      {
+        "data": {
+          "channel": "112",
+          "powerav": -82,
+          "$color": "#A9BDE6"
+        },
+        "nodeTo": "n0008",
+        "nodeTouid": 34,
+        "nodeFrom": "n0025"
+      },
+      {
+        "nodeTo": "n0023",
+        "data": {
+          "channel": "112",
+          "powerav": -80,
+          "rtt": 31,
+          "$color": "#A9BDE6"
+        },
+        "nodeTouid": 3,
+        "nodeFrom": "n0025"
+      }
+    ]
+  },
+  {
+    "lon": 2.140505,
+    "y": 2862.6078993026167,
+    "x": 2359.2735458042007,
+    "name": "BCNEntenca239-0f6b",
+    "lat": 41.387514,
+    "id": "n0026",
+    "data": {
+      "community_gwpath": [
+        "BCN-GS-JpTarradellas40-6a5f",
+        "BCCanBruixa20Rd6-4524",
+        "GSgranVia255-ERX-b66c",
+        "GSgV-kvm-463d",
+        "UPC-CN-C6-E104-ER-X"
+      ],
+      "community_gwbw": 4.1,
+      "community_gwpath_uid": [
+        39,
+        79,
+        221,
+        67,
+        186
+      ],
+      "gw": "UPC-CN-C6-E104-ER-X",
+      "ssid": "qMp-Entenca239",
+      "gwid": "n0014",
+      "gwrtt": 37.3,
+      "gwpath_uid": [
+        39,
+        79,
+        221,
+        67,
+        186
+      ],
+      "gwpath": [
+        "BCN-GS-JpTarradellas40-6a5f",
+        "BCCanBruixa20Rd6-4524",
+        "GSgranVia255-ERX-b66c",
+        "GSgV-kvm-463d",
+        "UPC-CN-C6-E104-ER-X"
+      ],
+      "community_gwuid": 186,
+      "gwuid": 186,
+      "community_gw": "UPC-CN-C6-E104-ER-X",
+      "gdev": "98021",
+      "ipv4": [
+        "10.2.8.1/27",
+        "169.254.107.1/29",
+        "10.2.8.1/32"
+      ],
+      "bmxversion": "BMX6-0.1-alpha comPatibility=16 revision=2a87b770d3f9c254e3927dc159e2f425f2e0e83a\n",
+      "qmpversion": "qMp Clearance 3.2.1 - qMp Clearance 3.2.1, master rev.fd26a34-20160622_1304\n",
+      "ipv6gl": [
+        "fd66:66:66:a:7a8a:20ff:fea1:f6b",
+        "fd66:66:66:d:7a8a:20ff:fea0:f6b"
+      ],
+      "community_gwrtt": 21.9,
+      "uptime": "13:19:43 up 72 days,  3:33",
+      "ipv6ll": [
+        "fe80::7a8a:20ff:fea1:f6b",
+        "fe80::7a8a:20ff:fea0:f6b"
+      ],
+      "gnode": "/ca/node/104964",
+      "load_average": "0.11, 0.05, 0.05",
+      "wifi": {
+        "wlan0": {
+          "addr": "78:6b",
+          "ch": "52",
+          "type": "IBSS",
+          "width": "40",
+          "center": "5270",
+          "txpower": "22.00 dBm"
+        }
+      },
+      "gwbw": 1.9,
+      "system": "Ubiquiti Nanostation M XW"
+    },
+    "adjacencies": [
+      {
+        "nodeTo": "n0021",
+        "data": {
+          "powerav": -82,
+          "channel": "52",
+          "$lineWidth": "0.5",
+          "$color": "#F9B7B0"
+        },
+        "nodeTouid": 24,
+        "nodeFrom": "n0026"
+      },
+      {
+        "nodeTouid": 39,
+        "nodeTo": "n0022",
+        "data": {
+          "channel": "52",
+          "rtt": 23.8,
+          "bw": 2.5,
+          "powerav": -74,
+          "$color": "#F9B7B0"
+        },
+        "nodeFrom": "n0026"
+      }
+    ],
+    "uid": 112
+  },
+  {
+    "uid": 184,
+    "id": "n0027",
+    "name": "BCNGranVia496",
+    "data": {
+      "ipv6ll": [],
+      "ipv6gl": [
+        "fd66:66:66:a:feec:daff:fe9b:a260"
+      ],
+      "$color": "#FCE704"
+    }
+  },
+  {
+    "lon": 2.160313,
+    "y": 0,
+    "lat": 41.361876,
+    "name": "BCNJardiBotanicSants186-ba35",
+    "x": 3987.885959123494,
+    "id": "n0028",
+    "uid": 85,
+    "data": {
+      "gwrtt": 4.8,
+      "gwpath_uid": [
+        217,
+        79,
+        91
+      ],
+      "gwpath": [
+        "BCNSants186-EdgePointR6",
+        "BCCanBruixa20Rd6-4524",
+        "BCNevaristoarnus5Rd3-Apu"
+      ],
+      "community_gwuid": 186,
+      "gwuid": 91,
+      "community_gw": "UPC-CN-C6-E104-ER-X",
+      "bmxversion": "BMX6-0.1-alpha comPatibility=16 revision=2a87b770d3f9c254e3927dc159e2f425f2e0e83a\n",
+      "community_gwrtt": 11.5,
+      "ipv6gl": [
+        "fd66:66:66:8:215:6dff:fe9b:ba35",
+        "fd66:66:66:b:215:6dff:fe9a:ba35"
+      ],
+      "qmpversion": "OpenWrt 18.06.4 r7808-ef686b7292 - temba 87e188e\n",
+      "gdev": "95689",
+      "ipv4": [
+        "10.1.15.65/28",
+        "10.1.15.65/32"
+      ],
+      "internetrtt": 80.5,
+      "community_gwpath": [
+        "BCNSants186-EdgePointR6",
+        "BCCanBruixa20Rd6-4524",
+        "GSgranVia255-ERX-b66c",
+        "GSgV-kvm-463d",
+        "UPC-CN-C6-E104-ER-X"
+      ],
+      "community_gwbw": 11.1,
+      "community_gwpath_uid": [
+        217,
+        79,
+        221,
+        67,
+        186
+      ],
+      "ssid": "guifi.net/BCNJardiBotanicSants18",
+      "gwid": "n0044",
+      "gw": "BCNevaristoarnus5Rd3-Apu",
+      "load_average": "0.00, 0.00, 0.00",
+      "wifi": {
+        "wlan0": {
+          "txpower": "22.00 dBm",
+          "center": "5190",
+          "width": "40",
+          "ch": "36",
+          "addr": "00:35",
+          "type": "IBSS"
+        }
+      },
+      "internetbw": 8.2,
+      "gwbw": 8.8,
+      "system": "Ubiquiti Bullet M",
+      "uptime": "14:20:32 up 1 day, 5 min",
+      "gnode": "/ca/node/89749",
+      "ipv6ll": [
+        "fe80::215:6dff:fe9b:ba35",
+        "fe80::215:6dff:fe9a:ba35"
+      ]
+    },
+    "adjacencies": [
+      {
+        "data": {
+          "channel": "36",
+          "$lineWidth": "0.5",
+          "powerav": -87,
+          "$color": "#7297E6"
+        },
+        "nodeTo": "n0031",
+        "nodeTouid": 38,
+        "nodeFrom": "n0028"
+      },
+      {
+        "data": {
+          "rtt": 3,
+          "bw": 6.7,
+          "powerav": -70,
+          "channel": "36",
+          "$color": "#7297E6"
+        },
+        "nodeTo": "n0047",
+        "nodeTouid": 88,
+        "nodeFrom": "n0028"
+      },
+      {
+        "nodeTo": "n0040",
+        "data": {
+          "channel": "br-lan",
+          "rtt": 2.2,
+          "bw": 15.5,
+          "$color": "#E62B17"
+        },
+        "nodeTouid": 217,
+        "nodeFrom": "n0028"
+      }
+    ]
+  },
+  {
+    "data": {
+      "community_gwuid": 186,
+      "gwuid": 186,
+      "gwpath": [
+        "BCNMVictoria5Rd1",
+        "GSgranVia255-db37",
+        "GSgranVia255-ERX-b66c",
+        "GSgV-kvm-463d",
+        "UPC-CN-C6-E104-ER-X"
+      ],
+      "gwpath_down": [
+        "GSgV-kvm-463d",
+        "GSgV-ns-a4a7",
+        "BCNMVictoria5Rd2",
+        "BCNMVictoria5Rd1",
+        "BCNMVictoria16-d594"
+      ],
+      "gwrtt": 10.9,
+      "gwpath_uid": [
+        28,
+        19,
+        221,
+        67,
+        186
+      ],
+      "gwpath_down_uid": [
+        67,
+        81,
+        38,
+        28,
+        36
+      ],
+      "qmpversion": "OpenWrt 18.06.4 r7808-ef686b7292 - temba 87e188e\n",
+      "ipv6gl": [
+        "fd66:66:66:b:215:6dff:fe7c:d594"
+      ],
+      "community_gwrtt": 33.4,
+      "bmxversion": "BMX6-0.1-alpha comPatibility=16 revision=2a87b770d3f9c254e3927dc159e2f425f2e0e83a\n",
+      "ipv4": [
+        "10.1.12.225/27",
+        "10.1.12.225/32"
+      ],
+      "gdev": "89589",
+      "community_gw": "UPC-CN-C6-E104-ER-X",
+      "community_gwpath_down": [
+        "GSgV-kvm-463d",
+        "GSgV-ns-a4a7",
+        "BCNMVictoria5Rd2",
+        "BCNMVictoria5Rd1",
+        "BCNMVictoria16-d594"
+      ],
+      "community_gwpath": [
+        "BCNMVictoria5Rd1",
+        "GSgranVia255-db37",
+        "GSgranVia255-ERX-b66c",
+        "GSgV-kvm-463d",
+        "UPC-CN-C6-E104-ER-X"
+      ],
+      "community_gwpath_down_uid": [
+        67,
+        81,
+        38,
+        28,
+        36
+      ],
+      "gwid": "n0014",
+      "ssid": "guifi.net/BCNVictoria16Rd1-d594",
+      "gw": "UPC-CN-C6-E104-ER-X",
+      "community_gwbw": 1.4,
+      "community_gwpath_uid": [
+        28,
+        19,
+        221,
+        67,
+        186
+      ],
+      "wifi": {
+        "wlan0": {
+          "addr": "00:94",
+          "ch": "60",
+          "type": "IBSS",
+          "txpower": "22.00 dBm",
+          "width": "40",
+          "center": "5310"
+        }
+      },
+      "load_average": "0.05, 0.03, 0.00",
+      "system": "Ubiquiti Nanostation M",
+      "gwbw": 1.4,
+      "uptime": "14:20:58 up 7 days, 29 min",
+      "gnode": "/ca/node/55410",
+      "ipv6ll": [
+        "fe80::215:6dff:fe7c:d594"
+      ]
+    },
+    "adjacencies": [
+      {
+        "nodeTouid": 28,
+        "data": {
+          "channel": "60",
+          "bw": 3.3,
+          "rtt": 4.3,
+          "powerav": -82,
+          "$color": "#6D0D03"
+        },
+        "nodeTo": "n0030",
+        "nodeFrom": "n0029"
+      }
+    ],
+    "uid": 36,
+    "lon": 2.1380755,
+    "y": 1250.4807693939656,
+    "id": "n0029",
+    "lat": 41.372975,
+    "name": "BCNMVictoria16-d594",
+    "x": 2140.084994057368
+  },
+  {
+    "data": {
+      "community_gw": "UPC-CN-C6-E104-ER-X",
+      "community_gwpath_down": [
+        "GSgV-kvm-463d",
+        "GSgV-ns-a4a7",
+        "BCNMVictoria5Rd2",
+        "BCNMVictoria5Rd1"
+      ],
+      "bmxversion": "BMX6-0.1-alpha comPatibility=16 revision=2a87b770d3f9c254e3927dc159e2f425f2e0e83a\n",
+      "qmpversion": "OpenWrt 18.06.4 r7808-ef686b7292 - temba 87e188e\n",
+      "ipv6gl": [
+        "fd66:66:66:8:de9f:dbff:fe09:8da9",
+        "fd66:66:66:b:de9f:dbff:fe08:8da9"
+      ],
+      "community_gwrtt": 8.7,
+      "gdev": "105922",
+      "ipv4": [
+        "10.2.10.225/32",
+        "10.2.10.225/27"
+      ],
+      "gwrtt": 8.9,
+      "gwpath_uid": [
+        19,
+        221,
+        91
+      ],
+      "gwpath_down": [
+        "GSgranVia255-ERX-b66c",
+        "GSgranVia255-db37"
+      ],
+      "gwpath": [
+        "GSgranVia255-db37",
+        "GSgranVia255-ERX-b66c",
+        "BCNevaristoarnus5Rd3-Apu"
+      ],
+      "gwpath_down_uid": [
+        221,
+        19
+      ],
+      "gwuid": 91,
+      "community_gwuid": 186,
+      "community_gwpath_uid": [
+        19,
+        221,
+        67,
+        186
+      ],
+      "community_gwbw": 17.3,
+      "ssid": "guifi.net/BCNMVictoria5Rd1",
+      "gwid": "n0044",
+      "gw": "BCNevaristoarnus5Rd3-Apu",
+      "community_gwpath_down_uid": [
+        67,
+        81,
+        38,
+        28
+      ],
+      "internetrtt": 112.4,
+      "community_gwpath": [
+        "GSgranVia255-db37",
+        "GSgranVia255-ERX-b66c",
+        "GSgV-kvm-463d",
+        "UPC-CN-C6-E104-ER-X"
+      ],
+      "gwbw": 13.8,
+      "internetbw": 7.3,
+      "system": "Ubiquiti Bullet M",
+      "load_average": "0.41, 0.18, 0.05",
+      "wifi": {
+        "wlan0": {
+          "width": "40",
+          "txpower": "22.00 dBm",
+          "center": "5310",
+          "type": "IBSS",
+          "ch": "60",
+          "addr": "dc:a9"
+        }
+      },
+      "gnode": "/ca/117762",
+      "ipv6ll": [
+        "fe80::de9f:dbff:fe09:8da9",
+        "fe80::de9f:dbff:fe08:8da9"
+      ],
+      "uptime": "14:21:48 up 9 days,  2:11",
+      "forwardings": [
+        "BCNMVictoria16-d594"
+      ],
+      "$color": "#b7b7a7"
+    },
+    "adjacencies": [
+      {
+        "nodeTouid": 19,
+        "nodeTo": "n0011",
+        "data": {
+          "powerav": -64,
+          "rtt": 17.7,
+          "bw": 12,
+          "channel": "60",
+          "$color": "#6D0D03"
+        },
+        "nodeFrom": "n0030"
+      },
+      {
+        "nodeTouid": 105,
+        "data": {
+          "bw": 0.4,
+          "rtt": 2.5,
+          "powerav": -81,
+          "channel": "60",
+          "$color": "#6D0D03"
+        },
+        "nodeTo": "n0035",
+        "nodeFrom": "n0030"
+      },
+      {
+        "nodeTo": "n0029",
+        "data": {
+          "channel": "60",
+          "bw": 5,
+          "rtt": 2.3,
+          "powerav": -81,
+          "$color": "#6D0D03"
+        },
+        "nodeTouid": 36,
+        "nodeFrom": "n0030"
+      },
+      {
+        "nodeTouid": 230,
+        "data": {
+          "bw": 0,
+          "rtt": 4.3,
+          "powerav": -83,
+          "channel": "60",
+          "$color": "#6D0D03"
+        },
+        "nodeTo": "n0002",
+        "nodeFrom": "n0030"
+      },
+      {
+        "nodeTouid": 7,
+        "data": {
+          "channel": "br-lan",
+          "rtt": 0.8,
+          "bw": 60.6,
+          "$color": "#E62B17"
+        },
+        "nodeTo": "n0032",
+        "nodeFrom": "n0030"
+      },
+      {
+        "nodeTouid": 38,
+        "data": {
+          "channel": "br-lan",
+          "rtt": 0.9,
+          "bw": 66.1,
+          "$color": "#E62B17"
+        },
+        "nodeTo": "n0031",
+        "nodeFrom": "n0030"
+      }
+    ],
+    "uid": 28,
+    "y": 1250.4807693939656,
+    "lat": 41.372975,
+    "name": "BCNMVictoria5Rd1",
+    "id": "n0030",
+    "x": 2140.084994057368,
+    "lon": 2.1380755
+  },
+  {
+    "adjacencies": [
+      {
+        "data": {
+          "channel": "br-lan",
+          "bw": 71.4,
+          "rtt": 0.9,
+          "$color": "#E62B17"
+        },
+        "nodeTo": "n0030",
+        "nodeTouid": 28,
+        "nodeFrom": "n0031"
+      },
+      {
+        "nodeTouid": 7,
+        "nodeTo": "n0032",
+        "data": {
+          "rtt": 0.8,
+          "bw": 69.5,
+          "channel": "br-lan",
+          "$color": "#E62B17"
+        },
+        "nodeFrom": "n0031"
+      },
+      {
+        "nodeTouid": 88,
+        "nodeTo": "n0047",
+        "data": {
+          "channel": "36",
+          "rtt": 1422.8,
+          "powerav": -82,
+          "$color": "#7297E6"
+        },
+        "nodeFrom": "n0031"
+      },
+      {
+        "nodeTouid": 81,
+        "nodeTo": "n0009",
+        "data": {
+          "channel": "36",
+          "powerav": -69,
+          "rtt": 1.7,
+          "bw": 24.1,
+          "$color": "#7297E6"
+        },
+        "nodeFrom": "n0031"
+      },
+      {
+        "data": {
+          "channel": "36",
+          "$color": "#7297E6",
+          "miss": 1
+        },
+        "nodeTo": "n0028",
+        "nodeTouid": 85,
+        "nodeFrom": 13
+      }
+    ],
+    "data": {
+      "community_gwrtt": 7.7,
+      "ipv6gl": [
+        "fd66:66:66:9:2c0:caff:fe94:92d",
+        "fd66:66:66:c:2c0:caff:fe94:92e"
+      ],
+      "qmpversion": "OpenWrt 18.06.4 r7808-ef686b7292 - temba 87e188e\n",
+      "bmxversion": "BMX6-0.1-alpha comPatibility=16 revision=2a87b770d3f9c254e3927dc159e2f425f2e0e83a\n",
+      "ipv4": [
+        "10.2.11.1/32",
+        "10.2.11.1/27"
+      ],
+      "gdev": "105923",
+      "community_gw": "UPC-CN-C6-E104-ER-X",
+      "community_gwuid": 186,
+      "gwuid": 186,
+      "gwpath": [
+        "GSgV-ns-a4a7",
+        "GSgV-kvm-463d",
+        "UPC-CN-C6-E104-ER-X"
+      ],
+      "gwpath_uid": [
+        81,
+        67,
+        186
+      ],
+      "gwrtt": 46.8,
+      "gwid": "n0014",
+      "ssid": "guifi.net/BCNMVictoria5Rd2",
+      "gw": "UPC-CN-C6-E104-ER-X",
+      "community_gwpath_uid": [
+        81,
+        67,
+        186
+      ],
+      "community_gwbw": 18.1,
+      "community_gwpath": [
+        "GSgV-ns-a4a7",
+        "GSgV-kvm-463d",
+        "UPC-CN-C6-E104-ER-X"
+      ],
+      "system": "ALFA Network N2/N5",
+      "gwbw": 19,
+      "wifi": {
+        "wlan0": {
+          "width": "40",
+          "center": "5190",
+          "txpower": "25.00 dBm",
+          "type": "IBSS",
+          "addr": "00:2e",
+          "ch": "36"
+        }
+      },
+      "load_average": "0.05, 0.09, 0.03",
+      "gnode": "/ca/node/117762",
+      "ipv6ll": [
+        "fe80::2c0:caff:fe94:92d",
+        "fe80::2c0:caff:fe94:92e"
+      ],
+      "uptime": "14:22:29 up 149 days,  9:22",
+      "forwardings": [
+        "BCN-Sagunt66-8971",
+        "BCNMVictoria5Rd3",
+        "BCNSagunt62"
+      ],
+      "$color": "#a9a99b"
+    },
+    "uid": 38,
+    "lat": 41.372975,
+    "name": "BCNMVictoria5Rd2",
+    "x": 2140.084994057368,
+    "id": "n0031",
+    "y": 1250.4807693939656,
+    "lon": 2.1380755
+  },
+  {
+    "uid": 7,
+    "data": {
+      "wifi": {
+        "wlan0": {
+          "type": "IBSS",
+          "ch": "112",
+          "addr": "dc:2f",
+          "width": "40",
+          "txpower": "22.00 dBm",
+          "center": "5550"
+        }
+      },
+      "load_average": "0.04, 0.10, 0.08",
+      "system": "Ubiquiti Bullet M",
+      "gwbw": 14.6,
+      "uptime": "14:23:50 up 149 days,  9:23",
+      "gnode": "/ca/node/117762",
+      "ipv6ll": [
+        "fe80::de9f:dbff:fe59:992f",
+        "fe80::de9f:dbff:fe58:992f"
+      ],
+      "community_gwuid": 186,
+      "gwuid": 186,
+      "gwpath": [
+        "BCNMVictoria5Rd2",
+        "GSgV-ns-a4a7",
+        "GSgV-kvm-463d",
+        "UPC-CN-C6-E104-ER-X"
+      ],
+      "gwrtt": 15.2,
+      "gwpath_uid": [
+        38,
+        81,
+        67,
+        186
+      ],
+      "ipv6gl": [
+        "fd66:66:66:8:de9f:dbff:fe59:992f",
+        "fd66:66:66:b:de9f:dbff:fe58:992f"
+      ],
+      "qmpversion": "OpenWrt 18.06.4 r7808-ef686b7292 - temba 87e188e\n",
+      "community_gwrtt": 7.4,
+      "bmxversion": "BMX6-0.1-alpha comPatibility=16 revision=2a87b770d3f9c254e3927dc159e2f425f2e0e83a\n",
+      "ipv4": [
+        "10.2.11.33/32",
+        "10.2.11.33/27"
+      ],
+      "gdev": "105925",
+      "community_gw": "UPC-CN-C6-E104-ER-X",
+      "community_gwpath": [
+        "BCNMVictoria5Rd2",
+        "GSgV-ns-a4a7",
+        "GSgV-kvm-463d",
+        "UPC-CN-C6-E104-ER-X"
+      ],
+      "gwid": "n0014",
+      "ssid": "guifi.net/BCNMVictoria5Rd3",
+      "gw": "UPC-CN-C6-E104-ER-X",
+      "community_gwbw": 18.4,
+      "community_gwpath_uid": [
+        38,
+        81,
+        67,
+        186
+      ],
+      "forwardings": [
+        "BCN-Sagunt66-8971",
+        "BCNSagunt62"
+      ],
+      "$color": "#b0b0a1"
+    },
+    "adjacencies": [
+      {
+        "nodeTouid": 3,
+        "nodeTo": "n0023",
+        "data": {
+          "powerav": -64,
+          "rtt": 19.9,
+          "bw": 12.9,
+          "channel": "112",
+          "$color": "#A9BDE6"
+        },
+        "nodeFrom": "n0032"
+      },
+      {
+        "nodeTo": "n0030",
+        "data": {
+          "channel": "br-lan",
+          "bw": 72.4,
+          "rtt": 0.9,
+          "$color": "#E62B17"
+        },
+        "nodeTouid": 28,
+        "nodeFrom": "n0032"
+      },
+      {
+        "nodeTouid": 38,
+        "data": {
+          "channel": "br-lan",
+          "bw": 70.7,
+          "rtt": 0.8,
+          "$color": "#E62B17"
+        },
+        "nodeTo": "n0031",
+        "nodeFrom": "n0032"
+      },
+      {
+        "data": {
+          "channel": "112",
+          "$color": "#A9BDE6",
+          "miss": 1
+        },
+        "nodeTo": "n0008",
+        "nodeTouid": 34,
+        "nodeFrom": 14
+      }
+    ],
+    "lon": 2.1380755,
+    "y": 1250.4807693939656,
+    "lat": 41.372975,
+    "x": 2140.084994057368,
+    "name": "BCNMVictoria5Rd3",
+    "id": "n0032"
+  },
+  {
+    "lon": 2.13304,
+    "y": 2407.640932017006,
+    "x": 1730.4956874416093,
+    "lat": 41.38336,
+    "id": "n0033",
+    "name": "BCNNovell47-39be",
+    "uid": 69,
+    "data": {
+      "ssid": "qMp-Novell47",
+      "gnode": "/ca/node/86041",
+      "gwid": "n0044",
+      "gw": "BCNevaristoarnus5Rd3-Apu",
+      "ipv6ll": [
+        "fe80::618:d6ff:fe93:39be",
+        "fe80::618:d6ff:fe92:39be"
+      ],
+      "internetrtt": 104.2,
+      "uptime": "13:24:45 up 212 days,  9:17",
+      "bmxversion": "BMX6-0.1-alpha comPatibility=16 revision=2a87b770d3f9c254e3927dc159e2f425f2e0e83a\n",
+      "qmpversion": "qMp Clearance 3.2 - qMp Clearance 3.2, master rev.9782ba8-20160121_1921\n",
+      "ipv6gl": [
+        "fd66:66:66:a:618:d6ff:fe93:39be",
+        "fd66:66:66:d:618:d6ff:fe92:39be"
+      ],
+      "system": "Ubiquiti Nanostation M XW",
+      "gdev": "85739",
+      "ipv4": [
+        "10.0.30.1/27",
+        "169.254.190.1/29",
+        "10.0.30.1/32"
+      ],
+      "internetbw": 4,
+      "gwbw": 13.3,
+      "gwuid": 91,
+      "wifi": {
+        "wlan0": {
+          "type": "IBSS",
+          "width": "40",
+          "center": "5270",
+          "addr": "04:be",
+          "ch": "52"
+        }
+      },
+      "load_average": "0.05, 0.04, 0.07",
+      "gwrtt": 25.9,
+      "gwpath_uid": [
+        17,
+        91
+      ],
+      "gwpath": [
+        "BCNevaristoarnus5Rd4-988e",
+        "BCNevaristoarnus5Rd3-Apu"
+      ]
+    },
+    "adjacencies": [
+      {
+        "nodeTouid": 39,
+        "data": {
+          "powerav": -77,
+          "rtt": 2,
+          "bw": 0.3,
+          "channel": "52",
+          "$color": "#F9B7B0"
+        },
+        "nodeTo": "n0022",
+        "nodeFrom": "n0033"
+      },
+      {
+        "nodeTouid": 24,
+        "nodeTo": "n0021",
+        "data": {
+          "channel": "52",
+          "powerav": -54,
+          "bw": 12.9,
+          "rtt": 59.3,
+          "$color": "#F9B7B0"
+        },
+        "nodeFrom": "n0033"
+      },
+      {
+        "nodeTouid": 17,
+        "nodeTo": "n0045",
+        "data": {
+          "channel": "52",
+          "powerav": -55,
+          "rtt": 48.3,
+          "bw": 16.4,
+          "$color": "#F9B7B0"
+        },
+        "nodeFrom": "n0033"
+      }
+    ]
+  },
+  {
+    "adjacencies": [
+      {
+        "nodeTo": "n0035",
+        "data": {
+          "channel": "br-lan",
+          "bw": 211.4,
+          "rtt": 0.7,
+          "$color": "#E62B17"
+        },
+        "nodeTouid": 105,
+        "nodeFrom": "n0034"
+      },
+      {
+        "nodeTouid": 109,
+        "data": {
+          "rtt": 1,
+          "bw": 89.3,
+          "channel": "br-lan",
+          "$color": "#E62B17"
+        },
+        "nodeTo": "n0036",
+        "nodeFrom": "n0034"
+      }
+    ],
+    "data": {
+      "community_gwpath_uid": [
+        105,
+        19,
+        221,
+        79
+      ],
+      "community_gwbw": 10.3,
+      "gw": "BCNevaristoarnus5Rd3-Apu",
+      "gwid": "n0044",
+      "community_gwpath": [
+        "BCNPisuerga17-mANTBox15s",
+        "GSgranVia255-db37",
+        "GSgranVia255-ERX-b66c",
+        "BCCanBruixa20Rd6-4524"
+      ],
+      "internetrtt": 84.9,
+      "community_gw": "BCCanBruixa20Rd6-4524",
+      "ipv4": [
+        "10.1.10.1/27",
+        "10.1.10.1/32"
+      ],
+      "gdev": "97961",
+      "qmpversion": "OpenWrt 21.02.0 r16279-5cc0535800 - qMp Rhodopes 5.1.0, branch HEAD rev.f7ca3df-20211013-1543\n",
+      "ipv6gl": [
+        "fd66:66:66:a:822a:a8ff:fe9f:4b9"
+      ],
+      "community_gwrtt": 8.3,
+      "bmxversion": "BMX6-0.1-alpha comPatibility=16 revision=d8869ec69797be0ca2da06abb344e60198a8a275\n",
+      "gwpath": [
+        "BCNPisuerga17-mANTBox15s",
+        "GSgranVia255-db37",
+        "GSgranVia255-ERX-b66c",
+        "BCNevaristoarnus5Rd3-Apu"
+      ],
+      "gwpath_uid": [
+        105,
+        19,
+        221,
+        91
+      ],
+      "gwrtt": 13.3,
+      "community_gwuid": 79,
+      "gwuid": 91,
+      "ipv6ll": [
+        "fe80::822a:a8ff:fe9f:4b9"
+      ],
+      "gnode": "/ca/bcnpisuerga17",
+      "uptime": "13:25:08 up 149 days, 11:30",
+      "gwbw": 19.1,
+      "internetbw": 11.5,
+      "system": "Ubiquiti EdgeRouter X SFP",
+      "load_average": "0.92, 0.99, 0.99"
+    },
+    "uid": 42,
+    "name": "BCNPisuerga17-EPR6",
+    "lat": 41.376859,
+    "id": "n0034",
+    "x": 0,
+    "y": 1703.330911164172,
+    "lon": 2.1124330000000002
+  },
+  {
+    "y": 1703.330911164172,
+    "lat": 41.376859,
+    "name": "BCNPisuerga17-mANTBox15s",
+    "x": 0,
+    "id": "n0035",
+    "lon": 2.1124330000000002,
+    "uid": 105,
+    "data": {
+      "gwpath_uid": [
+        19,
+        221,
+        91
+      ],
+      "gwrtt": 5.8,
+      "gwpath": [
+        "GSgranVia255-db37",
+        "GSgranVia255-ERX-b66c",
+        "BCNevaristoarnus5Rd3-Apu"
+      ],
+      "community_gwuid": 186,
+      "gwuid": 91,
+      "community_gw": "UPC-CN-C6-E104-ER-X",
+      "bmxversion": "BMX6-0.1-alpha comPatibility=16 revision=d8869ec69797be0ca2da06abb344e60198a8a275\n",
+      "qmpversion": "OpenWrt 21.02.2 r16495-bf0c965af0 - qMp Rhodopes 5.1.2, branch HEAD rev.f73716a-20220425-1404\n",
+      "ipv6gl": [
+        "fd66:66:66:5:e68d:8cff:fefd:f250",
+        "fd66:66:66:7:e68d:8cff:fefd:f252"
+      ],
+      "community_gwrtt": 18.3,
+      "gdev": "97963",
+      "ipv4": [
+        "10.1.10.2/28",
+        "169.254.82.1/29",
+        "10.1.10.2/32"
+      ],
+      "internetrtt": 80.5,
+      "community_gwpath": [
+        "GSgranVia255-db37",
+        "GSgranVia255-ERX-b66c",
+        "GSgV-kvm-463d",
+        "UPC-CN-C6-E104-ER-X"
+      ],
+      "community_gwpath_uid": [
+        19,
+        221,
+        67,
+        186
+      ],
+      "community_gwbw": 12,
+      "ssid": "BCNpisuerga17-mANTBox",
+      "gwid": "n0044",
+      "gw": "BCNevaristoarnus5Rd3-Apu",
+      "load_average": "1.70, 1.18, 1.03",
+      "wifi": {
+        "wlan0": {
+          "width": "40",
+          "txpower": "17.00 dBm",
+          "center": "5310",
+          "type": "IBSS",
+          "addr": "e4:52",
+          "ch": "60"
+        }
+      },
+      "internetbw": 14.6,
+      "gwbw": 9.5,
+      "system": "MikroTik RouterBOARD 921GS-5HPacD-15s",
+      "uptime": "13:25:28 up 149 days, 11:29",
+      "gnode": "/ca/bcnpisuerga17",
+      "ipv6ll": [
+        "fe80::e68d:8cff:fefd:f250",
+        "fe80::e68d:8cff:fefd:f252"
+      ],
+      "forwardings": [
+        "BCNPisuerga17-EPR6",
+        "BCNPisuerga17NSM5XW-97964"
+      ],
+      "$color": "#b0b0a1"
+    },
+    "adjacencies": [
+      {
+        "data": {
+          "channel": "60",
+          "rtt": 21.2,
+          "bw": 12.9,
+          "powerav": -67,
+          "$color": "#6D0D03"
+        },
+        "nodeTo": "n0011",
+        "nodeTouid": 19,
+        "nodeFrom": "n0035"
+      },
+      {
+        "nodeTouid": 42,
+        "nodeTo": "n0034",
+        "data": {
+          "channel": "br-lan",
+          "rtt": 1.8,
+          "bw": 68.7,
+          "$color": "#E62B17"
+        },
+        "nodeFrom": "n0035"
+      },
+      {
+        "nodeTouid": 28,
+        "nodeTo": "n0030",
+        "data": {
+          "channel": "60",
+          "powerav": -78,
+          "bw": 1.9,
+          "rtt": 8.7,
+          "$color": "#6D0D03"
+        },
+        "nodeFrom": "n0035"
+      },
+      {
+        "data": {
+          "$lineWidth": "0.5",
+          "channel": "60",
+          "powerav": -83,
+          "$color": "#6D0D03"
+        },
+        "nodeTo": "n0046",
+        "nodeTouid": 35,
+        "nodeFrom": "n0035"
+      },
+      {
+        "data": {
+          "channel": "br-lan",
+          "bw": 83.8,
+          "rtt": 0.6,
+          "$color": "#E62B17"
+        },
+        "nodeTo": "n0036",
+        "nodeTouid": 109,
+        "nodeFrom": "n0035"
+      },
+      {
+        "data": {
+          "powerav": -78,
+          "rtt": 183.4,
+          "bw": 0,
+          "$lineWidth": "0.5",
+          "channel": "60",
+          "$color": "#6D0D03"
+        },
+        "nodeTo": "n0006",
+        "nodeTouid": 46,
+        "nodeFrom": "n0035"
+      }
+    ]
+  },
+  {
+    "adjacencies": [
+      {
+        "data": {
+          "rtt": 3,
+          "bw": 62,
+          "channel": "br-lan",
+          "$color": "#E62B17"
+        },
+        "nodeTo": "n0035",
+        "nodeTouid": 105,
+        "nodeFrom": "n0036"
+      },
+      {
+        "nodeTouid": 42,
+        "nodeTo": "n0034",
+        "data": {
+          "rtt": 0.9,
+          "bw": 62.3,
+          "channel": "br-lan",
+          "$color": "#E62B17"
+        },
+        "nodeFrom": "n0036"
+      }
+    ],
+    "data": {
+      "gwpath_uid": [
+        105,
+        19,
+        221,
+        91
+      ],
+      "gwrtt": 9.7,
+      "gwpath": [
+        "BCNPisuerga17-mANTBox15s",
+        "GSgranVia255-db37",
+        "GSgranVia255-ERX-b66c",
+        "BCNevaristoarnus5Rd3-Apu"
+      ],
+      "community_gwuid": 186,
+      "gwuid": 91,
+      "community_gw": "UPC-CN-C6-E104-ER-X",
+      "gdev": "97964",
+      "ipv4": [
+        "10.1.10.3/28",
+        "10.1.10.3/32",
+        "169.254.125.1/29"
+      ],
+      "bmxversion": "BMX6-0.1-alpha comPatibility=16 revision=d8869ec69797be0ca2da06abb344e60198a8a275\n",
+      "community_gwrtt": 16,
+      "ipv6gl": [
+        "fd66:66:66:6:46d9:e7ff:fe47:777d",
+        "fd66:66:66:8:46d9:e7ff:fe47:777d",
+        "fd66:66:66:b:46d9:e7ff:fe46:777d"
+      ],
+      "qmpversion": "OpenWrt 21.02.3 r16554-1d4dea6d4f - qMp Rhodopes 5.1.3, branch HEAD rev.5c65f68-20220425-1411\n",
+      "community_gwpath": [
+        "BCNPisuerga17-mANTBox15s",
+        "GSgranVia255-db37",
+        "GSgranVia255-ERX-b66c",
+        "GSgV-kvm-463d",
+        "UPC-CN-C6-E104-ER-X"
+      ],
+      "internetrtt": 81.7,
+      "community_gwbw": 14,
+      "community_gwpath_uid": [
+        105,
+        19,
+        221,
+        67,
+        186
+      ],
+      "gw": "BCNevaristoarnus5Rd3-Apu",
+      "ssid": "BCNpisuerga17-NSM5",
+      "gwid": "n0044",
+      "load_average": "0.59, 0.33, 0.22",
+      "wifi": {
+        "wlan0": {
+          "type": "IBSS",
+          "ch": "100",
+          "addr": "44:7d",
+          "txpower": "17.00 dBm",
+          "width": "20",
+          "center": "5500"
+        }
+      },
+      "gwbw": 12.4,
+      "internetbw": 9.2,
+      "system": "Ubiquiti Nanostation M (XW)",
+      "uptime": "13:26:19 up 149 days, 11:30",
+      "ipv6ll": [
+        "fe80::46d9:e7ff:fe47:777d",
+        "fe80::46d9:e7ff:fe47:777d",
+        "fe80::46d9:e7ff:fe46:777d"
+      ],
+      "gnode": "/ca/bcnpisuerga17"
+    },
+    "uid": 109,
+    "lat": 41.376859,
+    "id": "n0036",
+    "name": "BCNPisuerga17NSM5XW-97964",
+    "x": 0,
+    "y": 1703.330911164172,
+    "lon": 2.1124330000000002
+  },
+  {
+    "y": 1126.6986590279266,
+    "name": "BCNSagunt62",
+    "lat": 41.3718379,
+    "id": "n0037",
+    "x": 1891.805423721089,
+    "lon": 2.1351218,
+    "data": {
+      "wifi": {
+        "wlan0": {
+          "width": "40",
+          "txpower": "20.00 dBm",
+          "center": "5550",
+          "type": "IBSS",
+          "addr": "04:65",
+          "ch": "112"
+        }
+      },
+      "load_average": "0.18, 0.06, 0.01",
+      "system": "Ubiquiti RouterStation",
+      "internetbw": 4.8,
+      "gwbw": 1.4,
+      "uptime": "14:26:44 up 274 days, 23:40",
+      "gnode": "/ca/node/49433",
+      "ipv6ll": [
+        "fe80::6f0:21ff:fe03:65"
+      ],
+      "gwuid": 91,
+      "community_gwuid": 79,
+      "gwpath": [
+        "BCNSants186Rd1-993d",
+        "BCNSants186-EdgePointR6",
+        "BCCanBruixa20Rd6-4524",
+        "BCNevaristoarnus5Rd3-Apu"
+      ],
+      "gwrtt": 102.6,
+      "gwpath_uid": [
+        29,
+        217,
+        79,
+        91
+      ],
+      "community_gwrtt": 16.3,
+      "qmpversion": "OpenWrt 18.06.4 r7808-ef686b7292 - temba ddd0cbb\n",
+      "ipv6gl": [
+        "fd66:66:66:b:6f0:21ff:fe03:65"
+      ],
+      "bmxversion": "BMX6-0.1-alpha comPatibility=16 revision=2a87b770d3f9c254e3927dc159e2f425f2e0e83a\n",
+      "ipv4": [
+        "10.1.13.129/32",
+        "10.1.13.129/27"
+      ],
+      "gdev": "89739",
+      "community_gw": "BCCanBruixa20Rd6-4524",
+      "community_gwpath_down": [
+        "BCNSants186-EdgePointR6",
+        "BCNSants186Rd1-993d",
+        "BCNSagunt62"
+      ],
+      "internetrtt": 106.6,
+      "community_gwpath": [
+        "BCN-Sagunt66-8971",
+        "BCNMVictoria5Rd3",
+        "BCNMVictoria5Rd2",
+        "GSgV-ns-a4a7",
+        "GSgranVia255-ERX-b66c",
+        "BCCanBruixa20Rd6-4524"
+      ],
+      "community_gwpath_down_uid": [
+        217,
+        29,
+        104
+      ],
+      "gwid": "n0044",
+      "ssid": "guifi.net/BCNSagunt62",
+      "gw": "BCNevaristoarnus5Rd3-Apu",
+      "community_gwbw": 0.8,
+      "community_gwpath_uid": [
+        3,
+        7,
+        38,
+        81,
+        221,
+        79
+      ]
+    },
+    "adjacencies": [
+      {
+        "nodeTouid": 3,
+        "data": {
+          "bw": 38.8,
+          "rtt": 7.6,
+          "powerav": -52,
+          "channel": "112",
+          "$color": "#A9BDE6"
+        },
+        "nodeTo": "n0023",
+        "nodeFrom": "n0037"
+      },
+      {
+        "nodeTouid": 29,
+        "nodeTo": "n0041",
+        "data": {
+          "channel": "112",
+          "powerav": -73,
+          "rtt": 5.2,
+          "bw": 0.3,
+          "$color": "#A9BDE6"
+        },
+        "nodeFrom": "n0037"
+      }
+    ],
+    "uid": 104
+  },
+  {
+    "y": 2028.2883573174477,
+    "x": 1941.471219214145,
+    "name": "BCNSantaCatalina59Rd3-805c",
+    "id": "n0038",
+    "lat": 41.3799624,
+    "lon": 2.1356081,
+    "uid": 75,
+    "data": {
+      "gw": "BCNevaristoarnus5Rd3-Apu",
+      "gwid": "n0044",
+      "ssid": "guifi.net/BCNSantaCatalina59Rd3-",
+      "community_gwbw": 2.2,
+      "community_gwpath_uid": [
+        71,
+        19,
+        221,
+        79
+      ],
+      "community_gwpath": [
+        "BCNSantaCaterina59Rd2-50b4",
+        "GSgranVia255-db37",
+        "GSgranVia255-ERX-b66c",
+        "BCCanBruixa20Rd6-4524"
+      ],
+      "internetrtt": 105.8,
+      "ipv4": [
+        "10.1.9.225/28",
+        "10.1.9.225/32"
+      ],
+      "gdev": "81096",
+      "ipv6gl": [
+        "fd66:66:66:8:46d9:e7ff:fea1:805c",
+        "fd66:66:66:b:46d9:e7ff:fea0:805c"
+      ],
+      "community_gwrtt": 61.5,
+      "qmpversion": "OpenWrt 18.06.4 r7808-ef686b7292 - temba 87e188e\n",
+      "bmxversion": "BMX6-0.1-alpha comPatibility=16 revision=2a87b770d3f9c254e3927dc159e2f425f2e0e83a\n",
+      "community_gw": "BCCanBruixa20Rd6-4524",
+      "gwuid": 91,
+      "community_gwuid": 79,
+      "gwpath": [
+        "BCNSantaCaterina59Rd2-50b4",
+        "GSgranVia255-db37",
+        "GSgranVia255-ERX-b66c",
+        "BCNevaristoarnus5Rd3-Apu"
+      ],
+      "gwrtt": 21.1,
+      "gwpath_uid": [
+        71,
+        19,
+        221,
+        91
+      ],
+      "ipv6ll": [
+        "fe80::46d9:e7ff:fea1:805c",
+        "fe80::46d9:e7ff:fea0:805c"
+      ],
+      "gnode": "/ca/node/57094",
+      "uptime": "14:27:15 up 55 days, 20:16",
+      "system": "Ubiquiti Loco M XW",
+      "internetbw": 1.5,
+      "gwbw": 2.1,
+      "wifi": {
+        "wlan0": {
+          "type": "IBSS",
+          "addr": "44:5c",
+          "ch": "108",
+          "width": "40",
+          "txpower": "22.00 dBm",
+          "center": "5550"
+        }
+      },
+      "load_average": "0.00, 0.00, 0.00",
+      "forwardings": [
+        "BCNValladolid22-d906"
+      ],
+      "$color": "#b7b7a7"
+    },
+    "adjacencies": [
+      {
+        "nodeTouid": 71,
+        "data": {
+          "channel": "br-lan",
+          "rtt": 0.8,
+          "bw": 72.5,
+          "$color": "#E62B17"
+        },
+        "nodeTo": "n0039",
+        "nodeFrom": "n0038"
+      },
+      {
+        "nodeTouid": 77,
+        "nodeTo": "n0043",
+        "data": {
+          "channel": "108",
+          "bw": 1.2,
+          "rtt": 26.7,
+          "powerav": -77,
+          "$color": "#031A49"
+        },
+        "nodeFrom": "n0038"
+      }
+    ]
+  },
+  {
+    "x": 1941.471219214145,
+    "id": "n0039",
+    "lat": 41.3799624,
+    "name": "BCNSantaCaterina59Rd2-50b4",
+    "y": 2028.2883573174477,
+    "lon": 2.1356081,
+    "adjacencies": [
+      {
+        "nodeTouid": 75,
+        "nodeTo": "n0038",
+        "data": {
+          "bw": 67.2,
+          "rtt": 0.8,
+          "channel": "br-lan",
+          "$color": "#E62B17"
+        },
+        "nodeFrom": "n0039"
+      },
+      {
+        "nodeTo": "n0005",
+        "data": {
+          "channel": "60",
+          "powerav": -88,
+          "$color": "#6D0D03"
+        },
+        "nodeTouid": 66,
+        "nodeFrom": "n0039"
+      },
+      {
+        "data": {
+          "channel": "60",
+          "powerav": -77,
+          "bw": 0.3,
+          "rtt": 3.8,
+          "$color": "#6D0D03"
+        },
+        "nodeTo": "n0002",
+        "nodeTouid": 230,
+        "nodeFrom": "n0039"
+      },
+      {
+        "nodeTouid": 35,
+        "data": {
+          "channel": "60",
+          "$lineWidth": "0.5",
+          "powerav": -82,
+          "$color": "#6D0D03"
+        },
+        "nodeTo": "n0046",
+        "nodeFrom": "n0039"
+      },
+      {
+        "nodeTo": "n0011",
+        "data": {
+          "channel": "60",
+          "rtt": 35.3,
+          "bw": 1.1,
+          "powerav": -74,
+          "$color": "#6D0D03"
+        },
+        "nodeTouid": 19,
+        "nodeFrom": "n0039"
+      }
+    ],
+    "data": {
+      "community_gwbw": 1.5,
+      "community_gwpath_uid": [
+        19,
+        221,
+        79
+      ],
+      "ssid": "guifi.net/BCNSantaCaterina59Rd2-",
+      "gwid": "n0044",
+      "gw": "BCNevaristoarnus5Rd3-Apu",
+      "internetrtt": 118.2,
+      "community_gwpath": [
+        "GSgranVia255-db37",
+        "GSgranVia255-ERX-b66c",
+        "BCCanBruixa20Rd6-4524"
+      ],
+      "community_gw": "BCCanBruixa20Rd6-4524",
+      "bmxversion": "BMX6-0.1-alpha comPatibility=16 revision=2a87b770d3f9c254e3927dc159e2f425f2e0e83a\n",
+      "ipv6gl": [
+        "fd66:66:66:8:46d9:e7ff:fec9:50b4",
+        "fd66:66:66:c:46d9:e7ff:fec8:50b4"
+      ],
+      "community_gwrtt": 27.3,
+      "qmpversion": "OpenWrt 18.06.4 r7808-ef686b7292 - temba 87e188e\n",
+      "gdev": "83782",
+      "ipv4": [
+        "10.1.9.241/28",
+        "10.1.9.241/32"
+      ],
+      "gwrtt": 4,
+      "gwpath_uid": [
+        19,
+        221,
+        91
+      ],
+      "gwpath": [
+        "GSgranVia255-db37",
+        "GSgranVia255-ERX-b66c",
+        "BCNevaristoarnus5Rd3-Apu"
+      ],
+      "community_gwuid": 79,
+      "gwuid": 91,
+      "gnode": "/ca/node/57094",
+      "ipv6ll": [
+        "fe80::46d9:e7ff:fec9:50b4",
+        "fe80::46d9:e7ff:fec8:50b4"
+      ],
+      "uptime": "14:27:42 up 55 days, 20:16",
+      "internetbw": 1.8,
+      "gwbw": 1.1,
+      "system": "Ubiquiti Nanostation M XW",
+      "load_average": "0.00, 0.02, 0.00",
+      "wifi": {
+        "wlan0": {
+          "addr": "44:b4",
+          "ch": "60",
+          "type": "IBSS",
+          "width": "40",
+          "txpower": "22.00 dBm",
+          "center": "5310"
+        }
+      },
+      "forwardings": [
+        "BCNSantaCatalina59Rd3-805c",
+        "BCNValladolid22-d906"
+      ],
+      "$color": "#b0b0a1"
+    },
+    "uid": 71
+  },
+  {
+    "uid": 217,
+    "adjacencies": [
+      {
+        "nodeTouid": 29,
+        "data": {
+          "channel": "eth",
+          "rtt": 0.7,
+          "bw": 92.5,
+          "$color": "#F97A6D"
+        },
+        "nodeTo": "n0041",
+        "nodeFrom": "n0040"
+      },
+      {
+        "nodeTouid": 85,
+        "data": {
+          "rtt": 2.7,
+          "bw": 4.7,
+          "channel": "br-lan",
+          "$color": "#E62B17"
+        },
+        "nodeTo": "n0028",
+        "nodeFrom": "n0040"
+      },
+      {
+        "data": {
+          "channel": "eth",
+          "bw": 12.1,
+          "rtt": 15.3,
+          "$color": "#F97A6D"
+        },
+        "nodeTo": "n0048",
+        "nodeTouid": 196,
+        "nodeFrom": "n0040"
+      },
+      {
+        "nodeTo": "n0008",
+        "data": {
+          "bw": 62,
+          "rtt": 2.4,
+          "channel": "eth",
+          "$color": "#F97A6D"
+        },
+        "nodeTouid": 34,
+        "nodeFrom": "n0040"
+      },
+      {
+        "nodeTouid": 2,
+        "nodeTo": "n0042",
+        "data": {
+          "bw": 92.3,
+          "rtt": 0.7,
+          "channel": "eth",
+          "$color": "#F97A6D"
+        },
+        "nodeFrom": "n0040"
+      },
+      {
+        "data": {
+          "channel": "eth",
+          "bw": 80.8,
+          "rtt": 2.1,
+          "$color": "#F97A6D"
+        },
+        "nodeTo": "n0019",
+        "nodeTouid": 79,
+        "nodeFrom": "n0040"
+      }
+    ],
+    "data": {
+      "gdev": "88713",
+      "ipv4": [
+        "10.1.11.225/28",
+        "10.1.11.249/29",
+        "10.1.11.241/29",
+        "10.1.12.17/28",
+        "10.1.11.225/32"
+      ],
+      "bmxversion": "BMX6-0.1-alpha comPatibility=16 revision=4016a1980d900309771e432d1f7c741d6c48d477\n",
+      "ipv6gl": [
+        "fd66:66:66:a:7a8a:20ff:fefd:ed72",
+        "fd66:66:66:7:7a8a:20ff:fefd:ed73",
+        "fd66:66:66:8:7a8a:20ff:fefd:ed74",
+        "fd66:66:66:9:7a8a:20ff:fefd:ed76",
+        "fd66:66:66:b:7a8a:20ff:fefd:ed72"
+      ],
+      "community_gwrtt": 2.6,
+      "qmpversion": "LEDE Reboot 17.01.4 r3560-79f57e422d\n",
+      "community_gw": "BCCanBruixa20Rd6-4524",
+      "community_gwuid": 79,
+      "gwuid": 91,
+      "gwrtt": 3.3,
+      "gwpath_uid": [
+        79,
+        91
+      ],
+      "gwpath": [
+        "BCCanBruixa20Rd6-4524",
+        "BCNevaristoarnus5Rd3-Apu"
+      ],
+      "gw": "BCNevaristoarnus5Rd3-Apu",
+      "gwid": "n0044",
+      "community_gwpath_uid": [
+        79
+      ],
+      "community_gwbw": 102.7,
+      "community_gwpath": [
+        "BCCanBruixa20Rd6-4524"
+      ],
+      "internetrtt": 216.1,
+      "system": "UBNT-ERX",
+      "gwbw": 81.2,
+      "internetbw": 14.4,
+      "load_average": "0.00, 0.05, 0.07",
+      "ipv6ll": [
+        "fe80::7a8a:20ff:fefd:ed72",
+        "fe80::7a8a:20ff:fefd:ed73",
+        "fe80::7a8a:20ff:fefd:ed74",
+        "fe80::7a8a:20ff:fefd:ed76",
+        "fe80::7a8a:20ff:fefd:ed72"
+      ],
+      "gnode": "/ca/node/89749",
+      "uptime": "14:28:21 up 110 days, 22:33",
+      "forwardings": [
+        "BCNCanViesRd1",
+        "BCNJardiBotanicSants186-ba35",
+        "BCNSagunt62",
+        "BCNSants186Rd1-993d",
+        "BCNSants186Rd2",
+        "BcnGranVia146-b233",
+        "BcnGranVia146Rd2-345f",
+        "GSConstitucio174-02ed"
+      ],
+      "$color": "#8e8e83"
+    },
+    "id": "n0040",
+    "name": "BCNSants186-EdgePointR6",
+    "lat": 41.37558,
+    "x": 1636.8900270985323,
+    "y": 1544.7422670768574,
+    "lon": 2.132024
+  },
+  {
+    "lon": 2.132024,
+    "x": 1636.8900270985323,
+    "name": "BCNSants186Rd1-993d",
+    "lat": 41.37558,
+    "id": "n0041",
+    "y": 1544.7422670768574,
+    "adjacencies": [
+      {
+        "nodeTo": "n0037",
+        "data": {
+          "channel": "112",
+          "bw": 1.8,
+          "rtt": 6.6,
+          "powerav": -76,
+          "$color": "#A9BDE6"
+        },
+        "nodeTouid": 104,
+        "nodeFrom": "n0041"
+      },
+      {
+        "data": {
+          "rtt": 0.8,
+          "bw": 55.6,
+          "channel": "br-lan",
+          "$color": "#E62B17"
+        },
+        "nodeTo": "n0042",
+        "nodeTouid": 2,
+        "nodeFrom": "n0041"
+      },
+      {
+        "nodeTo": "n0008",
+        "data": {
+          "channel": "112",
+          "bw": 0.4,
+          "rtt": 18.6,
+          "powerav": -64,
+          "$color": "#A9BDE6"
+        },
+        "nodeTouid": 34,
+        "nodeFrom": "n0041"
+      },
+      {
+        "nodeTouid": 37,
+        "nodeTo": "n0025",
+        "data": {
+          "channel": "112",
+          "rtt": 13.3,
+          "bw": 3.1,
+          "powerav": -66,
+          "$color": "#A9BDE6"
+        },
+        "nodeFrom": "n0041"
+      },
+      {
+        "data": {
+          "powerav": -66,
+          "bw": 2.6,
+          "rtt": 4.8,
+          "channel": "112",
+          "$color": "#A9BDE6"
+        },
+        "nodeTo": "n0023",
+        "nodeTouid": 3,
+        "nodeFrom": "n0041"
+      },
+      {
+        "nodeTouid": 217,
+        "nodeTo": "n0040",
+        "data": {
+          "rtt": 0.6,
+          "bw": 65.7,
+          "channel": "eth",
+          "$color": "#F97A6D"
+        },
+        "nodeFrom": "n0041"
+      }
+    ],
+    "data": {
+      "uptime": "14:28:55 up 110 days, 22:33",
+      "gnode": "/ca/node/89749",
+      "ipv6ll": [
+        "fe80::227:22ff:fe47:993d",
+        "fe80::227:22ff:fe46:993d"
+      ],
+      "load_average": "0.06, 0.04, 0.00",
+      "wifi": {
+        "wlan0": {
+          "type": "IBSS",
+          "addr": "00:3d",
+          "ch": "112",
+          "center": "5550",
+          "width": "40",
+          "txpower": "22.00 dBm"
+        }
+      },
+      "internetbw": 11.4,
+      "gwbw": 77.2,
+      "system": "Ubiquiti Bullet M",
+      "internetrtt": 99.4,
+      "community_gwpath": [
+        "BCNSants186-EdgePointR6",
+        "BCCanBruixa20Rd6-4524"
+      ],
+      "community_gwbw": 76.5,
+      "community_gwpath_uid": [
+        217,
+        79
+      ],
+      "ssid": "guifi.net/BCNSants186Rd1-993d",
+      "gwid": "n0044",
+      "gw": "BCNevaristoarnus5Rd3-Apu",
+      "gwrtt": 40.2,
+      "gwpath_uid": [
+        217,
+        79,
+        91
+      ],
+      "gwpath": [
+        "BCNSants186-EdgePointR6",
+        "BCCanBruixa20Rd6-4524",
+        "BCNevaristoarnus5Rd3-Apu"
+      ],
+      "gwuid": 91,
+      "community_gwuid": 79,
+      "community_gw": "BCCanBruixa20Rd6-4524",
+      "bmxversion": "BMX6-0.1-alpha comPatibility=16 revision=2a87b770d3f9c254e3927dc159e2f425f2e0e83a\n",
+      "qmpversion": "OpenWrt 18.06.2 r7676-cddd7b4c77 - temba 1d74965\n",
+      "community_gwrtt": 2.5,
+      "ipv6gl": [
+        "fd66:66:66:8:227:22ff:fe47:993d",
+        "fd66:66:66:c:227:22ff:fe46:993d"
+      ],
+      "gdev": "95689",
+      "ipv4": [
+        "10.1.15.81/32",
+        "10.1.15.81/28"
+      ],
+      "forwardings": [
+        "BCNCanViesRd1",
+        "BCNSagunt62"
+      ],
+      "$color": "#b0b0a1"
+    },
+    "uid": 29
+  },
+  {
+    "lon": 2.132024,
+    "y": 1544.7422670768574,
+    "x": 1636.8900270985323,
+    "lat": 41.37558,
+    "name": "BCNSants186Rd2",
+    "id": "n0042",
+    "data": {
+      "community_gwpath": [
+        "BCNSants186-EdgePointR6",
+        "BCCanBruixa20Rd6-4524"
+      ],
+      "gw": "UPC-CN-C6-E104-ER-X",
+      "gwid": "n0014",
+      "ssid": "guifi.net/BCNSants186Rd2",
+      "community_gwpath_uid": [
+        217,
+        79
+      ],
+      "community_gwbw": 78.2,
+      "gwuid": 186,
+      "community_gwuid": 79,
+      "gwpath": [
+        "BCNSants186-EdgePointR6",
+        "BCCanBruixa20Rd6-4524",
+        "GSgranVia255-ERX-b66c",
+        "GSgV-kvm-463d",
+        "UPC-CN-C6-E104-ER-X"
+      ],
+      "gwpath_uid": [
+        217,
+        79,
+        221,
+        67,
+        186
+      ],
+      "gwrtt": 12.7,
+      "ipv4": [
+        "10.1.12.1/28",
+        "10.1.12.1/32"
+      ],
+      "gdev": "88716",
+      "ipv6gl": [
+        "fd66:66:66:9:227:22ff:fe46:996c",
+        "fd66:66:66:8:227:22ff:fe47:996c"
+      ],
+      "community_gwrtt": 3.2,
+      "qmpversion": "OpenWrt 18.06.4 r7808-ef686b7292 - temba 87e188e\n",
+      "bmxversion": "BMX6-0.1-alpha comPatibility=16 revision=d8869ec69797be0ca2da06abb344e60198a8a275\n",
+      "community_gw": "BCCanBruixa20Rd6-4524",
+      "uptime": "14:29:31 up 110 days, 22:34",
+      "ipv6ll": [
+        "fe80::227:22ff:fe47:996c",
+        "fe80::227:22ff:fe46:996c"
+      ],
+      "gnode": "/ca/node/89749",
+      "wifi": {
+        "wif0": {
+          "txpower": "22.00 dBm",
+          "width": "40",
+          "center": "5670",
+          "addr": "00:6c",
+          "ch": "132",
+          "type": "mesh point"
+        }
+      },
+      "load_average": "0.03, 0.03, 0.00",
+      "system": "Ubiquiti Rocket M",
+      "gwbw": 21.3
+    },
+    "adjacencies": [
+      {
+        "nodeTouid": 29,
+        "nodeTo": "n0041",
+        "data": {
+          "bw": 70.2,
+          "rtt": 0.8,
+          "channel": "br-lan",
+          "$color": "#E62B17"
+        },
+        "nodeFrom": "n0042"
+      },
+      {
+        "nodeTouid": 217,
+        "data": {
+          "rtt": 0.6,
+          "bw": 70.2,
+          "channel": "eth",
+          "$color": "#F97A6D"
+        },
+        "nodeTo": "n0040",
+        "nodeFrom": "n0042"
+      }
+    ],
+    "uid": 2
+  },
+  {
+    "x": 2027.0786482286057,
+    "lat": 41.377758,
+    "name": "BCNValladolid22-d906",
+    "id": "n0043",
+    "y": 1782.6745205726475,
+    "lon": 2.136661,
+    "adjacencies": [
+      {
+        "nodeTo": "n0038",
+        "data": {
+          "bw": 1.7,
+          "rtt": 49.5,
+          "powerav": -78,
+          "channel": "108",
+          "$color": "#031A49"
+        },
+        "nodeTouid": 75,
+        "nodeFrom": "n0043"
+      }
+    ],
+    "data": {
+      "qmpversion": "qMp Clearance 3.2.1 - qMp Clearance 3.2.1, master rev.fd26a34-20160622_1304\n",
+      "ipv6gl": [
+        "fd66:66:66:a:822a:a8ff:fe31:d906",
+        "fd66:66:66:d:822a:a8ff:fe30:d906"
+      ],
+      "community_gwrtt": 35,
+      "bmxversion": "BMX6-0.1-alpha comPatibility=16 revision=2a87b770d3f9c254e3927dc159e2f425f2e0e83a\n",
+      "ipv4": [
+        "10.1.13.1/27",
+        "169.254.6.1/29",
+        "10.1.13.1/32"
+      ],
+      "gdev": "89637",
+      "community_gw": "UPC-CN-C6-E104-ER-X",
+      "gwuid": 186,
+      "community_gwuid": 186,
+      "gwpath": [
+        "BCNSantaCatalina59Rd3-805c",
+        "BCNSantaCaterina59Rd2-50b4",
+        "GSgranVia255-db37",
+        "GSgranVia255-ERX-b66c",
+        "GSgV-kvm-463d",
+        "UPC-CN-C6-E104-ER-X"
+      ],
+      "gwpath_uid": [
+        75,
+        71,
+        19,
+        221,
+        67,
+        186
+      ],
+      "gwrtt": 25.3,
+      "gwid": "n0014",
+      "ssid": "qMpValladolid22",
+      "gw": "UPC-CN-C6-E104-ER-X",
+      "community_gwbw": 1.1,
+      "community_gwpath_uid": [
+        75,
+        71,
+        19,
+        221,
+        67,
+        186
+      ],
+      "community_gwpath": [
+        "BCNSantaCatalina59Rd3-805c",
+        "BCNSantaCaterina59Rd2-50b4",
+        "GSgranVia255-db37",
+        "GSgranVia255-ERX-b66c",
+        "GSgV-kvm-463d",
+        "UPC-CN-C6-E104-ER-X"
+      ],
+      "system": "Ubiquiti Nanostation M XW",
+      "gwbw": 0.8,
+      "wifi": {
+        "wlan0": {
+          "center": "5550",
+          "txpower": "22.00 dBm",
+          "width": "40",
+          "type": "IBSS",
+          "addr": "80:06",
+          "ch": "108"
+        }
+      },
+      "load_average": "0.00, 0.01, 0.04",
+      "gnode": "/ca/node/77790",
+      "ipv6ll": [
+        "fe80::822a:a8ff:fe31:d906",
+        "fe80::822a:a8ff:fe30:d906"
+      ],
+      "uptime": "13:30:21 up 68 days, 18:51"
+    },
+    "uid": 77
+  },
+  {
+    "x": 1667.6025697406149,
+    "id": "n0044",
+    "lat": 41.382521,
+    "name": "BCNevaristoarnus5Rd3-Apu",
+    "y": 2315.11376330629,
+    "lon": 2.132299,
+    "adjacencies": [
+      {
+        "data": {
+          "channel": "eth",
+          "bw": 86.7,
+          "rtt": 1.5,
+          "$color": "#F97A6D"
+        },
+        "nodeTo": "n0010",
+        "nodeTouid": 221,
+        "nodeFrom": "n0044"
+      },
+      {
+        "nodeTouid": 30,
+        "data": {
+          "rtt": 1.5,
+          "bw": 89.9,
+          "channel": "eth0",
+          "$color": "#8F463F"
+        },
+        "nodeTo": "n0020",
+        "nodeFrom": "n0044"
+      },
+      {
+        "nodeTo": "n0019",
+        "data": {
+          "rtt": 1.6,
+          "bw": 233.1,
+          "channel": "eth",
+          "$color": "#F97A6D"
+        },
+        "nodeTouid": 79,
+        "nodeFrom": "n0044"
+      },
+      {
+        "nodeTo": "n0046",
+        "data": {
+          "rtt": 85.2,
+          "bw": 85.9,
+          "channel": "eth",
+          "$color": "#F97A6D"
+        },
+        "nodeTouid": 35,
+        "nodeFrom": "n0044"
+      },
+      {
+        "nodeTo": "n0045",
+        "data": {
+          "bw": 90.4,
+          "rtt": 0.6,
+          "channel": "eth",
+          "$color": "#F97A6D"
+        },
+        "nodeTouid": 17,
+        "nodeFrom": "n0044"
+      },
+      {
+        "nodeTo": "n0021",
+        "data": {
+          "channel": "eth0",
+          "rtt": 36.7,
+          "bw": 88.3,
+          "$color": "#8F463F"
+        },
+        "nodeTouid": 24,
+        "nodeFrom": "n0044"
+      }
+    ],
+    "data": {
+      "uptime": "13:30:56 up 266 days, 53 min",
+      "gnode": "/ca/node/77417",
+      "ipv6ll": [
+        "fe80::20d:b9ff:fe46:d90c"
+      ],
+      "gwguest": [
+        "BCCanBruixa20Rd6-4524",
+        "BCNPisuerga17-EPR6",
+        "BCNevaristoarnus5Rd9-c239",
+        "BCNSants186-EdgePointR6",
+        "BCNPisuerga17NSM5XW-97964",
+        "BCN-GS-CanBruixa20NSM5",
+        "BCN-GS-CanBruixa20-RKM5-7bbd",
+        "BCNBerlin20-1edf",
+        "BCNNovell47-39be",
+        "GSgranVia255-db37",
+        "BCNSagunt62",
+        "BCNJardiBotanicSants186-ba35",
+        "GSgranVia255-ERX-b66c",
+        "UPC-CN-C6-E206-Alix",
+        "BCNMVictoria5Rd1",
+        "BCNSants186Rd1-993d",
+        "BCNSantaCaterina59Rd2-50b4",
+        "UPC-CN-C5-Terrat-mANTBox19s",
+        "BCNPisuerga17-mANTBox15s",
+        "GSgV-ns-a4a7",
+        "GS-UPC-CN-C6-E208-TL-WDR4300-Mi",
+        "BcnGranVia146-b233",
+        "BCN-Sagunt66-8971",
+        "BCNSantaCatalina59Rd3-805c",
+        "BCN-GS-JpTarradellas40-6a5f",
+        "BcnGranVia146Rd2-345f",
+        "BCNevaristoarnus5Rd4-988e"
+      ],
+      "load_average": "0.00, 0.00, 0.00",
+      "$color": "#6b9200",
+      "system": "AMD GX-412TC SOC",
+      "internetbw": 30.2,
+      "gwbw": 40.4,
+      "internetrtt": 73.6,
+      "community_gwpath": [
+        "BCCanBruixa20Rd6-4524"
+      ],
+      "gwid": "n0014",
+      "gw": "UPC-CN-C6-E104-ER-X",
+      "community_gwpath_uid": [
+        79
+      ],
+      "community_gwbw": 165.2,
+      "community_gwuid": 79,
+      "gwuid": 186,
+      "gwpath_uid": [
+        221,
+        67,
+        186
+      ],
+      "gwrtt": 6.9,
+      "gwpath": [
+        "GSgranVia255-ERX-b66c",
+        "GSgV-kvm-463d",
+        "UPC-CN-C6-E104-ER-X"
+      ],
+      "bmxversion": "BMX6-0.1-alpha comPatibility=16 revision=4016a1980d900309771e432d1f7c741d6c48d477\n",
+      "community_gwrtt": 1.7,
+      "ipv6gl": [
+        "fd66:66:66:8:20d:b9ff:fe46:d90c"
+      ],
+      "qmpversion": "LEDE Reboot 17.01.4 r3560-79f57e422d\n",
+      "gdev": "86592",
+      "ipv4": [
+        "10.1.9.60/27",
+        "192.168.34.14/24",
+        "10.1.9.60/32"
+      ],
+      "community_gw": "BCCanBruixa20Rd6-4524",
+      "forwardings": [
+        "BCCanBruixa20Rd6-4524",
+        "BCN-GS-CanBruixa20-RKM5-7bbd",
+        "BCN-GS-CanBruixa20NSM5",
+        "BCN-GS-JpTarradellas40-6a5f",
+        "BCN-Sagunt66-8971",
+        "BCNBerlin20-1edf",
+        "BCNJardiBotanicSants186-ba35",
+        "BCNMVictoria5Rd1",
+        "BCNNovell47-39be",
+        "BCNPisuerga17-EPR6",
+        "BCNPisuerga17-mANTBox15s",
+        "BCNPisuerga17NSM5XW-97964",
+        "BCNSagunt62",
+        "BCNSantaCatalina59Rd3-805c",
+        "BCNSantaCaterina59Rd2-50b4",
+        "BCNSants186-EdgePointR6",
+        "BCNSants186Rd1-993d",
+        "BCNevaristoarnus5Rd4-988e",
+        "BCNevaristoarnus5Rd9-c239",
+        "BcnGranVia146-b233",
+        "BcnGranVia146Rd2-345f",
+        "GS-UPC-CN-C6-E208-TL-WDR4300-Mi",
+        "GSgV-ns-a4a7",
+        "GSgranVia255-ERX-b66c",
+        "GSgranVia255-db37",
+        "UPC-CN-C5-Terrat-mANTBox19s",
+        "UPC-CN-C6-E206-Alix"
+      ]
+    },
+    "uid": 91
+  },
+  {
+    "uid": 17,
+    "data": {
+      "gw": "BCNevaristoarnus5Rd3-Apu",
+      "ssid": "qMp-EvaristArnus5",
+      "gwid": "n0044",
+      "community_gwpath_uid": [
+        79
+      ],
+      "community_gwbw": 68.7,
+      "community_gwpath": [
+        "BCCanBruixa20Rd6-4524"
+      ],
+      "internetrtt": 79.6,
+      "gdev": "85719",
+      "ipv4": [
+        "169.254.142.1/29",
+        "10.1.11.65/32"
+      ],
+      "bmxversion": "BMX6-0.1-alpha comPatibility=16 revision=2a87b770d3f9c254e3927dc159e2f425f2e0e83a\n",
+      "qmpversion": "qMp Clearance 3.2.1 - qMp Clearance 3.2.1, master rev.fd26a34-20160622_1304\n",
+      "ipv6gl": [
+        "fd66:66:66:8:de9f:dbff:fe59:988e",
+        "fd66:66:66:a:de9f:dbff:fe58:988e"
+      ],
+      "community_gwrtt": 2.1,
+      "community_gw": "BCCanBruixa20Rd6-4524",
+      "community_gwuid": 79,
+      "gwuid": 91,
+      "gwpath_uid": [
+        91
+      ],
+      "gwrtt": 0.4,
+      "gwpath": [
+        "BCNevaristoarnus5Rd3-Apu"
+      ],
+      "ipv6ll": [
+        "fe80::de9f:dbff:fe59:988e",
+        "fe80::de9f:dbff:fe58:988e"
+      ],
+      "gnode": "/ca/node/77417",
+      "uptime": "06:01:38 up 11 days, 14:25",
+      "system": "Ubiquiti Rocket M",
+      "gwbw": 87.9,
+      "internetbw": 19,
+      "wifi": {
+        "wlan0": {
+          "width": "40",
+          "center": "5270",
+          "txpower": "21.00 dBm",
+          "addr": "dc:8e",
+          "ch": "52",
+          "type": "IBSS"
+        }
+      },
+      "load_average": "0.14, 0.09, 0.10",
+      "forwardings": [
+        "BCNNovell47-39be"
+      ],
+      "$color": "#b7b7a7"
+    },
+    "adjacencies": [
+      {
+        "nodeTouid": 69,
+        "data": {
+          "bw": 16.3,
+          "rtt": 16.5,
+          "powerav": -60,
+          "channel": "52",
+          "$color": "#F9B7B0"
+        },
+        "nodeTo": "n0033",
+        "nodeFrom": "n0045"
+      },
+      {
+        "nodeTouid": 39,
+        "data": {
+          "channel": "52",
+          "rtt": 8.7,
+          "bw": 19.6,
+          "powerav": -64,
+          "$color": "#F9B7B0"
+        },
+        "nodeTo": "n0022",
+        "nodeFrom": "n0045"
+      },
+      {
+        "nodeTo": "n0044",
+        "data": {
+          "channel": "eth",
+          "rtt": 0.6,
+          "bw": 86.2,
+          "$color": "#F97A6D"
+        },
+        "nodeTouid": 91,
+        "nodeFrom": "n0045"
+      },
+      {
+        "nodeTo": "n0020",
+        "data": {
+          "channel": "eth0",
+          "bw": 57.4,
+          "rtt": 2.2,
+          "$color": "#8F463F"
+        },
+        "nodeTouid": 30,
+        "nodeFrom": "n0045"
+      },
+      {
+        "data": {
+          "powerav": -81,
+          "channel": "52",
+          "$color": "#F9B7B0"
+        },
+        "nodeTo": "n0024",
+        "nodeTouid": 101,
+        "nodeFrom": "n0045"
+      },
+      {
+        "nodeTouid": 221,
+        "nodeTo": "n0010",
+        "data": {
+          "channel": "eth0",
+          "bw": 90.6,
+          "rtt": 2.2,
+          "$color": "#8F463F"
+        },
+        "nodeFrom": "n0045"
+      },
+      {
+        "data": {
+          "channel": "52",
+          "powerav": -67,
+          "bw": 4.7,
+          "rtt": 47.2,
+          "$color": "#F9B7B0"
+        },
+        "nodeTo": "n0021",
+        "nodeTouid": 24,
+        "nodeFrom": "n0045"
+      },
+      {
+        "nodeTouid": 35,
+        "nodeTo": "n0046",
+        "data": {
+          "rtt": 194.1,
+          "bw": 85.2,
+          "channel": "eth0",
+          "$color": "#8F463F"
+        },
+        "nodeFrom": "n0045"
+      },
+      {
+        "nodeTouid": 79,
+        "data": {
+          "bw": 88.5,
+          "rtt": 1.7,
+          "channel": "eth",
+          "$color": "#F97A6D"
+        },
+        "nodeTo": "n0019",
+        "nodeFrom": "n0045"
+      }
+    ],
+    "y": 2315.11376330629,
+    "id": "n0045",
+    "x": 1667.6025697406149,
+    "lat": 41.382521,
+    "name": "BCNevaristoarnus5Rd4-988e",
+    "lon": 2.132299
+  },
+  {
+    "id": "n0046",
+    "x": 1667.6025697406149,
+    "lat": 41.382521,
+    "name": "BCNevaristoarnus5Rd9-c239",
+    "y": 2315.11376330629,
+    "lon": 2.132299,
+    "uid": 35,
+    "adjacencies": [
+      {
+        "nodeTo": "n0044",
+        "data": {
+          "channel": "eth",
+          "bw": 0.5,
+          "rtt": 39.5,
+          "$color": "#F97A6D"
+        },
+        "nodeTouid": 91,
+        "nodeFrom": "n0046"
+      },
+      {
+        "nodeTouid": 46,
+        "data": {
+          "powerav": -61,
+          "bw": 14.5,
+          "rtt": 24.9,
+          "channel": "60",
+          "$color": "#6D0D03"
+        },
+        "nodeTo": "n0006",
+        "nodeFrom": "n0046"
+      },
+      {
+        "data": {
+          "bw": 82,
+          "rtt": 2.1,
+          "channel": "eth0",
+          "$color": "#8F463F"
+        },
+        "nodeTo": "n0010",
+        "nodeTouid": 221,
+        "nodeFrom": "n0046"
+      },
+      {
+        "nodeTouid": 30,
+        "nodeTo": "n0020",
+        "data": {
+          "rtt": 3.7,
+          "bw": 56,
+          "powerav": -64,
+          "channel": "60",
+          "$color": "#6D0D03"
+        },
+        "nodeFrom": "n0046"
+      },
+      {
+        "nodeTouid": 79,
+        "nodeTo": "n0019",
+        "data": {
+          "channel": "eth",
+          "bw": 48.3,
+          "rtt": 137.4,
+          "$color": "#F97A6D"
+        },
+        "nodeFrom": "n0046"
+      },
+      {
+        "nodeTouid": 24,
+        "nodeTo": "n0021",
+        "data": {
+          "channel": "eth0",
+          "rtt": 97.9,
+          "bw": 80.2,
+          "$color": "#8F463F"
+        },
+        "nodeFrom": "n0046"
+      },
+      {
+        "nodeTo": "n0045",
+        "data": {
+          "channel": "eth0",
+          "rtt": 33.2,
+          "bw": 91.2,
+          "$color": "#8F463F"
+        },
+        "nodeTouid": 17,
+        "nodeFrom": "n0046"
+      },
+      {
+        "data": {
+          "channel": "60",
+          "$color": "#6D0D03",
+          "miss": 1
+        },
+        "nodeTo": "n0035",
+        "nodeTouid": 105,
+        "nodeFrom": 28
+      },
+      {
+        "data": {
+          "channel": "60",
+          "$color": "#6D0D03",
+          "miss": 1
+        },
+        "nodeTo": "n0039",
+        "nodeTouid": 71,
+        "nodeFrom": 28
+      },
+      {
+        "data": {
+          "channel": "60",
+          "$color": "#6D0D03",
+          "miss": 1
+        },
+        "nodeTo": "n0002",
+        "nodeTouid": 230,
+        "nodeFrom": 28
+      },
+      {
+        "data": {
+          "channel": "60",
+          "$color": "#6D0D03",
+          "miss": 1
+        },
+        "nodeTo": "n0011",
+        "nodeTouid": 19,
+        "nodeFrom": 28
+      }
+    ],
+    "data": {
+      "system": "Ubiquiti Rocket M",
+      "internetbw": 4.5,
+      "gwbw": 89.6,
+      "wifi": {
+        "wlan0": {
+          "txpower": "21.00 dBm",
+          "width": "40",
+          "center": "5310",
+          "type": "IBSS",
+          "ch": "60",
+          "addr": "00:39"
+        }
+      },
+      "load_average": "0.25, 0.13, 0.11",
+      "ipv6ll": [
+        "fe80::215:6dff:feef:c239",
+        "fe80::215:6dff:feee:c239"
+      ],
+      "gnode": "/ca/node/77417",
+      "uptime": "03:17:59 up 514 days,  6:42",
+      "gdev": "87338",
+      "ipv4": [
+        "169.254.57.1/29",
+        "10.0.31.33/32"
+      ],
+      "bmxversion": "BMX6-0.1-alpha comPatibility=16 revision=2a87b770d3f9c254e3927dc159e2f425f2e0e83a\n",
+      "community_gwrtt": 20.4,
+      "ipv6gl": [
+        "fd66:66:66:8:215:6dff:feef:c239",
+        "fd66:66:66:a:215:6dff:feee:c239"
+      ],
+      "qmpversion": "qMp Clearance 3.2.1 - qMp Clearance 3.2.1, master rev.fd26a34-20160622_1304\n",
+      "community_gw": "BCCanBruixa20Rd6-4524",
+      "community_gwuid": 79,
+      "gwuid": 91,
+      "gwrtt": 21.2,
+      "gwpath_uid": [
+        91
+      ],
+      "gwpath": [
+        "BCNevaristoarnus5Rd3-Apu"
+      ],
+      "gw": "BCNevaristoarnus5Rd3-Apu",
+      "ssid": "qMp-EvaristArnus5",
+      "gwid": "n0044",
+      "community_gwpath_uid": [
+        79
+      ],
+      "community_gwbw": 89,
+      "community_gwpath": [
+        "BCCanBruixa20Rd6-4524"
+      ],
+      "internetrtt": 78.6
+    }
+  },
+  {
+    "lat": 41.365824,
+    "name": "BcnGranVia146-b233",
+    "id": "n0047",
+    "x": 2060.135281875031,
+    "y": 457.2826796108857,
+    "lon": 2.137214,
+    "uid": 88,
+    "adjacencies": [
+      {
+        "nodeTouid": 85,
+        "nodeTo": "n0028",
+        "data": {
+          "powerav": -69,
+          "rtt": 8.7,
+          "bw": 14.7,
+          "channel": "36",
+          "$color": "#7297E6"
+        },
+        "nodeFrom": "n0047"
+      },
+      {
+        "data": {
+          "bw": 53.2,
+          "rtt": 0.6,
+          "channel": "br-lan",
+          "$color": "#E62B17"
+        },
+        "nodeTo": "n0048",
+        "nodeTouid": 196,
+        "nodeFrom": "n0047"
+      },
+      {
+        "nodeTouid": 38,
+        "nodeTo": "n0031",
+        "data": {
+          "channel": "36",
+          "bw": 0,
+          "rtt": 193.2,
+          "powerav": -83,
+          "$color": "#7297E6"
+        },
+        "nodeFrom": "n0047"
+      }
+    ],
+    "data": {
+      "gw": "BCNevaristoarnus5Rd3-Apu",
+      "gwid": "n0044",
+      "ssid": "guifi.net/BcnGranVia146-b233",
+      "community_gwbw": 17.6,
+      "community_gwpath_uid": [
+        196,
+        217,
+        79
+      ],
+      "community_gwpath": [
+        "BcnGranVia146Rd2-345f",
+        "BCNSants186-EdgePointR6",
+        "BCCanBruixa20Rd6-4524"
+      ],
+      "internetrtt": 100.4,
+      "ipv4": [
+        "10.1.11.97/32",
+        "10.1.11.97/28"
+      ],
+      "gdev": "88418",
+      "ipv6gl": [
+        "fd66:66:66:8:f29f:c2ff:fe41:b233",
+        "fd66:66:66:b:f29f:c2ff:fe40:b233"
+      ],
+      "qmpversion": "OpenWrt 18.06.4 r7808-ef686b7292 - temba 87e188e\n",
+      "community_gwrtt": 42,
+      "bmxversion": "BMX6-0.1-alpha comPatibility=16 revision=2a87b770d3f9c254e3927dc159e2f425f2e0e83a\n",
+      "community_gw": "BCCanBruixa20Rd6-4524",
+      "gwuid": 91,
+      "community_gwuid": 79,
+      "gwpath": [
+        "BcnGranVia146Rd2-345f",
+        "BCNSants186-EdgePointR6",
+        "BCCanBruixa20Rd6-4524",
+        "BCNevaristoarnus5Rd3-Apu"
+      ],
+      "gwrtt": 42.5,
+      "gwpath_uid": [
+        196,
+        217,
+        79,
+        91
+      ],
+      "ipv6ll": [
+        "fe80::f29f:c2ff:fe41:b233",
+        "fe80::f29f:c2ff:fe40:b233"
+      ],
+      "gnode": "/ca/node/88610",
+      "uptime": "14:32:52 up 109 days,  3:23",
+      "system": "Ubiquiti Loco M XW",
+      "internetbw": 2.5,
+      "gwbw": 27.3,
+      "wifi": {
+        "wlan0": {
+          "ch": "36",
+          "addr": "f0:33",
+          "type": "IBSS",
+          "width": "40",
+          "center": "5190",
+          "txpower": "22.00 dBm"
+        }
+      },
+      "load_average": "0.10, 0.07, 0.01"
+    }
+  },
+  {
+    "uid": 196,
+    "adjacencies": [
+      {
+        "data": {
+          "channel": "br-lan",
+          "rtt": 0.7,
+          "bw": 91.9,
+          "$color": "#E62B17"
+        },
+        "nodeTo": "n0047",
+        "nodeTouid": 88,
+        "nodeFrom": "n0048"
+      },
+      {
+        "nodeTouid": 217,
+        "data": {
+          "channel": "eth",
+          "bw": 34.4,
+          "rtt": 5.3,
+          "$color": "#F97A6D"
+        },
+        "nodeTo": "n0040",
+        "nodeFrom": "n0048"
+      }
+    ],
+    "data": {
+      "gdev": "103799",
+      "ipv4": [
+        "10.2.10.97/27",
+        "10.2.10.97/32"
+      ],
+      "bmxversion": "BMX6-0.1-alpha comPatibility=16 revision=0312168aaa384379ccbefd4b2d936fc698664d5b\n",
+      "qmpversion": "OpenWrt 19.07.1 r10911-c155900f66\n",
+      "ipv6gl": [
+        "fd66:66:66:7:b6fb:e4ff:feb2:345e",
+        "fd66:66:66:8:b6fb:e4ff:feb2:345f"
+      ],
+      "system": "UBNT-ERX-SFP",
+      "internetbw": 4.5,
+      "gwbw": 19.9,
+      "gwuid": 91,
+      "load_average": "0.20, 0.18, 0.18",
+      "gwrtt": 47.4,
+      "gwpath_uid": [
+        217,
+        79,
+        91
+      ],
+      "gwpath": [
+        "BCNSants186-EdgePointR6",
+        "BCCanBruixa20Rd6-4524",
+        "BCNevaristoarnus5Rd3-Apu"
+      ],
+      "ipv6ll": [
+        "fe80::b6fb:e4ff:feb2:345e",
+        "fe80::b6fb:e4ff:feb2:345f"
+      ],
+      "gw": "BCNevaristoarnus5Rd3-Apu",
+      "gwid": "n0044",
+      "gnode": "/ca/node/88610",
+      "internetrtt": 325.6,
+      "uptime": "13:33:30 up 109 days,  3:24",
+      "forwardings": [
+        "BcnGranVia146-b233"
+      ],
+      "$color": "#b7b7a7"
+    },
+    "id": "n0048",
+    "lat": 41.365824,
+    "name": "BcnGranVia146Rd2-345f",
+    "x": 2060.135281875031,
+    "y": 457.2826796108857,
+    "lon": 2.137214
+  },
+  {
+    "adjacencies": [
+      {
+        "nodeTouid": 19,
+        "data": {
+          "rtt": 1.5,
+          "bw": 10.8,
+          "powerav": -58,
+          "channel": "60",
+          "$color": "#6D0D03"
+        },
+        "nodeTo": "n0011",
+        "nodeFrom": "n0002"
+      },
+      {
+        "data": {
+          "channel": "60",
+          "bw": 0.4,
+          "rtt": 5.5,
+          "powerav": -80,
+          "$color": "#6D0D03"
+        },
+        "nodeTo": "n0030",
+        "nodeTouid": 28,
+        "nodeFrom": "n0002"
+      },
+      {
+        "nodeTo": "n0046",
+        "data": {
+          "$lineWidth": "0.5",
+          "channel": "60",
+          "powerav": -83,
+          "$color": "#6D0D03"
+        },
+        "nodeTouid": 35,
+        "nodeFrom": "n0002"
+      },
+      {
+        "data": {
+          "powerav": -77,
+          "rtt": 9.8,
+          "bw": 1.7,
+          "channel": "60",
+          "$color": "#6D0D03"
+        },
+        "nodeTo": "n0005",
+        "nodeTouid": 66,
+        "nodeFrom": "n0002"
+      },
+      {
+        "nodeTouid": 71,
+        "data": {
+          "powerav": -76,
+          "bw": 1.5,
+          "rtt": 28.4,
+          "channel": "60",
+          "$color": "#6D0D03"
+        },
+        "nodeTo": "n0039",
+        "nodeFrom": "n0002"
+      }
+    ],
+    "data": {
+      "ipv6ll": [
+        "fe80::6e3b:6bff:fe97:f0b3",
+        "fe80::6c3b:6bff:fe97:f0b3"
+      ],
+      "gnode": "/ca/node/131458",
+      "uptime": "13:00:40 up 18 days,  2:58",
+      "system": "MikroTik RouterBOARD LHG 5nD",
+      "gwbw": 11,
+      "wifi": {
+        "wlan0a": {
+          "type": "IBSS",
+          "ch": "60",
+          "addr": "6e:b3",
+          "center": "5310",
+          "width": "40",
+          "txpower": "24.00 dBm"
+        },
+        "wlan0": {
+          "txpower": "24.00 dBm",
+          "center": "5310",
+          "width": "40",
+          "ch": "60",
+          "addr": "6c:b3",
+          "type": "mesh point"
+        }
+      },
+      "load_average": "0.01, 0.04, 0.01",
+      "gw": "UPC-CN-C6-E104-ER-X",
+      "gwid": "n0014",
+      "ssid": "qMp-BCNEusebiPlanes4",
+      "community_gwpath_uid": [
+        19,
+        221,
+        79
+      ],
+      "community_gwbw": 19.4,
+      "community_gwpath": [
+        "GSgranVia255-db37",
+        "GSgranVia255-ERX-b66c",
+        "BCCanBruixa20Rd6-4524"
+      ],
+      "ipv4": [
+        "10.2.10.193/27",
+        "169.254.179.1/29",
+        "10.2.10.193/32",
+        "169.254.180.1/29"
+      ],
+      "gdev": "115389",
+      "qmpversion": "OpenWrt 19.07.8 r11364-ef56c85848 - qMp Leverage 5.0.1, branch HEAD rev.954c31d-20210907-1129\n",
+      "community_gwrtt": 12.1,
+      "ipv6gl": [
+        "fd66:66:66:8:6e3b:6bff:fe97:f0b3",
+        "fd66:66:66:9:6e3b:6bff:fe97:f0b3"
+      ],
+      "bmxversion": "BMX6-0.1-alpha comPatibility=16 revision=0312168aaa384379ccbefd4b2d936fc698664d5b\n",
+      "community_gw": "BCCanBruixa20Rd6-4524",
+      "gwuid": 186,
+      "community_gwuid": 79,
+      "gwpath": [
+        "GSgranVia255-db37",
+        "GSgranVia255-ERX-b66c",
+        "GSgV-kvm-463d",
+        "UPC-CN-C6-E104-ER-X"
+      ],
+      "gwrtt": 15.5,
+      "gwpath_uid": [
+        19,
+        221,
+        67,
+        186
+      ]
+    },
+    "uid": 230,
+    "lat": 41.376375,
+    "id": "n0002",
+    "name": "GS-BCNEusebiPlanes4-f0b2",
+    "x": 2121.2177299883915,
+    "y": 1628.1792510962114,
+    "lon": 2.137805
+  },
+  {
+    "data": {
+      "uptime": "13:01:43 up 104 days,  1:56",
+      "ipv6ll": [
+        "fe80::618:d6ff:fe59:e34c",
+        "fe80::618:d6ff:fe58:e34c"
+      ],
+      "gnode": "/ca/UPCC6lab104",
+      "load_average": "0.14, 0.12, 0.09",
+      "wifi": {
+        "wlan0": {
+          "ch": "136",
+          "addr": "04:4c",
+          "type": "mesh point",
+          "center": "5670",
+          "width": "40",
+          "txpower": "10.00 dBm"
+        }
+      },
+      "internetbw": 84.3,
+      "gwbw": 83.5,
+      "system": "Ubiquiti Nanostation Loco M (XW)",
+      "community_gwpath": [
+        "UPC-CN-C6-E104-ER-X"
+      ],
+      "internetrtt": 1.8,
+      "community_gwbw": 81.7,
+      "community_gwpath_uid": [
+        186
+      ],
+      "gw": "UPC-CN-C6-E104-ER-X",
+      "gwid": "n0014",
+      "gwpath": [
+        "UPC-CN-C6-E104-ER-X"
+      ],
+      "gwrtt": 0.8,
+      "gwpath_uid": [
+        186
+      ],
+      "community_gwuid": 186,
+      "gwuid": 186,
+      "community_gw": "UPC-CN-C6-E104-ER-X",
+      "ipv4": [
+        "10.139.40.12/24",
+        "169.254.76.1/29",
+        "10.1.25.33/32"
+      ],
+      "gdev": "94210",
+      "ipv6gl": [
+        "fd66:66:66:7:618:d6ff:fe58:e34c",
+        "fd66:66:66:2:618:d6ff:fe59:e34c"
+      ],
+      "community_gwrtt": 1.7,
+      "qmpversion": "OpenWrt 21.02.0 r16279-5cc0535800 - qMp Rhodopes 5.1.0, branch HEAD rev.f7ca3df-20211013-1410\n",
+      "bmxversion": "BMX6-0.1-alpha comPatibility=16 revision=d8869ec69797be0ca2da06abb344e60198a8a275\n",
+      "forwardings": [
+        "GS-UPC-CN-C6-E208-TL-WDR4300-Mi",
+        "UPC-CN-C6-E206-Alix",
+        "UPC-CN-C6-E208-TL-WDR4300-Proxm"
+      ],
+      "$color": "#a9a99b"
+    },
+    "adjacencies": [
+      {
+        "nodeTouid": 110,
+        "data": {
+          "channel": "136",
+          "powerav": -77,
+          "bw": 16.9,
+          "rtt": 9.1,
+          "$color": "#2F3F60"
+        },
+        "nodeTo": "n0017",
+        "nodeFrom": "n0003"
+      },
+      {
+        "nodeTo": "n0004",
+        "data": {
+          "channel": "136",
+          "powerav": -74,
+          "bw": 12.8,
+          "rtt": 2.6,
+          "$color": "#2F3F60"
+        },
+        "nodeTouid": 59,
+        "nodeFrom": "n0003"
+      },
+      {
+        "nodeTouid": 186,
+        "nodeTo": "n0014",
+        "data": {
+          "channel": "eth",
+          "rtt": 0.7,
+          "bw": 81.1,
+          "$color": "#F97A6D"
+        },
+        "nodeFrom": "n0003"
+      },
+      {
+        "data": {
+          "channel": "eth",
+          "rtt": 0.6,
+          "bw": 85.6,
+          "$color": "#F97A6D"
+        },
+        "nodeTo": "n0015",
+        "nodeTouid": 219,
+        "nodeFrom": "n0003"
+      },
+      {
+        "nodeTo": "n0016",
+        "data": {
+          "channel": "136",
+          "powerav": -69,
+          "bw": 9,
+          "rtt": 2.1,
+          "$color": "#2F3F60"
+        },
+        "nodeTouid": 45,
+        "nodeFrom": "n0003"
+      }
+    ],
+    "uid": 227,
+    "lon": 2.113007,
+    "y": 3127.1391332838684,
+    "name": "GS-UPC-CN-C6-E104-NSLM5XW-94210",
+    "id": "n0003",
+    "lat": 41.389688,
+    "x": 62.579139675945044
+  },
+  {
+    "uid": 59,
+    "data": {
+      "wifi": {
+        "wlan1": {
+          "ch": "136",
+          "addr": "10:5e",
+          "type": "mesh point",
+          "center": "5680",
+          "width": "20",
+          "txpower": "17.00 dBm"
+        },
+        "wlan0": {
+          "type": "mesh point",
+          "ch": "1",
+          "addr": "10:5d",
+          "txpower": "17.00 dBm",
+          "center": "2412",
+          "width": "20"
+        }
+      },
+      "load_average": "1.30, 1.27, 1.21",
+      "system": "TP-Link TL-WDR4300 v1",
+      "internetbw": 6.8,
+      "gwbw": 10.9,
+      "uptime": "13:02:17 up 104 days,  1:57",
+      "ipv6ll": [
+        "fe80::12fe:edff:fee6:65e",
+        "fe80::12fe:edff:fee6:65f",
+        "fe80::12fe:edff:fee6:65d",
+        "fe80::12fe:edff:fee6:65e"
+      ],
+      "gnode": "/ca/UPC-C6-E208",
+      "gwuid": 91,
+      "community_gwuid": 79,
+      "gwrtt": 12,
+      "gwpath_uid": [
+        227,
+        219,
+        67,
+        221,
+        91
+      ],
+      "gwpath": [
+        "GS-UPC-CN-C6-E104-NSLM5XW-94210",
+        "UPC-CN-C6-E104-TL-WDR4300",
+        "GSgV-kvm-463d",
+        "GSgranVia255-ERX-b66c",
+        "BCNevaristoarnus5Rd3-Apu"
+      ],
+      "gdev": "92032",
+      "ipv4": [
+        "10.1.24.65/27",
+        "10.1.24.65/32",
+        "169.254.94.1/29",
+        "169.254.93.1/29"
+      ],
+      "bmxversion": "BMX6-0.1-alpha comPatibility=16 revision=d8869ec69797be0ca2da06abb344e60198a8a275\n",
+      "ipv6gl": [
+        "fd66:66:66:7:12fe:edff:fee6:65e",
+        "fd66:66:66:9:12fe:edff:fee6:65f",
+        "fd66:66:66:e:12fe:edff:fee6:65d",
+        "fd66:66:66:d:12fe:edff:fee6:65e"
+      ],
+      "community_gwrtt": 61.2,
+      "qmpversion": "OpenWrt 21.02.0 r16279-5cc0535800 - qMp Rhodopes 5.1.0, branch HEAD rev.f7ca3df-20211013-1410\n",
+      "community_gw": "BCCanBruixa20Rd6-4524",
+      "community_gwpath": [
+        "GS-UPC-CN-C6-E104-NSLM5XW-94210",
+        "UPC-CN-C6-E104-TL-WDR4300",
+        "GSgV-kvm-463d",
+        "GSgranVia255-ERX-b66c",
+        "BCCanBruixa20Rd6-4524"
+      ],
+      "internetrtt": 95.6,
+      "gw": "BCNevaristoarnus5Rd3-Apu",
+      "gwid": "n0044",
+      "community_gwbw": 8.9,
+      "community_gwpath_uid": [
+        227,
+        219,
+        67,
+        221,
+        79
+      ]
+    },
+    "adjacencies": [
+      {
+        "nodeTo": "n0017",
+        "data": {
+          "powerav": -45,
+          "rtt": 1.8,
+          "bw": 41,
+          "channel": "136",
+          "$color": "#2F3F60"
+        },
+        "nodeTouid": 110,
+        "nodeFrom": "n0004"
+      },
+      {
+        "nodeTouid": 45,
+        "nodeTo": "n0016",
+        "data": {
+          "powerav": -61,
+          "bw": 24.3,
+          "rtt": 3.3,
+          "channel": "1",
+          "$color": "#1D4599"
+        },
+        "nodeFrom": "n0004"
+      },
+      {
+        "nodeTouid": 219,
+        "nodeTo": "n0015",
+        "data": {
+          "powerav": -83,
+          "channel": "1",
+          "$color": "#1D4599"
+        },
+        "nodeFrom": "n0004"
+      },
+      {
+        "data": {
+          "rtt": 2.3,
+          "bw": 11.5,
+          "powerav": -76,
+          "channel": "136",
+          "$color": "#2F3F60"
+        },
+        "nodeTo": "n0003",
+        "nodeTouid": 227,
+        "nodeFrom": "n0004"
+      }
+    ],
+    "lon": 2.112966,
+    "y": 3099.529748189263,
+    "id": "n0004",
+    "lat": 41.389439,
+    "x": 58.868162730068434,
+    "name": "GS-UPC-CN-C6-E208-TL-WDR4300-Mi"
+  },
+  {
+    "uid": 66,
+    "data": {
+      "system": "Ubiquiti Nanostation M XW",
+      "gwbw": 5,
+      "wifi": {
+        "wlan0": {
+          "width": "40",
+          "txpower": "22.00 dBm",
+          "center": "5310",
+          "addr": "44:10",
+          "ch": "60",
+          "type": "IBSS"
+        }
+      },
+      "load_average": "0.12, 0.06, 0.00",
+      "ipv6ll": [
+        "fe80::46d9:e7ff:fe7e:8710"
+      ],
+      "gnode": "/ca/node/84906",
+      "uptime": "14:02:52 up 57 days,  3:09",
+      "gdev": "83333",
+      "ipv4": [
+        "10.1.9.129/27",
+        "10.1.9.129/32"
+      ],
+      "bmxversion": "BMX6-0.1-alpha comPatibility=16 revision=2a87b770d3f9c254e3927dc159e2f425f2e0e83a\n",
+      "community_gwrtt": 104.9,
+      "qmpversion": "OpenWrt 18.06.4 r7808-ef686b7292 - temba 5ecd1b9\n",
+      "ipv6gl": [
+        "fd66:66:66:c:46d9:e7ff:fe7e:8710"
+      ],
+      "community_gw": "BCCanBruixa20Rd6-4524",
+      "gwuid": 186,
+      "community_gwuid": 79,
+      "gwrtt": 17.1,
+      "gwpath_uid": [
+        19,
+        221,
+        67,
+        186
+      ],
+      "gwpath": [
+        "GSgranVia255-db37",
+        "GSgranVia255-ERX-b66c",
+        "GSgV-kvm-463d",
+        "UPC-CN-C6-E104-ER-X"
+      ],
+      "gw": "UPC-CN-C6-E104-ER-X",
+      "ssid": "qMp-26gener10",
+      "gwid": "n0014",
+      "community_gwbw": 3.6,
+      "community_gwpath_uid": [
+        19,
+        221,
+        79
+      ],
+      "community_gwpath": [
+        "GSgranVia255-db37",
+        "GSgranVia255-ERX-b66c",
+        "BCCanBruixa20Rd6-4524"
+      ]
+    },
+    "adjacencies": [
+      {
+        "nodeTouid": 71,
+        "nodeTo": "n0039",
+        "data": {
+          "channel": "60",
+          "rtt": 728.4,
+          "powerav": -86,
+          "$color": "#6D0D03"
+        },
+        "nodeFrom": "n0005"
+      },
+      {
+        "data": {
+          "channel": "60",
+          "bw": 6.2,
+          "rtt": 322,
+          "powerav": -68,
+          "$color": "#6D0D03"
+        },
+        "nodeTo": "n0011",
+        "nodeTouid": 19,
+        "nodeFrom": "n0005"
+      },
+      {
+        "nodeTo": "n0002",
+        "data": {
+          "bw": 0.1,
+          "rtt": 593.5,
+          "powerav": -76,
+          "channel": "60",
+          "$color": "#6D0D03"
+        },
+        "nodeTouid": 230,
+        "nodeFrom": "n0005"
+      }
+    ],
+    "y": 1288.0620684521273,
+    "lat": 41.37334,
+    "name": "GS26gener10-8710",
+    "x": 2436.9152128150454,
+    "id": "n0005",
+    "lon": 2.14162
+  },
+  {
+    "y": 1606.5069002695382,
+    "lat": 41.376068599999996,
+    "name": "GSAvMadrid5-nb-9a57",
+    "id": "n0006",
+    "x": 890.4038987770327,
+    "lon": 2.1230911,
+    "uid": 46,
+    "data": {
+      "community_gwpath_uid": [
+        67,
+        186
+      ],
+      "community_gwbw": 11,
+      "gw": "UPC-CN-C6-E104-ER-X",
+      "gwid": "n0014",
+      "ssid": "guifi.net/GSAvMadrid5-nb-9a57",
+      "community_gwpath": [
+        "GSgV-kvm-463d",
+        "UPC-CN-C6-E104-ER-X"
+      ],
+      "community_gw": "UPC-CN-C6-E104-ER-X",
+      "ipv4": [
+        "10.1.8.97/27",
+        "10.1.8.97/32"
+      ],
+      "gdev": "63328",
+      "ipv6gl": [
+        "fd66:66:66:9:26a4:3cff:fe8b:9a57",
+        "fd66:66:66:c:26a4:3cff:fe8a:9a57"
+      ],
+      "community_gwrtt": 7.4,
+      "qmpversion": "OpenWrt 18.06.4 r7808-ef686b7292 - temba dce0a12\n",
+      "bmxversion": "BMX6-0.1-alpha comPatibility=16 revision=2a87b770d3f9c254e3927dc159e2f425f2e0e83a\n",
+      "gwpath": [
+        "GSgV-kvm-463d",
+        "UPC-CN-C6-E104-ER-X"
+      ],
+      "gwrtt": 8,
+      "gwpath_uid": [
+        67,
+        186
+      ],
+      "gwuid": 186,
+      "community_gwuid": 186,
+      "ipv6ll": [
+        "fe80::26a4:3cff:fe8b:9a57",
+        "fe80::26a4:3cff:fe8a:9a57"
+      ],
+      "gnode": "/ca/node/27031",
+      "uptime": "14:04:19 up 59 days,  2:46",
+      "gwbw": 7.3,
+      "system": "Ubiquiti Nanostation M",
+      "load_average": "0.22, 0.19, 0.16",
+      "wifi": {
+        "wlan0": {
+          "center": "5310",
+          "width": "40",
+          "txpower": "22.00 dBm",
+          "addr": "24:57",
+          "ch": "60",
+          "type": "IBSS"
+        }
+      }
+    },
+    "adjacencies": [
+      {
+        "nodeTouid": 30,
+        "nodeTo": "n0020",
+        "data": {
+          "powerav": -51,
+          "rtt": 18,
+          "bw": 18.8,
+          "channel": "60",
+          "$color": "#6D0D03"
+        },
+        "nodeFrom": "n0006"
+      },
+      {
+        "nodeTouid": 13,
+        "nodeTo": "n0007",
+        "data": {
+          "bw": 69.4,
+          "rtt": 0.9,
+          "channel": "br-lan",
+          "$color": "#E62B17"
+        },
+        "nodeFrom": "n0006"
+      },
+      {
+        "data": {
+          "bw": 9.8,
+          "rtt": 11.3,
+          "powerav": -62,
+          "channel": "60",
+          "$color": "#6D0D03"
+        },
+        "nodeTo": "n0046",
+        "nodeTouid": 35,
+        "nodeFrom": "n0006"
+      },
+      {
+        "data": {
+          "channel": "br-lan",
+          "rtt": 3.9,
+          "bw": 17.2,
+          "$color": "#E62B17"
+        },
+        "nodeTo": "n0001",
+        "nodeTouid": 67,
+        "nodeFrom": "n0006"
+      },
+      {
+        "nodeTouid": 87,
+        "data": {
+          "bw": 81.9,
+          "rtt": 3.3,
+          "channel": "br-lan",
+          "$color": "#E62B17"
+        },
+        "nodeTo": "n0049",
+        "nodeFrom": "n0006"
+      },
+      {
+        "nodeTouid": 105,
+        "nodeTo": "n0035",
+        "data": {
+          "rtt": 45.6,
+          "bw": 0,
+          "powerav": -81,
+          "channel": "60",
+          "$color": "#6D0D03"
+        },
+        "nodeFrom": "n0006"
+      }
+    ]
+  },
+  {
+    "lon": 2.1230911,
+    "y": 1606.5069002695382,
+    "x": 890.4038987770327,
+    "name": "GSAvMadrid5-ns-7369",
+    "id": "n0007",
+    "lat": 41.376068599999996,
+    "data": {
+      "community_gw": "UPC-CN-C6-E104-ER-X",
+      "bmxversion": "BMX6-0.1-alpha comPatibility=16 revision=2a87b770d3f9c254e3927dc159e2f425f2e0e83a\n",
+      "ipv6gl": [
+        "fd66:66:66:9:de9f:dbff:fe45:7369",
+        "fd66:66:66:c:de9f:dbff:fe44:7369"
+      ],
+      "qmpversion": "OpenWrt 18.06.4 r7808-ef686b7292 - temba dce0a12\n",
+      "community_gwrtt": 7,
+      "gdev": "89319",
+      "ipv4": [
+        "10.1.12.65/27",
+        "10.1.12.65/32"
+      ],
+      "gwpath_uid": [
+        67,
+        186
+      ],
+      "gwrtt": 6.9,
+      "gwpath": [
+        "GSgV-kvm-463d",
+        "UPC-CN-C6-E104-ER-X"
+      ],
+      "gwuid": 186,
+      "community_gwuid": 186,
+      "community_gwbw": 11.7,
+      "community_gwpath_uid": [
+        67,
+        186
+      ],
+      "ssid": "guifi.net/GSAvMadrid5-ns-7369",
+      "gwid": "n0014",
+      "gw": "UPC-CN-C6-E104-ER-X",
+      "community_gwpath": [
+        "GSgV-kvm-463d",
+        "UPC-CN-C6-E104-ER-X"
+      ],
+      "gwbw": 12.2,
+      "system": "Ubiquiti Nanostation M",
+      "load_average": "0.01, 0.02, 0.00",
+      "wifi": {
+        "wlan0": {
+          "type": "IBSS",
+          "addr": "dc:69",
+          "ch": "52",
+          "width": "40",
+          "center": "5270",
+          "txpower": "22.00 dBm"
+        }
+      },
+      "gnode": "/ca/node/27031",
+      "ipv6ll": [
+        "fe80::de9f:dbff:fe45:7369",
+        "fe80::de9f:dbff:fe44:7369"
+      ],
+      "uptime": "14:05:41 up 19 days,  1:13"
+    },
+    "adjacencies": [
+      {
+        "nodeTo": "n0006",
+        "data": {
+          "channel": "br-lan",
+          "bw": 67.8,
+          "rtt": 0.9,
+          "$color": "#E62B17"
+        },
+        "nodeTouid": 46,
+        "nodeFrom": "n0007"
+      },
+      {
+        "nodeTo": "n0001",
+        "data": {
+          "bw": 16.1,
+          "rtt": 2.9,
+          "channel": "br-lan",
+          "$color": "#E62B17"
+        },
+        "nodeTouid": 67,
+        "nodeFrom": "n0007"
+      },
+      {
+        "nodeTouid": 87,
+        "data": {
+          "rtt": 3.4,
+          "bw": 76.9,
+          "channel": "br-lan",
+          "$color": "#E62B17"
+        },
+        "nodeTo": "n0049",
+        "nodeFrom": "n0007"
+      },
+      {
+        "data": {
+          "channel": "52",
+          "$color": "#F9B7B0",
+          "miss": 1
+        },
+        "nodeTo": "n0021",
+        "nodeTouid": 24,
+        "nodeFrom": 36
+      },
+      {
+        "data": {
+          "channel": "52",
+          "$color": "#F9B7B0",
+          "miss": 1
+        },
+        "nodeTo": "n0022",
+        "nodeTouid": 39,
+        "nodeFrom": 36
+      }
+    ],
+    "uid": 13
+  },
+  {
+    "uid": 34,
+    "data": {
+      "wifi": {
+        "wlan0": {
+          "txpower": "22.00 dBm",
+          "width": "40",
+          "center": "5550",
+          "ch": "112",
+          "addr": "44:ed",
+          "type": "IBSS"
+        }
+      },
+      "load_average": "0.09, 0.05, 0.00",
+      "system": "Ubiquiti Nanostation M XW",
+      "gwbw": 12.7,
+      "uptime": "14:06:32 up 37 days, 17:31",
+      "ipv6ll": [
+        "fe80::46d9:e7ff:fed5:2ed",
+        "fe80::46d9:e7ff:fed4:2ed"
+      ],
+      "gnode": "/ca/node/86667",
+      "community_gwuid": 186,
+      "gwuid": 186,
+      "gwpath_uid": [
+        217,
+        79,
+        221,
+        67,
+        186
+      ],
+      "gwrtt": 13.2,
+      "gwpath": [
+        "BCNSants186-EdgePointR6",
+        "BCCanBruixa20Rd6-4524",
+        "GSgranVia255-ERX-b66c",
+        "GSgV-kvm-463d",
+        "UPC-CN-C6-E104-ER-X"
+      ],
+      "gdev": "85146",
+      "ipv4": [
+        "10.1.10.193/28",
+        "10.1.10.209/28",
+        "10.1.10.193/32"
+      ],
+      "bmxversion": "BMX6-0.1-alpha comPatibility=16 revision=2a87b770d3f9c254e3927dc159e2f425f2e0e83a\n",
+      "community_gwrtt": 11.8,
+      "ipv6gl": [
+        "fd66:66:66:a:46d9:e7ff:fed5:2ed",
+        "fd66:66:66:d:46d9:e7ff:fed4:2ed"
+      ],
+      "qmpversion": "OpenWrt 18.06.2 r7676-cddd7b4c77 - temba 1d74965\n",
+      "community_gw": "UPC-CN-C6-E104-ER-X",
+      "community_gwpath": [
+        "BCNSants186-EdgePointR6",
+        "BCCanBruixa20Rd6-4524",
+        "GSgranVia255-ERX-b66c",
+        "GSgV-kvm-463d",
+        "UPC-CN-C6-E104-ER-X"
+      ],
+      "gw": "UPC-CN-C6-E104-ER-X",
+      "ssid": "guifi.net/GSConstitucio174-02ed",
+      "gwid": "n0014",
+      "community_gwpath_uid": [
+        217,
+        79,
+        221,
+        67,
+        186
+      ],
+      "community_gwbw": 33.4
+    },
+    "adjacencies": [
+      {
+        "nodeTo": "n0023",
+        "data": {
+          "channel": "112",
+          "rtt": 9.2,
+          "bw": 0.6,
+          "powerav": -77,
+          "$color": "#A9BDE6"
+        },
+        "nodeTouid": 3,
+        "nodeFrom": "n0008"
+      },
+      {
+        "nodeTouid": 217,
+        "nodeTo": "n0040",
+        "data": {
+          "bw": 84.1,
+          "rtt": 1.6,
+          "channel": "eth",
+          "$color": "#F97A6D"
+        },
+        "nodeFrom": "n0008"
+      },
+      {
+        "nodeTouid": 7,
+        "data": {
+          "$lineWidth": "0.5",
+          "channel": "112",
+          "powerav": -82,
+          "$color": "#A9BDE6"
+        },
+        "nodeTo": "n0032",
+        "nodeFrom": "n0008"
+      },
+      {
+        "nodeTouid": 37,
+        "data": {
+          "channel": "112",
+          "powerav": -81,
+          "$color": "#A9BDE6"
+        },
+        "nodeTo": "n0025",
+        "nodeFrom": "n0008"
+      },
+      {
+        "nodeTouid": 29,
+        "nodeTo": "n0041",
+        "data": {
+          "channel": "112",
+          "rtt": 3.8,
+          "bw": 4.2,
+          "powerav": -63,
+          "$color": "#A9BDE6"
+        },
+        "nodeFrom": "n0008"
+      }
+    ],
+    "y": 769.7144393818453,
+    "id": "n0008",
+    "lat": 41.3686,
+    "x": 1638.8320898252423,
+    "name": "GSConstitucio174-02ed",
+    "lon": 2.13214
+  },
+  {
+    "uid": 67,
+    "data": {
+      "system": "Common KVM processor",
+      "gwbw": 70.1,
+      "internetbw": 73.5,
+      "load_average": "0.00, 0.05, 0.07",
+      "gnode": "/ca/node/49335",
+      "ipv6ll": [
+        "fe80::a831:d9ff:fea2:463d",
+        "fe80::a831:d9ff:fea2:463e",
+        "fe80::a831:d9ff:fea2:463f"
+      ],
+      "uptime": "14:00:04 up 411 days,  4:59",
+      "qmpversion": "OpenWrt 19.07.6 r11278-8055e38794\n",
+      "community_gwrtt": 5.6,
+      "ipv6gl": [
+        "fd66:66:66:8:aa31:d9ff:fea2:463d",
+        "fd66:66:66:9:aa31:d9ff:fea2:463e",
+        "fd66:66:66:a:aa31:d9ff:fea2:463f"
+      ],
+      "bmxversion": "BMX6-0.1-alpha comPatibility=16 revision=0312168aaa384379ccbefd4b2d936fc698664d5b\n",
+      "ipv4": [
+        "10.1.24.33/27",
+        "10.1.12.129/27",
+        "192.168.198.7/24",
+        "10.1.11.1/27",
+        "10.1.12.193/28",
+        "10.1.12.209/28",
+        "10.1.24.33/32"
+      ],
+      "gdev": "103535",
+      "community_gw": "UPC-CN-C6-E104-ER-X",
+      "community_gwuid": 186,
+      "gwuid": 186,
+      "gwpath": [
+        "UPC-CN-C6-E104-ER-X"
+      ],
+      "gwrtt": 5.5,
+      "gwpath_uid": [
+        186
+      ],
+      "gwid": "n0014",
+      "gw": "UPC-CN-C6-E104-ER-X",
+      "community_gwbw": 69.4,
+      "community_gwpath_uid": [
+        186
+      ],
+      "internetrtt": 5.2,
+      "community_gwpath": [
+        "UPC-CN-C6-E104-ER-X"
+      ],
+      "forwardings": [
+        "BCNCanViesRd1",
+        "BCNEntenca239-0f6b",
+        "BCNJardiBotanicSants186-ba35",
+        "BCNMVictoria16-d594",
+        "BCNMVictoria5Rd1",
+        "BCNMVictoria5Rd2",
+        "BCNMVictoria5Rd3",
+        "BCNPisuerga17-mANTBox15s",
+        "BCNPisuerga17NSM5XW-97964",
+        "BCNSants186Rd2",
+        "BCNValladolid22-d906",
+        "BCNevaristoarnus5Rd3-Apu",
+        "GS-BCNEusebiPlanes4-f0b2",
+        "GS-UPC-CN-C6-E208-TL-WDR4300-Mi",
+        "GS26gener10-8710",
+        "GSAvMadrid5-nb-9a57",
+        "GSAvMadrid5-ns-7369",
+        "GSConstitucio174-02ed",
+        "HWRafaelCampalans29",
+        "UPC-CN-C5-Terrat-mANTBox19s",
+        "UPC-CN-C6-E206-Alix",
+        "UPC-CN-C6-E208-TL-WDR4300-Proxm"
+      ],
+      "$color": "#51514a"
+    },
+    "adjacencies": [
+      {
+        "data": {
+          "channel": "br-lan",
+          "bw": 10.1,
+          "rtt": 2.8,
+          "$color": "#E62B17"
+        },
+        "nodeTo": "n0006",
+        "nodeTouid": 46,
+        "nodeFrom": "n0001"
+      },
+      {
+        "nodeTo": "n0015",
+        "data": {
+          "channel": "eth",
+          "bw": 73,
+          "rtt": 4.4,
+          "$color": "#F97A6D"
+        },
+        "nodeTouid": 219,
+        "nodeFrom": "n0001"
+      },
+      {
+        "nodeTouid": 81,
+        "nodeTo": "n0009",
+        "data": {
+          "channel": "eth",
+          "rtt": 4,
+          "bw": 91.8,
+          "$color": "#F97A6D"
+        },
+        "nodeFrom": "n0001"
+      },
+      {
+        "nodeTo": "n0049",
+        "data": {
+          "bw": 37.5,
+          "rtt": 6.8,
+          "channel": "eth",
+          "$color": "#F97A6D"
+        },
+        "nodeTouid": 87,
+        "nodeFrom": "n0001"
+      },
+      {
+        "nodeTouid": 186,
+        "nodeTo": "n0014",
+        "data": {
+          "channel": "eth",
+          "bw": 70.7,
+          "rtt": 4.2,
+          "$color": "#F97A6D"
+        },
+        "nodeFrom": "n0001"
+      },
+      {
+        "nodeTouid": 221,
+        "nodeTo": "n0010",
+        "data": {
+          "bw": 196,
+          "rtt": 2.7,
+          "channel": "eth",
+          "$color": "#F97A6D"
+        },
+        "nodeFrom": "n0001"
+      },
+      {
+        "nodeTouid": 13,
+        "nodeTo": "n0007",
+        "data": {
+          "rtt": 3.7,
+          "bw": 38.9,
+          "channel": "br-lan",
+          "$color": "#E62B17"
+        },
+        "nodeFrom": "n0001"
+      }
+    ],
+    "y": 772.6264069685712,
+    "x": 2376.6153673044755,
+    "id": "n0001",
+    "name": "GSgV-kvm-463d",
+    "lat": 41.368692411754,
+    "lon": 2.1409601142301
+  },
+  {
+    "uid": 81,
+    "data": {
+      "uptime": "14:07:29 up 411 days,  5:09",
+      "ipv6ll": [
+        "fe80::822a:a8ff:fe07:a4a7",
+        "fe80::822a:a8ff:fe06:a4a7"
+      ],
+      "gnode": "/ca/node/49335",
+      "wifi": {
+        "wlan0": {
+          "type": "IBSS",
+          "ch": "36",
+          "addr": "80:a7",
+          "width": "40",
+          "txpower": "22.00 dBm",
+          "center": "5190"
+        }
+      },
+      "load_average": "0.23, 0.17, 0.11",
+      "system": "Ubiquiti Nanostation M XW",
+      "internetbw": 22.3,
+      "gwbw": 63.5,
+      "community_gwpath": [
+        "GSgranVia255-ERX-b66c",
+        "BCCanBruixa20Rd6-4524"
+      ],
+      "internetrtt": 77.7,
+      "gw": "BCNevaristoarnus5Rd3-Apu",
+      "ssid": "guifi.net/GSgV-ns-a4a7",
+      "gwid": "n0044",
+      "community_gwpath_uid": [
+        221,
+        79
+      ],
+      "community_gwbw": 77.5,
+      "community_gwuid": 79,
+      "gwuid": 91,
+      "gwpath_uid": [
+        221,
+        91
+      ],
+      "gwrtt": 3.4,
+      "gwpath": [
+        "GSgranVia255-ERX-b66c",
+        "BCNevaristoarnus5Rd3-Apu"
+      ],
+      "gdev": "89331",
+      "ipv4": [
+        "10.1.12.161/27",
+        "10.1.11.2/27",
+        "192.168.0.1/24",
+        "10.1.12.161/32"
+      ],
+      "bmxversion": "BMX6-0.1-alpha comPatibility=16 revision=d8869ec69797be0ca2da06abb344e60198a8a275\n",
+      "qmpversion": "OpenWrt 18.06.4 r7808-ef686b7292 - temba caae365\n",
+      "community_gwrtt": 6,
+      "ipv6gl": [
+        "fd66:66:66:9:822a:a8ff:fe07:a4a7",
+        "fd66:66:66:d:822a:a8ff:fe06:a4a7"
+      ],
+      "community_gw": "BCCanBruixa20Rd6-4524",
+      "forwardings": [
+        "BCN-Sagunt66-8971",
+        "BCNMVictoria5Rd2",
+        "BCNMVictoria5Rd3",
+        "BCNSagunt62"
+      ],
+      "$color": "#a4a496"
+    },
+    "adjacencies": [
+      {
+        "nodeTouid": 221,
+        "data": {
+          "channel": "eth",
+          "rtt": 2.4,
+          "bw": 88.5,
+          "$color": "#F97A6D"
+        },
+        "nodeTo": "n0010",
+        "nodeFrom": "n0009"
+      },
+      {
+        "nodeTouid": 38,
+        "nodeTo": "n0031",
+        "data": {
+          "channel": "36",
+          "powerav": -64,
+          "bw": 9.6,
+          "rtt": 11.3,
+          "$color": "#7297E6"
+        },
+        "nodeFrom": "n0009"
+      },
+      {
+        "data": {
+          "bw": 69.3,
+          "rtt": 1,
+          "channel": "eth",
+          "$color": "#F97A6D"
+        },
+        "nodeTo": "n0001",
+        "nodeTouid": 67,
+        "nodeFrom": "n0009"
+      }
+    ],
+    "lon": 2.1409601142301,
+    "y": 772.6264069685712,
+    "name": "GSgV-ns-a4a7",
+    "x": 2376.6153673044755,
+    "id": "n0009",
+    "lat": 41.368692411754
+  },
+  {
+    "uid": 221,
+    "adjacencies": [
+      {
+        "nodeTouid": 30,
+        "nodeTo": "n0020",
+        "data": {
+          "bw": 80,
+          "rtt": 95.4,
+          "channel": "eth0",
+          "$color": "#8F463F"
+        },
+        "nodeFrom": "n0010"
+      },
+      {
+        "data": {
+          "channel": "eth",
+          "bw": 91.3,
+          "rtt": 0.9,
+          "$color": "#F97A6D"
+        },
+        "nodeTo": "n0011",
+        "nodeTouid": 19,
+        "nodeFrom": "n0010"
+      },
+      {
+        "nodeTouid": 79,
+        "data": {
+          "rtt": 3.7,
+          "bw": 112,
+          "channel": "eth",
+          "$color": "#F97A6D"
+        },
+        "nodeTo": "n0019",
+        "nodeFrom": "n0010"
+      },
+      {
+        "nodeTo": "n0001",
+        "data": {
+          "channel": "eth",
+          "rtt": 2.6,
+          "bw": 57.7,
+          "$color": "#F97A6D"
+        },
+        "nodeTouid": 67,
+        "nodeFrom": "n0010"
+      },
+      {
+        "data": {
+          "bw": 80.4,
+          "rtt": 1.8,
+          "channel": "eth0",
+          "$color": "#8F463F"
+        },
+        "nodeTo": "n0045",
+        "nodeTouid": 17,
+        "nodeFrom": "n0010"
+      },
+      {
+        "nodeTo": "n0021",
+        "data": {
+          "channel": "eth0",
+          "bw": 49.3,
+          "rtt": 36.3,
+          "$color": "#8F463F"
+        },
+        "nodeTouid": 24,
+        "nodeFrom": "n0010"
+      },
+      {
+        "nodeTo": "n0046",
+        "data": {
+          "rtt": 89.5,
+          "bw": 47.5,
+          "channel": "eth0",
+          "$color": "#8F463F"
+        },
+        "nodeTouid": 35,
+        "nodeFrom": "n0010"
+      },
+      {
+        "nodeTouid": 81,
+        "data": {
+          "bw": 76.2,
+          "rtt": 2.8,
+          "channel": "eth",
+          "$color": "#F97A6D"
+        },
+        "nodeTo": "n0009",
+        "nodeFrom": "n0010"
+      },
+      {
+        "nodeTouid": 91,
+        "nodeTo": "n0044",
+        "data": {
+          "channel": "eth",
+          "bw": 212.2,
+          "rtt": 1.8,
+          "$color": "#F97A6D"
+        },
+        "nodeFrom": "n0010"
+      }
+    ],
+    "data": {
+      "gnode": "/ca/node/43864",
+      "ipv6ll": [
+        "fe80::7683:c2ff:fef7:b66c",
+        "fe80::7683:c2ff:fef7:b66c",
+        "fe80::7683:c2ff:fef7:b66c",
+        "fe80::7683:c2ff:fef7:b66c",
+        "fe80::7683:c2ff:fef7:b66c",
+        "0:0:0:1::"
+      ],
+      "uptime": "14:07:52 up 298 days, 14:40",
+      "system": "UBNT-ERX",
+      "gwbw": 174.9,
+      "internetbw": 33.5,
+      "load_average": "0.15, 0.15, 0.10",
+      "gwid": "n0044",
+      "gw": "BCNevaristoarnus5Rd3-Apu",
+      "community_gwbw": 75.2,
+      "community_gwpath_uid": [
+        79
+      ],
+      "internetrtt": 75.7,
+      "community_gwpath": [
+        "BCCanBruixa20Rd6-4524"
+      ],
+      "bmxversion": "BMX6-0.1-alpha comPatibility=16 revision=0312168aaa384379ccbefd4b2d936fc698664d5b\n",
+      "qmpversion": "OpenWrt 19.07.4 r11208-ce6496d796\n",
+      "community_gwrtt": 94.1,
+      "ipv6gl": [
+        "fd66:66:66:b:7683:c2ff:fef7:b66c",
+        "fd66:66:66:8:7683:c2ff:fef7:b66c",
+        "fd66:66:66:9:7683:c2ff:fef7:b66c",
+        "fd66:66:66:7:7683:c2ff:fef7:b66c",
+        "fd66:66:66:a:7683:c2ff:fef7:b66c",
+        "0:0:0:1::"
+      ],
+      "gdev": "73805",
+      "ipv4": [
+        "10.1.8.193/29",
+        "192.168.1.1/24",
+        "10.1.8.217/30",
+        "10.1.8.209/30",
+        "10.1.8.213/30",
+        "10.1.8.201/29",
+        "10.1.8.193/32"
+      ],
+      "community_gw": "BCCanBruixa20Rd6-4524",
+      "community_gwuid": 79,
+      "gwuid": 91,
+      "gwpath_uid": [
+        91
+      ],
+      "gwrtt": 2,
+      "gwpath": [
+        "BCNevaristoarnus5Rd3-Apu"
+      ],
+      "forwardings": [
+        "BCN-Sagunt66-8971",
+        "BCNCanViesRd1",
+        "BCNEntenca239-0f6b",
+        "BCNJardiBotanicSants186-ba35",
+        "BCNMVictoria16-d594",
+        "BCNMVictoria5Rd1",
+        "BCNPisuerga17-EPR6",
+        "BCNPisuerga17-mANTBox15s",
+        "BCNPisuerga17NSM5XW-97964",
+        "BCNSagunt62",
+        "BCNSantaCatalina59Rd3-805c",
+        "BCNSantaCaterina59Rd2-50b4",
+        "BCNSants186Rd2",
+        "BCNValladolid22-d906",
+        "BCNevaristoarnus5Rd3-Apu",
+        "GS-BCNEusebiPlanes4-f0b2",
+        "GS-UPC-CN-C6-E208-TL-WDR4300-Mi",
+        "GS26gener10-8710",
+        "GSConstitucio174-02ed",
+        "GSgV-ns-a4a7",
+        "GSgranVia255-db37",
+        "UPC-CN-C5-Terrat-mANTBox19s",
+        "UPC-CN-C6-E206-Alix",
+        "UPC-CN-C6-E208-TL-WDR4300-Proxm"
+      ],
+      "$color": "#494943"
+    },
+    "lon": 2.1429512,
+    "name": "GSgranVia255-ERX-b66c",
+    "lat": 41.3706999,
+    "x": 2545.3456642815145,
+    "id": "n0010",
+    "y": 993.8524515079334
+  },
+  {
+    "uid": 19,
+    "data": {
+      "gwbw": 79.6,
+      "system": "Ubiquiti Nanostation M",
+      "load_average": "0.09, 0.22, 0.14",
+      "wifi": {
+        "wlan0": {
+          "txpower": "22.00 dBm",
+          "width": "40",
+          "center": "5310",
+          "type": "IBSS",
+          "addr": "00:37",
+          "ch": "60"
+        }
+      },
+      "gnode": "/ca/node/43864",
+      "ipv6ll": [
+        "fe80::227:22ff:fe68:db37",
+        "fe80::227:22ff:fe69:db37"
+      ],
+      "uptime": "03:29:19 up 4 days, 15:37",
+      "community_gw": "BCCanBruixa20Rd6-4524",
+      "bmxversion": "BMX6-0.1-alpha comPatibility=16 revision=2a87b770d3f9c254e3927dc159e2f425f2e0e83a\n",
+      "community_gwrtt": 3.6,
+      "qmpversion": "qMp Clearance 3.2.1 - qMp Clearance 3.2.1, master rev.fd26a34-20160622_1304\n",
+      "ipv6gl": [
+        "fd66:66:66:d:227:22ff:fe68:db37",
+        "fd66:66:66:b:227:22ff:fe69:db37"
+      ],
+      "gdev": "73805",
+      "ipv4": [
+        "169.254.56.1/29",
+        "10.1.8.198/29",
+        "10.1.8.218/30",
+        "169.254.55.1/29",
+        "10.1.8.193/32"
+      ],
+      "gwrtt": 2.9,
+      "gwpath_uid": [
+        221,
+        91
+      ],
+      "gwpath": [
+        "GSgranVia255-ERX-b66c",
+        "BCNevaristoarnus5Rd3-Apu"
+      ],
+      "community_gwuid": 79,
+      "gwuid": 91,
+      "community_gwpath_uid": [
+        221,
+        79
+      ],
+      "community_gwbw": 80.9,
+      "ssid": "qmp-GSgranVia255",
+      "gwid": "n0044",
+      "gw": "BCNevaristoarnus5Rd3-Apu",
+      "community_gwpath": [
+        "GSgranVia255-ERX-b66c",
+        "BCCanBruixa20Rd6-4524"
+      ],
+      "forwardings": [
+        "BCNMVictoria16-d594",
+        "BCNMVictoria5Rd1",
+        "BCNPisuerga17-EPR6",
+        "BCNPisuerga17-mANTBox15s",
+        "BCNPisuerga17NSM5XW-97964",
+        "BCNSantaCatalina59Rd3-805c",
+        "BCNSantaCaterina59Rd2-50b4",
+        "BCNValladolid22-d906",
+        "GS-BCNEusebiPlanes4-f0b2",
+        "GS26gener10-8710"
+      ],
+      "$color": "#85857a"
+    },
+    "adjacencies": [
+      {
+        "nodeTouid": 230,
+        "data": {
+          "channel": "60",
+          "powerav": -62,
+          "bw": 28.5,
+          "rtt": 28.7,
+          "$color": "#6D0D03"
+        },
+        "nodeTo": "n0002",
+        "nodeFrom": "n0011"
+      },
+      {
+        "nodeTo": "n0030",
+        "data": {
+          "channel": "60",
+          "powerav": -66,
+          "rtt": 16.7,
+          "bw": 21.7,
+          "$color": "#6D0D03"
+        },
+        "nodeTouid": 28,
+        "nodeFrom": "n0011"
+      },
+      {
+        "nodeTouid": 35,
+        "data": {
+          "channel": "60",
+          "$lineWidth": "0.5",
+          "powerav": -80,
+          "$color": "#6D0D03"
+        },
+        "nodeTo": "n0046",
+        "nodeFrom": "n0011"
+      },
+      {
+        "nodeTo": "n0039",
+        "data": {
+          "channel": "60",
+          "bw": 4.9,
+          "rtt": 18.7,
+          "powerav": -78,
+          "$color": "#6D0D03"
+        },
+        "nodeTouid": 71,
+        "nodeFrom": "n0011"
+      },
+      {
+        "data": {
+          "powerav": -79,
+          "rtt": 31.8,
+          "bw": 0.1,
+          "channel": "60",
+          "$color": "#6D0D03"
+        },
+        "nodeTo": "n0020",
+        "nodeTouid": 30,
+        "nodeFrom": "n0011"
+      },
+      {
+        "nodeTouid": 221,
+        "data": {
+          "rtt": 0.5,
+          "bw": 88.2,
+          "channel": "eth",
+          "$color": "#F97A6D"
+        },
+        "nodeTo": "n0010",
+        "nodeFrom": "n0011"
+      },
+      {
+        "data": {
+          "powerav": -68,
+          "bw": 12.4,
+          "rtt": 3.6,
+          "channel": "60",
+          "$color": "#6D0D03"
+        },
+        "nodeTo": "n0035",
+        "nodeTouid": 105,
+        "nodeFrom": "n0011"
+      },
+      {
+        "nodeTouid": 66,
+        "nodeTo": "n0005",
+        "data": {
+          "channel": "60",
+          "powerav": -73,
+          "bw": 12.9,
+          "rtt": 2.5,
+          "$color": "#6D0D03"
+        },
+        "nodeFrom": "n0011"
+      }
+    ],
+    "y": 993.8524515079334,
+    "lat": 41.3706999,
+    "name": "GSgranVia255-db37",
+    "x": 2545.3456642815145,
+    "id": "n0011",
+    "lon": 2.1429512
+  },
+  {
+    "x": 758.810116465902,
+    "name": "HWRafaelCampalans29",
+    "lat": 41.372688,
+    "id": "n0049",
+    "y": 1232.481057564728,
+    "lon": 2.121563,
+    "uid": 87,
+    "adjacencies": [
+      {
+        "data": {
+          "bw": 72.2,
+          "rtt": 3.8,
+          "channel": "br-lan",
+          "$color": "#E62B17"
+        },
+        "nodeTo": "n0007",
+        "nodeTouid": 13,
+        "nodeFrom": "n0049"
+      },
+      {
+        "nodeTo": "n0001",
+        "data": {
+          "rtt": 6.3,
+          "bw": 16.3,
+          "channel": "eth",
+          "$color": "#F97A6D"
+        },
+        "nodeTouid": 67,
+        "nodeFrom": "n0049"
+      },
+      {
+        "nodeTouid": 46,
+        "data": {
+          "rtt": 4.2,
+          "bw": 70.6,
+          "channel": "br-lan",
+          "$color": "#E62B17"
+        },
+        "nodeTo": "n0006",
+        "nodeFrom": "n0049"
+      }
+    ],
+    "data": {
+      "community_gwpath": [
+        "GSgV-kvm-463d",
+        "UPC-CN-C6-E104-ER-X"
+      ],
+      "gw": "UPC-CN-C6-E104-ER-X",
+      "ssid": "guifi.net/HWRafaelCampalans29",
+      "gwid": "n0014",
+      "community_gwbw": 11.4,
+      "community_gwpath_uid": [
+        67,
+        186
+      ],
+      "community_gwuid": 186,
+      "gwuid": 186,
+      "gwpath_uid": [
+        67,
+        186
+      ],
+      "gwrtt": 10,
+      "gwpath": [
+        "GSgV-kvm-463d",
+        "UPC-CN-C6-E104-ER-X"
+      ],
+      "gdev": "96111",
+      "ipv4": [
+        "10.1.15.97/28",
+        "10.1.15.113/28",
+        "10.1.15.97/32"
+      ],
+      "bmxversion": "BMX6-0.1-alpha comPatibility=16 revision=2a87b770d3f9c254e3927dc159e2f425f2e0e83a\n",
+      "ipv6gl": [
+        "fd66:66:66:a:9ade:d0ff:feff:c7a0",
+        "fd66:66:66:d:9ade:d0ff:feff:c7a0"
+      ],
+      "community_gwrtt": 10.3,
+      "qmpversion": "OpenWrt 18.06.4 r7808-ef686b7292 - temba 717d40c\n",
+      "community_gw": "UPC-CN-C6-E104-ER-X",
+      "uptime": "14:33:49 up 18 days, 27 min",
+      "ipv6ll": [
+        "fe80::9ade:d0ff:feff:c7a0",
+        "fe80::9ade:d0ff:feff:c7a0"
+      ],
+      "gnode": "/ca/node/95975",
+      "wifi": {
+        "wlan0": {
+          "addr": "98:a0",
+          "ch": "100",
+          "type": "IBSS",
+          "width": "40",
+          "txpower": "17.00 dBm",
+          "center": "5510"
+        }
+      },
+      "load_average": "0.02, 0.04, 0.00",
+      "system": "TP-LINK CPE510/520",
+      "gwbw": 11.7
+    }
+  },
+  {
+    "uid": 211,
+    "data": {
+      "community_gwbw": 38.3,
+      "community_gwpath_uid": [
+        186
+      ],
+      "ipv6ll": [
+        "fe80::feec:daff:fe75:3cd",
+        "fe80::d0b5:e3ff:fe05:6cf3"
+      ],
+      "gnode": "/ca/upc-c5",
+      "uptime": "14:09:22 up 17:08",
+      "community_gwpath": [
+        "UPC-CN-C6-E104-ER-X"
+      ],
+      "internetrtt": 1.4,
+      "community_gw": "UPC-CN-C6-E104-ER-X",
+      "internetbw": 93.9,
+      "ipv4": [
+        "192.168.156.5/32",
+        "10.1.24.1/27",
+        "172.25.33.65/29",
+        "147.83.24.31/24",
+        "172.29.17.1/32",
+        "10.1.24.1/32"
+      ],
+      "gdev": "102133",
+      "qmpversion": "OpenWrt 18.06.1 r7258-5eb055306f\n",
+      "system": "UBNT-ERX-SFP",
+      "community_gwrtt": 2.4,
+      "ipv6gl": [
+        "fd66:66:66:9:feec:daff:fe75:3cd",
+        "fd66:66:66:8:d2b5:e3ff:fe05:6cf3"
+      ],
+      "bmxversion": "BMX6-0.1-alpha comPatibility=16 revision=0312168aaa384379ccbefd4b2d936fc698664d5b\n",
+      "load_average": "0.03, 0.04, 0.02",
+      "community_gwuid": 186,
+      "forwardings": [
+        "UPC-CN-C5-Terrat-mANTBox19s"
+      ],
+      "$color": "#b7b7a7"
+    },
+    "adjacencies": [
+      {
+        "nodeTo": "n0014",
+        "data": {
+          "channel": "tap0",
+          "rtt": 1.9,
+          "bw": 42.4,
+          "$color": "#67EB84"
+        },
+        "nodeTouid": 186,
+        "nodeFrom": "n0012"
+      },
+      {
+        "nodeTouid": 65,
+        "nodeTo": "n0013",
+        "data": {
+          "rtt": 0.6,
+          "bw": 306.2,
+          "channel": "br-lan",
+          "$color": "#E62B17"
+        },
+        "nodeFrom": "n0012"
+      }
+    ],
+    "lon": 2.1128,
+    "y": 3085.1279606278986,
+    "x": 44.8400481613935,
+    "lat": 41.389308,
+    "name": "UPC-CN-C5-Terrat-ER-X-SFP",
+    "id": "n0012"
+  },
+  {
+    "adjacencies": [
+      {
+        "nodeTouid": 50,
+        "data": {
+          "bw": 6,
+          "rtt": 30.7,
+          "channel": "100",
+          "$color": "#A6EBB5"
+        },
+        "nodeTo": "n0018",
+        "nodeFrom": "n0013"
+      },
+      {
+        "nodeTouid": 211,
+        "nodeTo": "n0012",
+        "data": {
+          "rtt": 0.4,
+          "bw": 113.7,
+          "channel": "br-lan",
+          "$color": "#E62B17"
+        },
+        "nodeFrom": "n0013"
+      }
+    ],
+    "data": {
+      "community_gwuid": 186,
+      "gwuid": 91,
+      "gwpath": [
+        "UPC-CN-C5-Terrat-ER-X-SFP",
+        "UPC-CN-C6-E104-ER-X",
+        "GSgV-kvm-463d",
+        "GSgranVia255-ERX-b66c",
+        "BCNevaristoarnus5Rd3-Apu"
+      ],
+      "gwrtt": 8,
+      "gwpath_uid": [
+        211,
+        186,
+        67,
+        221,
+        91
+      ],
+      "ipv4": [
+        "10.1.24.17/27",
+        "169.254.101.1/29",
+        "10.1.24.17/32"
+      ],
+      "gdev": "90228",
+      "community_gwrtt": 2,
+      "ipv6gl": [
+        "fd66:66:66:9:764d:28ff:fe0d:e63",
+        "fd66:66:66:b:764d:28ff:fe0d:e65"
+      ],
+      "qmpversion": "OpenWrt 19.07.1 r10911-c155900f66 - qMp Neumann testing, branch testing rev.2585f3d-20200228-1705\n",
+      "bmxversion": "BMX6-0.1-alpha comPatibility=16 revision=0312168aaa384379ccbefd4b2d936fc698664d5b\n",
+      "community_gw": "UPC-CN-C6-E104-ER-X",
+      "community_gwpath": [
+        "UPC-CN-C5-Terrat-ER-X-SFP",
+        "UPC-CN-C6-E104-ER-X"
+      ],
+      "internetrtt": 105.3,
+      "gw": "BCNevaristoarnus5Rd3-Apu",
+      "gwid": "n0044",
+      "ssid": "UPC-CN-C5-Terrat-mANTBox19s",
+      "community_gwbw": 32.9,
+      "community_gwpath_uid": [
+        211,
+        186
+      ],
+      "wifi": {
+        "wlan0": {
+          "width": "40",
+          "txpower": "30.00 dBm",
+          "center": "5510",
+          "addr": "74:65",
+          "ch": "100",
+          "type": "IBSS"
+        }
+      },
+      "load_average": "0.09, 0.06, 0.00",
+      "system": "MikroTik RouterBOARD 921GS-5HPacD r2",
+      "internetbw": 18.7,
+      "gwbw": 42.2,
+      "uptime": "13:09:37 up 17:08",
+      "ipv6ll": [
+        "fe80::764d:28ff:fe0d:e63",
+        "fe80::764d:28ff:fe0d:e65"
+      ],
+      "gnode": "/ca/upc-c5"
+    },
+    "uid": 65,
+    "lat": 41.389308,
+    "name": "UPC-CN-C5-Terrat-mANTBox19s",
+    "x": 44.8400481613935,
+    "id": "n0013",
+    "y": 3085.1279606278986,
+    "lon": 2.1128
+  },
+  {
+    "lon": 2.113007,
+    "y": 3127.1391332838684,
+    "id": "n0014",
+    "lat": 41.389688,
+    "name": "UPC-CN-C6-E104-ER-X",
+    "x": 62.579139675945044,
+    "uid": 186,
+    "data": {
+      "uptime": "14:10:02 up 2 days,  9:06",
+      "internetrtt": 3.7,
+      "ipv6ll": [
+        "fe80::b6fb:e4ff:fe57:c2cd",
+        "fe80::b6fb:e4ff:fe57:c2cc",
+        "fe80::68af:f5ff:fe32:2308"
+      ],
+      "gnode": "/ca/UPCC6lab104",
+      "gwguest": [
+        "BCNEntenca239-0f6b",
+        "BCNevaristoarnus5Rd3-Apu",
+        "HWRafaelCampalans29",
+        "GS26gener10-8710",
+        "GSConstitucio174-02ed",
+        "GSgV-kvm-463d",
+        "GSAvMadrid5-ns-7369",
+        "BCNSants186Rd2",
+        "BCNMVictoria5Rd2",
+        "BCNMVictoria16-d594",
+        "GS-BCNEusebiPlanes4-f0b2",
+        "BCNValladolid22-d906",
+        "BCNMVictoria5Rd3",
+        "GS-UPC-CN-C6-E104-NSLM5XW-94210",
+        "UPC-CN-C6-E208-TL-WDR4300-Proxm",
+        "GSAvMadrid5-nb-9a57",
+        "BCNCanViesRd1",
+        "UPC-CN-C6-E104-TL-WDR4300"
+      ],
+      "load_average": "0.40, 0.27, 0.26",
+      "$color": "#719a00",
+      "internetbw": 0,
+      "gdev": "42331",
+      "ipv4": [
+        "192.168.156.6/32",
+        "10.1.25.1/27",
+        "84.88.85.35/27",
+        "10.139.40.2/24",
+        "10.228.207.3/24",
+        "192.168.1.1/24",
+        "10.1.25.1/32"
+      ],
+      "bmxversion": "BMX6-0.1-alpha comPatibility=16 revision=0312168aaa384379ccbefd4b2d936fc698664d5b\n",
+      "ipv6gl": [
+        "fd66:66:66:8:b6fb:e4ff:fe57:c2cd",
+        "fd66:66:66:9:b6fb:e4ff:fe57:c2cc",
+        "fd66:66:66:4:6aaf:f5ff:fe32:2308"
+      ],
+      "qmpversion": "OpenWrt 18.06.4 r7808-ef686b7292\n",
+      "system": "UBNT-ERX",
+      "cgwguest": [
+        "BCNCanViesRd1",
+        "BCNEntenca239-0f6b",
+        "BCNJardiBotanicSants186-ba35",
+        "BCNMVictoria16-d594",
+        "BCNMVictoria5Rd1",
+        "BCNMVictoria5Rd2",
+        "BCNMVictoria5Rd3",
+        "BCNPisuerga17-mANTBox15s",
+        "BCNPisuerga17NSM5XW-97964",
+        "BCNValladolid22-d906",
+        "GS-UPC-CN-C6-E104-NSLM5XW-94210",
+        "GSAvMadrid5-nb-9a57",
+        "GSAvMadrid5-ns-7369",
+        "GSConstitucio174-02ed",
+        "GSgV-kvm-463d",
+        "HWRafaelCampalans29",
+        "UPC-CN-C5-Terrat-ER-X-SFP",
+        "UPC-CN-C5-Terrat-mANTBox19s",
+        "UPC-CN-C6-E104-TL-WDR4300"
+      ],
+      "forwardings": [
+        "BCNCanViesRd1",
+        "BCNEntenca239-0f6b",
+        "BCNJardiBotanicSants186-ba35",
+        "BCNMVictoria16-d594",
+        "BCNMVictoria5Rd1",
+        "BCNMVictoria5Rd2",
+        "BCNMVictoria5Rd3",
+        "BCNPisuerga17-mANTBox15s",
+        "BCNPisuerga17NSM5XW-97964",
+        "BCNSants186Rd2",
+        "BCNValladolid22-d906",
+        "BCNevaristoarnus5Rd3-Apu",
+        "GS-BCNEusebiPlanes4-f0b2",
+        "GS-UPC-CN-C6-E104-NSLM5XW-94210",
+        "GS26gener10-8710",
+        "GSAvMadrid5-nb-9a57",
+        "GSAvMadrid5-ns-7369",
+        "GSConstitucio174-02ed",
+        "GSgV-kvm-463d",
+        "HWRafaelCampalans29",
+        "UPC-CN-C5-Terrat-ER-X-SFP",
+        "UPC-CN-C5-Terrat-mANTBox19s",
+        "UPC-CN-C6-E104-TL-WDR4300",
+        "UPC-CN-C6-E208-TL-WDR4300-Proxm"
+      ]
+    },
+    "adjacencies": [
+      {
+        "nodeTouid": 219,
+        "data": {
+          "bw": 294.4,
+          "rtt": 0.8,
+          "channel": "eth",
+          "$color": "#F97A6D"
+        },
+        "nodeTo": "n0015",
+        "nodeFrom": "n0014"
+      },
+      {
+        "nodeTo": "n0003",
+        "data": {
+          "bw": 90.3,
+          "rtt": 1.1,
+          "channel": "eth",
+          "$color": "#F97A6D"
+        },
+        "nodeTouid": 227,
+        "nodeFrom": "n0014"
+      },
+      {
+        "nodeTouid": 211,
+        "data": {
+          "channel": "tap0",
+          "bw": 46.9,
+          "rtt": 2.3,
+          "$color": "#67EB84"
+        },
+        "nodeTo": "n0012",
+        "nodeFrom": "n0014"
+      },
+      {
+        "nodeTouid": 67,
+        "nodeTo": "n0001",
+        "data": {
+          "bw": 82.8,
+          "rtt": 5.2,
+          "channel": "eth",
+          "$color": "#F97A6D"
+        },
+        "nodeFrom": "n0014"
+      }
+    ]
+  },
+  {
+    "id": "n0015",
+    "x": 42.192103071836755,
+    "name": "UPC-CN-C6-E104-TL-WDR4300",
+    "lat": 41.3897,
+    "y": 3128.680256851949,
+    "lon": 2.112763,
+    "adjacencies": [
+      {
+        "nodeTouid": 67,
+        "nodeTo": "n0001",
+        "data": {
+          "bw": 64.2,
+          "rtt": 3.1,
+          "channel": "eth",
+          "$color": "#F97A6D"
+        },
+        "nodeFrom": "n0015"
+      },
+      {
+        "nodeTouid": 45,
+        "nodeTo": "n0016",
+        "data": {
+          "powerav": -77,
+          "rtt": 5.9,
+          "bw": 2.1,
+          "channel": "1",
+          "$color": "#1D4599"
+        },
+        "nodeFrom": "n0015"
+      },
+      {
+        "nodeTouid": 227,
+        "nodeTo": "n0003",
+        "data": {
+          "channel": "eth",
+          "bw": 89.1,
+          "rtt": 0.7,
+          "$color": "#F97A6D"
+        },
+        "nodeFrom": "n0015"
+      },
+      {
+        "data": {
+          "rtt": 1.7,
+          "bw": 177.9,
+          "channel": "eth",
+          "$color": "#F97A6D"
+        },
+        "nodeTo": "n0014",
+        "nodeTouid": 186,
+        "nodeFrom": "n0015"
+      },
+      {
+        "nodeTouid": 59,
+        "nodeTo": "n0004",
+        "data": {
+          "powerav": -75,
+          "bw": 0.6,
+          "rtt": 66.3,
+          "channel": "1",
+          "$color": "#1D4599"
+        },
+        "nodeFrom": "n0015"
+      }
+    ],
+    "data": {
+      "gnode": "/ca/node/48641",
+      "ipv6ll": [
+        "fe80::6666:b3ff:fe16:42c0",
+        "fe80::6666:b3ff:fe16:42c1",
+        "fe80::6666:b3ff:fe16:42bf"
+      ],
+      "uptime": "13:10:28 up 20 days, 22:00",
+      "system": "TP-Link TL-WDR4300 v1",
+      "internetbw": 176,
+      "gwbw": 170.1,
+      "wifi": {
+        "wlan1": {
+          "center": "5560",
+          "width": "20",
+          "txpower": "6.00 dBm",
+          "ch": "112",
+          "addr": "64:c0",
+          "type": "AP"
+        },
+        "wlan0": {
+          "addr": "64:bf",
+          "ch": "1",
+          "type": "mesh point",
+          "txpower": "6.00 dBm",
+          "width": "40",
+          "center": "2422"
+        },
+        "wlan0ap": {
+          "txpower": "6.00 dBm",
+          "width": "40",
+          "center": "2422",
+          "ch": "1",
+          "addr": "66:bf",
+          "type": "AP"
+        }
+      },
+      "load_average": "0.00, 0.05, 0.07",
+      "ssid": "qMp-lab104",
+      "gwid": "n0014",
+      "gw": "UPC-CN-C6-E104-ER-X",
+      "community_gwbw": 160.6,
+      "community_gwpath_uid": [
+        186
+      ],
+      "internetrtt": 1.7,
+      "community_gwpath": [
+        "UPC-CN-C6-E104-ER-X"
+      ],
+      "bmxversion": "BMX6-0.1-alpha comPatibility=16 revision=d8869ec69797be0ca2da06abb344e60198a8a275\n",
+      "ipv6gl": [
+        "fd66:66:66:7:6666:b3ff:fe16:42c0",
+        "fd66:66:66:8:6666:b3ff:fe16:42c1",
+        "fd66:66:66:89:6666:b3ff:fe16:42bf"
+      ],
+      "qmpversion": "OpenWrt 21.02.0 r16279-5cc0535800 - qMp Rhodopes 5.1.0, branch HEAD rev.f7ca3df-20211003-1707\n",
+      "community_gwrtt": 0.5,
+      "gdev": "73952",
+      "ipv4": [
+        "10.228.207.22/24",
+        "10.139.40.21/24",
+        "10.1.25.97/32",
+        "10.1.25.97/27",
+        "169.254.191.1/29"
+      ],
+      "community_gw": "UPC-CN-C6-E104-ER-X",
+      "community_gwuid": 186,
+      "gwuid": 186,
+      "gwpath_uid": [
+        186
+      ],
+      "gwrtt": 0.6,
+      "gwpath": [
+        "UPC-CN-C6-E104-ER-X"
+      ],
+      "forwardings": [
+        "GS-UPC-CN-C6-E208-TL-WDR4300-Mi",
+        "UPC-CN-C6-E206-Alix",
+        "UPC-CN-C6-E208-TL-WDR4300-Proxm"
+      ],
+      "$color": "#a9a99b"
+    },
+    "uid": 219
+  },
+  {
+    "lon": 2.113075,
+    "id": "n0016",
+    "lat": 41.389479,
+    "name": "UPC-CN-C6-E206-Alix",
+    "x": 68.02707034465857,
+    "y": 3103.8773401463404,
+    "uid": 45,
+    "adjacencies": [
+      {
+        "nodeTouid": 110,
+        "data": {
+          "powerav": -64,
+          "rtt": 1.7,
+          "bw": 11.5,
+          "channel": "136",
+          "$color": "#2F3F60"
+        },
+        "nodeTo": "n0017",
+        "nodeFrom": "n0016"
+      },
+      {
+        "nodeTouid": 227,
+        "data": {
+          "bw": 9.4,
+          "rtt": 2.6,
+          "powerav": -78,
+          "channel": "136",
+          "$color": "#2F3F60"
+        },
+        "nodeTo": "n0003",
+        "nodeFrom": "n0016"
+      },
+      {
+        "nodeTo": "n0015",
+        "data": {
+          "channel": "1",
+          "powerav": -82,
+          "bw": 3.3,
+          "rtt": 22.2,
+          "$color": "#1D4599"
+        },
+        "nodeTouid": 219,
+        "nodeFrom": "n0016"
+      },
+      {
+        "nodeTo": "n0004",
+        "data": {
+          "channel": "1",
+          "bw": 11.7,
+          "rtt": 2.2,
+          "powerav": -62,
+          "$color": "#1D4599"
+        },
+        "nodeTouid": 59,
+        "nodeFrom": "n0016"
+      }
+    ],
+    "data": {
+      "gw": "BCNevaristoarnus5Rd3-Apu",
+      "gwid": "n0044",
+      "ssid": "UPC-CN-C6-E206-Alix",
+      "community_gwbw": 9.2,
+      "community_gwpath_uid": [
+        227,
+        219,
+        67,
+        221,
+        79
+      ],
+      "community_gwpath": [
+        "GS-UPC-CN-C6-E104-NSLM5XW-94210",
+        "UPC-CN-C6-E104-TL-WDR4300",
+        "GSgV-kvm-463d",
+        "GSgranVia255-ERX-b66c",
+        "BCCanBruixa20Rd6-4524"
+      ],
+      "internetrtt": 119.9,
+      "ipv4": [
+        "10.1.24.129/27",
+        "10.1.24.129/32",
+        "169.254.189.1/29",
+        "169.254.150.1/29"
+      ],
+      "gdev": "59001",
+      "qmpversion": "OpenWrt 18.06.1 r7258-5eb055306f - qMp Neumann testing, branch testing rev.97ea701-20181010-2157\n",
+      "ipv6gl": [
+        "fd66:66:66:36:202:6fff:fe4a:32bd",
+        "fd66:66:66:39:5e33:8eff:fee4:696"
+      ],
+      "community_gwrtt": 48,
+      "bmxversion": "BMX6-0.1-alpha comPatibility=16 revision=0312168aaa384379ccbefd4b2d936fc698664d5b\n",
+      "community_gw": "BCCanBruixa20Rd6-4524",
+      "community_gwuid": 79,
+      "gwuid": 91,
+      "gwpath": [
+        "GS-UPC-CN-C6-E104-NSLM5XW-94210",
+        "UPC-CN-C6-E104-TL-WDR4300",
+        "GSgV-kvm-463d",
+        "GSgranVia255-ERX-b66c",
+        "BCNevaristoarnus5Rd3-Apu"
+      ],
+      "gwrtt": 10.2,
+      "gwpath_uid": [
+        227,
+        219,
+        67,
+        221,
+        91
+      ],
+      "ipv6ll": [
+        "fe80::202:6fff:fe4a:32bd",
+        "fe80::5e33:8eff:fee4:696"
+      ],
+      "gnode": "/ca/node/48220",
+      "uptime": "13:11:04 up 63 days,  3:38",
+      "system": "Geode(TM) Integrated Processor by AMD PCS",
+      "gwbw": 9.7,
+      "internetbw": 7.8,
+      "wifi": {
+        "wlan1ap": {
+          "txpower": "6.00 dBm",
+          "width": "20",
+          "center": "2412",
+          "ch": "1",
+          "addr": "5e:96",
+          "type": "AP"
+        },
+        "wlan1": {
+          "txpower": "6.00 dBm",
+          "width": "20",
+          "center": "2412",
+          "ch": "1",
+          "addr": "5c:96",
+          "type": "mesh point"
+        },
+        "wlan0": {
+          "width": "20",
+          "center": "5680",
+          "txpower": "12.00 dBm",
+          "type": "mesh point",
+          "ch": "136",
+          "addr": "00:bd"
+        }
+      },
+      "load_average": "0.17, 0.07, 0.01"
+    }
+  },
+  {
+    "y": 3099.529748189263,
+    "x": 58.868162730068434,
+    "id": "n0017",
+    "name": "UPC-CN-C6-E208-TL-WDR4300-Proxm",
+    "lat": 41.389439,
+    "lon": 2.112966,
+    "uid": 110,
+    "data": {
+      "gw": "UPC-CN-C6-E104-ER-X",
+      "ssid": "c6-e208-guifi.net",
+      "gwid": "n0014",
+      "community_gwbw": 22.7,
+      "community_gwpath_uid": [
+        227,
+        219,
+        67,
+        221,
+        79
+      ],
+      "community_gwpath": [
+        "GS-UPC-CN-C6-E104-NSLM5XW-94210",
+        "UPC-CN-C6-E104-TL-WDR4300",
+        "GSgV-kvm-463d",
+        "GSgranVia255-ERX-b66c",
+        "BCCanBruixa20Rd6-4524"
+      ],
+      "internetrtt": 4.1,
+      "gdev": "101943",
+      "ipv4": [
+        "10.1.27.1/25",
+        "10.1.27.1/32",
+        "169.254.102.1/29"
+      ],
+      "bmxversion": "BMX6-0.1-alpha comPatibility=16 revision=d8869ec69797be0ca2da06abb344e60198a8a275\n",
+      "ipv6gl": [
+        "fd66:66:66:a:a2f3:c1ff:feff:2e66",
+        "fd66:66:66:b:a2f3:c1ff:feff:2e67",
+        "fd66:66:66:e:a2f3:c1ff:feff:2e66"
+      ],
+      "qmpversion": "OpenWrt 21.02.0 r16279-5cc0535800 - qMp Rhodopes 5.1.0, branch HEAD rev.f7ca3df-20211013-1410\n",
+      "community_gwrtt": 11.7,
+      "community_gw": "BCCanBruixa20Rd6-4524",
+      "community_gwuid": 79,
+      "gwuid": 186,
+      "gwpath_uid": [
+        227,
+        186
+      ],
+      "gwrtt": 14.6,
+      "gwpath": [
+        "GS-UPC-CN-C6-E104-NSLM5XW-94210",
+        "UPC-CN-C6-E104-ER-X"
+      ],
+      "ipv6ll": [
+        "fe80::a2f3:c1ff:feff:2e66",
+        "fe80::a2f3:c1ff:feff:2e67",
+        "fe80::a2f3:c1ff:feff:2e66"
+      ],
+      "gnode": "/ca/node/UPC-C6-E208",
+      "uptime": "13:11:37 up 104 days,  2:06",
+      "system": "TP-Link TL-WDR4300 v1",
+      "internetbw": 10.2,
+      "gwbw": 18,
+      "wifi": {
+        "wlan0": {
+          "txpower": "17.00 dBm",
+          "width": "20",
+          "center": "2452",
+          "ch": "9",
+          "addr": "a0:65",
+          "type": "AP"
+        },
+        "wlan1": {
+          "ch": "136",
+          "addr": "a0:66",
+          "type": "mesh point",
+          "width": "40",
+          "txpower": "15.00 dBm",
+          "center": "5670"
+        }
+      },
+      "load_average": "0.15, 0.14, 0.13"
+    },
+    "adjacencies": [
+      {
+        "data": {
+          "channel": "136",
+          "bw": 12,
+          "rtt": 1.3,
+          "powerav": -53,
+          "$color": "#2F3F60"
+        },
+        "nodeTo": "n0016",
+        "nodeTouid": 45,
+        "nodeFrom": "n0017"
+      },
+      {
+        "nodeTouid": 227,
+        "nodeTo": "n0003",
+        "data": {
+          "channel": "136",
+          "powerav": -75,
+          "bw": 14.4,
+          "rtt": 4.7,
+          "$color": "#2F3F60"
+        },
+        "nodeFrom": "n0017"
+      },
+      {
+        "nodeTouid": 59,
+        "data": {
+          "channel": "136",
+          "powerav": -40,
+          "rtt": 1.7,
+          "bw": 42.9,
+          "$color": "#2F3F60"
+        },
+        "nodeTo": "n0004",
+        "nodeFrom": "n0017"
+      }
+    ]
+  },
+  {
+    "data": {
+      "ipv6ll": [],
+      "gdev": "46654",
+      "ipv4": [
+        "10.228.206.1/32"
+      ],
+      "gnode": "/ca/node/53088",
+      "ipv6gl": [
+        "fd66:66:66:a:215:6dff:fe9f:7094"
+      ],
+      "$color": "#FCE704"
+    },
+    "uid": 50,
+    "lon": 2.1152463,
+    "x": 244.3481605220586,
+    "id": "n0018",
+    "name": "UPC-ETSEIB-NS-7094",
+    "lat": 41.3848736,
+    "y": 2590.7209820635617,
+    "adjacencies": [
+      {
+        "data": {
+          "channel": "100",
+          "$color": "#A6EBB5",
+          "miss": 1
+        },
+        "nodeTo": "n0013",
+        "nodeTouid": 65,
+        "nodeFrom": 49
+      }
+    ]
+  }
+]
