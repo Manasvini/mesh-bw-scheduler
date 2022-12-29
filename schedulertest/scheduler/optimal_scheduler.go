@@ -185,9 +185,7 @@ func (opt *OptimalScheduler) SchedulerHelper(app Application, currentAssignment 
             }
             if err == nil {
                 currentAssignment = assignment
-            } else {
-                continue
-            }
+            } 
             glog.Info("After assignment, state is")
             opt.LogState()
             possible := opt.SchedulerHelper(app, currentAssignment)
