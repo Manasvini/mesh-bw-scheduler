@@ -6,14 +6,14 @@ import (
 )
 
 type BaseScheduler struct {
-    Nodes               map[string]Node                // nodes indexed by name
-    Routes              map[string]map[string]Route    // routes indexed by src and dst
-    Assignments         map[string]map[string]string    // app id / component id mapped to node id
-    DeploymentStatus    map[string]string               // App id -> deployment status (DEPLOYED/WAITING/COMPLETED)
-    Links               map[string]map[string]*LinkBandwidth  // src -> dst -> link bw
+    Nodes               NodeMap 
+    Routes              RouteMap
+    Assignments         AppCompAssignment
+    DeploymentStatus    DeploymentStateMap
+    Links               LinkMap
 }
 
-func (opt *BaseScheduler) InitScheduler(nodes map[string]Node, routes map[string]map[string]Route, links map[string]map[string]*LinkBandwidth) {
+func (opt *BaseScheduler) InitScheduler(nodes NodeMap, routes RouteMap, links LinkMap) {
     opt.ResetState( nodes, routes, links)
     for src, dstPath := range opt.Routes {
         for dst, path := range dstPath{
@@ -23,7 +23,7 @@ func (opt *BaseScheduler) InitScheduler(nodes map[string]Node, routes map[string
             opt.Routes[src][dst] = path
         }
     }
-    opt.Assignments = make(map[string]map[string]string, 0)
+    opt.Assignments = make(AppCompAssignment, 0)
 }
 
 
@@ -81,7 +81,7 @@ func (opt *BaseScheduler) PrintState() {
     }
 }
 
-func (opt *BaseScheduler) VerifyFit(assignment map[string]map[string]string, app Application, comp Component) (bool, error) {
+func (opt *BaseScheduler) VerifyFit(assignment AppCompAssignment, app Application, comp Component) (bool, error) {
     appDeployment, exists := assignment[app.AppId]
     
     if !exists {
@@ -115,12 +115,12 @@ func (opt *BaseScheduler) VerifyFit(assignment map[string]map[string]string, app
     return true, nil
 }
 
-func (opt *BaseScheduler) CopyState() (map[string]Node, map[string]map[string]Route, map[string]map[string]*LinkBandwidth){
-    oldState := make(map[string]Node, 0)
+func (opt *BaseScheduler) CopyState() (NodeMap, RouteMap, LinkMap){
+    oldState := make(NodeMap, 0)
     for nodeId, state := range opt.Nodes{
         oldState[nodeId] = state
     }
-    oldLinks := make(map[string]map[string]*LinkBandwidth, 0)
+    oldLinks := make(LinkMap, 0)
     for src, dstLink := range opt.Links{
         _, exists := oldLinks[src]
         if !exists {
@@ -132,7 +132,7 @@ func (opt *BaseScheduler) CopyState() (map[string]Node, map[string]map[string]Ro
 
         }
     }
-    oldRoutes := make(map[string]map[string]Route, 0)
+    oldRoutes := make(RouteMap, 0)
     for src, dstRoute := range opt.Routes{
         _, exists := oldRoutes[src]
         if !exists{
@@ -153,10 +153,10 @@ func (opt *BaseScheduler) CopyState() (map[string]Node, map[string]map[string]Ro
     return oldState, oldRoutes, oldLinks
 }
 
-func (opt *BaseScheduler) ResetState(nodes map[string]Node, routes map[string]map[string]Route, links map[string]map[string]*LinkBandwidth) {
+func (opt *BaseScheduler) ResetState(nodes NodeMap, routes RouteMap, links LinkMap) {
     opt.Nodes = nodes
-    opt.Links = make(map[string]map[string]*LinkBandwidth, 0)
-    opt.Routes = make(map[string]map[string]Route, 0)
+    opt.Links = make(LinkMap, 0)
+    opt.Routes = make(RouteMap, 0)
     for src, dstLink := range links {
         _, exists := opt.Links[src]
         if !exists {

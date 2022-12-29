@@ -1,28 +1,28 @@
 package meshscheduler
 import ("github.com/golang/glog"
         )
-
 type Node struct {
     NodeId              string
     CpuCapacity         int
     CpuInUse            int
     MemoryCapacity      int
     MemoryInUse         int
-    BandwidthCapacity   map[string]int  // bw to destination node available
-    BandwidthInUse      map[string]int
 }
+
+type ComponentBw        map[string]int                  // bw to other component needed
+type ComponentMap       map[string]Component            // component name -> component map
 
 type Component struct {
     ComponentId         string
     Cpu                 int
     Memory              int
-    Bandwidth           map[string]int  // bw to other component needed
+    Bandwidth           ComponentBw
     TotalBw             int
 }
 
 type Application struct {
     AppId               string
-    Components          map[string]Component   // component name to requirements
+    Components          ComponentMap   
 }
 
 
@@ -41,10 +41,13 @@ type Route struct {
     PathBw              []*LinkBandwidth
 }
 
+type NodeMap            map[string]Node                         // node id -> node map
+type RouteMap           map[string]map[string]Route             // src-> dst -> Route 
+type AppCompAssignment  map[string]map[string]string            // app id -> component id -> node id
+type LinkMap            map[string]map[string]*LinkBandwidth    // src -> dst -> Link
+type DeploymentStateMap map[string]string                       // app -> deployment status
+
 func (r *Route) FindBottleneckBw() (int, *LinkBandwidth) {
-    //if len(r.PathBw) == 0{
-    //    return r.BwCapacity - r.BwInUse, &LinkBandwidth{Src:r.Src, Dst: r.Dst, BwInUse: r.BwInUse, BwCapacity:r.BwCapacity}
-    //}
     minBw := r.PathBw[0].BwCapacity - r.PathBw[0].BwInUse 
     minBwIdx := 0
     for i := 1; i < len(r.PathBw); i++{

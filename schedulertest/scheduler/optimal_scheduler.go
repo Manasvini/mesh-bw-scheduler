@@ -15,7 +15,7 @@ func NewOptimalScheduler()(*OptimalScheduler) {
     return &OptimalScheduler{}
 }
 
-func (opt *OptimalScheduler) InitScheduler(nodes map[string]Node, routes map[string]map[string]Route, links map[string]map[string]*LinkBandwidth) {
+func (opt *OptimalScheduler) InitScheduler(nodes NodeMap, routes RouteMap, links LinkMap) {
    
     opt.ResetState( nodes, routes, links)
     for src, dstPath := range opt.Routes {
@@ -27,10 +27,10 @@ func (opt *OptimalScheduler) InitScheduler(nodes map[string]Node, routes map[str
             
         }
     }
-    opt.Assignments = make(map[string]map[string]string, 0)
+    opt.Assignments = make(AppCompAssignment, 0)
 }
 
-func (opt *OptimalScheduler) MakeAssignment(app Application, component Component, currentAssignment map[string]map[string]string, nodeId string) (error,  map[string]map[string]string){
+func (opt *OptimalScheduler) MakeAssignment(app Application, component Component, currentAssignment AppCompAssignment, nodeId string) (error,  AppCompAssignment){
     currentAssignment[app.AppId][component.ComponentId] = nodeId
     possible, err := opt.VerifyFit(currentAssignment, app, component)
     oldState, oldRoutes, oldLinks := opt.CopyState()
@@ -157,7 +157,7 @@ func (opt *OptimalScheduler) MakeAssignment(app Application, component Component
     return err, currentAssignment
 }
 
-func (opt *OptimalScheduler) SchedulerHelper(app Application, currentAssignment map[string]map[string]string) bool{
+func (opt *OptimalScheduler) SchedulerHelper(app Application, currentAssignment AppCompAssignment) bool{
     glog.Info("current assignment\n")
     appAssignment, _ :=  currentAssignment[app.AppId]
     for comp, nodeId := range appAssignment{
@@ -201,7 +201,7 @@ func (opt *OptimalScheduler) SchedulerHelper(app Application, currentAssignment 
 }
 
 func (opt *OptimalScheduler) Schedule(app Application) {
-    currentAssignment := make(map[string]map[string]string, 0)
+    currentAssignment := make(AppCompAssignment, 0)
     currentAssignment[app.AppId] = make(map[string]string, 0)
     oldState, oldRoutes, oldLinks := opt.CopyState()
     possible := opt.SchedulerHelper(app, currentAssignment)
