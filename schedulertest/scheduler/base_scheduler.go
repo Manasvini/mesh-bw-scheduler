@@ -36,7 +36,7 @@ func (opt *BaseScheduler) LogAssignments() {
     } 
 }
 func (opt *BaseScheduler) PrintAssignments() {
-    fmt.Println("\nAppId,ComponentId,NodeId\n")
+    fmt.Println("\nAppId,ComponentId,NodeId")
     for app, comps := range opt.Assignments {
         for comp, nodeId := range comps {
             fmt.Printf("%s,%s,%s\n", app, comp, nodeId)
@@ -163,7 +163,6 @@ func (opt *BaseScheduler) ResetState(nodes NodeMap, routes RouteMap, links LinkM
             opt.Links[src] = make(map[string]*LinkBandwidth, 0)
         }
         for dst, link := range dstLink {
-            glog.Infof("Link src = %s dst = %s bw in use = %d\n", src, dst, link.BwInUse)
             opt.Links[src][dst] = &LinkBandwidth{Src:(*link).Src, Dst:(*link).Dst, BwCapacity:(*link).BwCapacity, BwInUse:(*link).BwInUse}
         }
     }

@@ -34,11 +34,6 @@ func (opt *OptimalScheduler) MakeAssignment(app Application, component Component
     currentAssignment[app.AppId][component.ComponentId] = nodeId
     possible, err := opt.VerifyFit(currentAssignment, app, component)
     oldState, oldRoutes, oldLinks := opt.CopyState()
-    for src, dstLink := range oldLinks {
-        for dst, link := range dstLink {
-            glog.Infof("old link src = %s dst = %s bw in use = %d ol addr link %p addr %p\n", src, dst, link.BwInUse, link, opt.Links[src][dst])
-        }
-    }
     glog.Infof("Test comp %s on node %s\n", component.ComponentId, nodeId)
     if possible == true {
         n := opt.Nodes[nodeId] 
@@ -58,8 +53,6 @@ func (opt *OptimalScheduler) MakeAssignment(app Application, component Component
                     return &InsufficientResourceError{ResourceType:"PathBandwidth", NodeId:depNode  +":" + nodeId}, currentAssignment
                 }
                 bottleneckBw, bottleneckLink := path.FindBottleneckBw()
-                glog.Infof("check assignment for %s to %s  with dep on %s bw = %d available = %d\n", component.ComponentId, nodeId, depNode, bw, bottleneckBw) 
-                glog.Infof("bottleneck link is %s to %s\n", bottleneckLink.Src, bottleneckLink.Dst)
                 if bottleneckBw  > bw {
                     bottleneckLink.BwInUse += bw
                     path.SetPathBw(bottleneckLink.BwInUse)
@@ -79,7 +72,6 @@ func (opt *OptimalScheduler) MakeAssignment(app Application, component Component
                     
                     opt.UpdatePaths()  
                     
-                    glog.Infof("rev link %s to %s bw in use =%d\n", reverseLink.Src, reverseLink.Dst,  (*(opt.Links[bottleneckLink.Dst][bottleneckLink.Src])).BwInUse)
 
                 } else {
                     delete(currentAssignment[app.AppId], component.ComponentId)
@@ -92,12 +84,6 @@ func (opt *OptimalScheduler) MakeAssignment(app Application, component Component
 
         }
         glog.Infof("Updated %s to all deps", component.ComponentId)
-        opt.LogState()
-        for src, dstLink := range oldLinks{
-            for dst, link := range dstLink {
-                glog.Infof("Link src = %s dst = %s bw in use = %d ol addr %p link addr %p \n", src, dst, link.BwInUse, link, opt.Links[src][dst])
-            }
-        }
 
         // can all the already scheduled dependencies to this component be satisfied by this node
         appAssignment := currentAssignment[app.AppId]
@@ -113,7 +99,6 @@ func (opt *OptimalScheduler) MakeAssignment(app Application, component Component
                     path, exists := opt.Routes[nId][nodeId]
                     glog.Infof("src = %s dst = %s bw in use =%d\n", nId, nodeId, path.BwInUse)
                     if !exists {
-                        glog.Infof("No path from %s to %s, reset staate\n", nId, nodeId)
                         delete(currentAssignment[app.AppId], component.ComponentId)
                         opt.ResetState(oldState, oldRoutes, oldLinks)
                         opt.UpdatePaths()
@@ -129,8 +114,6 @@ func (opt *OptimalScheduler) MakeAssignment(app Application, component Component
                         return &InsufficientResourceError{ResourceType:"PathBandwidth", NodeId:depNode  +":" + nodeId}, currentAssignment
  
                     }
-                    glog.Infof("check bw for comps %s to %s  on nodes %s and %s\n", compId, component.ComponentId, nId,nodeId ) 
-                    glog.Infof("bottleneck link is %s to %s bw = %d\n", bottleneckLink.Src, bottleneckLink.Dst, bottleneckBw)
                     bottleneckLink.BwInUse += depCompBw
                     path.SetPathBw(bottleneckLink.BwInUse)
                     opt.Links[bottleneckLink.Src][bottleneckLink.Dst] = bottleneckLink
@@ -151,7 +134,6 @@ func (opt *OptimalScheduler) MakeAssignment(app Application, component Component
         }
         opt.Nodes[nodeId] = n
         glog.Info("added assignment")
-        opt.LogState()
         return nil, currentAssignment
     }
     return err, currentAssignment
@@ -160,9 +142,6 @@ func (opt *OptimalScheduler) MakeAssignment(app Application, component Component
 func (opt *OptimalScheduler) SchedulerHelper(app Application, currentAssignment AppCompAssignment) bool{
     glog.Info("current assignment\n")
     appAssignment, _ :=  currentAssignment[app.AppId]
-    for comp, nodeId := range appAssignment{
-        glog.Infof("comp = %s node = %s\n", comp, nodeId)
-    }
     if len(appAssignment) == len(app.Components){
             opt.Assignments[app.AppId] = make(map[string]string, 0)
             opt.Assignments[app.AppId] = currentAssignment[app.AppId]
@@ -176,9 +155,6 @@ func (opt *OptimalScheduler) SchedulerHelper(app Application, currentAssignment 
         }
         for nodeId, _ := range opt.Nodes {
             oldState, oldRoutes, oldLinks := opt.CopyState()
-            opt.LogState()
-            opt.LogAssignments()
-            glog.Infof("processing comp %s on node %s \n", comp.ComponentId, nodeId)
             err, assignment := opt.MakeAssignment(app, comp, currentAssignment, nodeId)
             if err != nil {
                 glog.Info(err)
@@ -186,8 +162,6 @@ func (opt *OptimalScheduler) SchedulerHelper(app Application, currentAssignment 
             if err == nil {
                 currentAssignment = assignment
             } 
-            glog.Info("After assignment, state is")
-            opt.LogState()
             possible := opt.SchedulerHelper(app, currentAssignment)
             if !possible {
                 opt.ResetState(oldState, oldRoutes, oldLinks)
@@ -207,7 +181,5 @@ func (opt *OptimalScheduler) Schedule(app Application) {
     if !possible {
         opt.ResetState(oldState, oldRoutes, oldLinks)
     } 
-    opt.PrintState()
-    opt.PrintAssignments()
 }
 

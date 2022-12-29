@@ -69,7 +69,7 @@ func readApp(appFilename string, depsFilename string) meshscheduler.Application 
     return app
 }
 
-func readNodes(filename string) map[string]meshscheduler.Node {
+func readNodes(filename string) meshscheduler.NodeMap {
 	in, err := os.Open(filename)
     if err != nil {
         panic(err)
@@ -82,7 +82,7 @@ func readNodes(filename string) map[string]meshscheduler.Node {
         panic(err)
     }
 
-	nodesMap := make(map[string]meshscheduler.Node, 0)
+	nodesMap := make(meshscheduler.NodeMap, 0)
 	for _, n := range nodes {
 		node := meshscheduler.Node{NodeId:n.NodeId, CpuCapacity:n.Cpu, MemoryCapacity: n.Memory, CpuInUse: 0, MemoryInUse: 0}
 		nodesMap[n.NodeId] = node
@@ -90,7 +90,7 @@ func readNodes(filename string) map[string]meshscheduler.Node {
 	return nodesMap
 }
 
-func readPaths(filename string, linksMap map[string]map[string]*meshscheduler.LinkBandwidth) map[string]map[string]meshscheduler.Route {
+func readPaths(filename string, linksMap meshscheduler.LinkMap) meshscheduler.RouteMap {
 	in, err := os.Open(filename)
     if err != nil {
         panic(err)
@@ -103,7 +103,7 @@ func readPaths(filename string, linksMap map[string]map[string]*meshscheduler.Li
         panic(err)
     }
 
-	pathsMap := make(map[string]map[string]meshscheduler.Route, 0)
+	pathsMap := make(meshscheduler.RouteMap, 0)
 	
 	for src, dstLink := range linksMap {
 		for dst, link := range dstLink {
@@ -136,6 +136,7 @@ func readPaths(filename string, linksMap map[string]map[string]*meshscheduler.Li
 			    r.PathBw = append(r.PathBw, link)
 		    }
         }
+        //fmt.Printf("src %s dst %s p len = %d hop = %s-%s\n", p.Src, p.Dst, len(r.PathBw), r.PathBw[0].Src, r.PathBw[0].Dst)
         pathsMap[p.Src][p.Dst]=r
 	
 	}
@@ -164,9 +165,19 @@ func readPaths(filename string, linksMap map[string]map[string]*meshscheduler.Li
 					continue
 				}
 				link, linkExists := linksMap[path.PathBw[hoplen-1].Dst][dst]
+                //fmt.Printf("src is %s dst is %s last hop = %s-%s link exists = %d\n", src, dst, linkExists, path.PathBw[hoplen-1].Src, path.PathBw[hoplen-1].Dst)
 				if  linkExists {
 					path.PathBw = append(path.PathBw, link)
                     pathsMap[src][dst] =path
+                } else {
+                    //fmt.Printf("check if path from %s to %s is complete\n", path.PathBw[hoplen-1].Dst, dst)
+                    _, exists := completedPaths[path.PathBw[hoplen-1].Dst][dst]
+                    if exists {
+                        completePath := pathsMap[path.PathBw[hoplen-1].Dst][dst].PathBw
+                        //fmt.Printf("src = %s dst = %s path from = %s dst = %s is complete\n", src, dst, completePath[0].Dst, completePath[len(completePath)-1].Dst) 
+                        path.PathBw = append(path.PathBw, completePath...)
+                        pathsMap[src][dst] = path
+                    }
                 }
 			}	
 			
@@ -183,7 +194,7 @@ func readPaths(filename string, linksMap map[string]map[string]*meshscheduler.Li
 
 }
 
-func readLinks(filename string) map[string]map[string]*meshscheduler.LinkBandwidth {
+func readLinks(filename string) meshscheduler.LinkMap {
 	in, err := os.Open(filename)
     if err != nil {
         panic(err)
@@ -196,7 +207,7 @@ func readLinks(filename string) map[string]map[string]*meshscheduler.LinkBandwid
         panic(err)
     }
 
-	linksMap := make(map[string]map[string]*meshscheduler.LinkBandwidth, 0)
+	linksMap := make(meshscheduler.LinkMap, 0)
 	for _, l := range links {
 		link := &meshscheduler.LinkBandwidth{Src:l.Src, Dst:l.Dst, BwCapacity:l.Bw, BwInUse:0}
 		_, exists := linksMap[l.Src]
@@ -227,5 +238,8 @@ func main() {
     s := time.Now()
     opt.Schedule(app)
     dur := time.Since(s)
+    opt.PrintState()
+    opt.PrintAssignments()
     fmt.Printf("Scheduling took %.3f ms to execute", float64(dur.Microseconds())/1000.0)
+ 
 }
