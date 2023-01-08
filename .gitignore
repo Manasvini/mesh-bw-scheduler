@@ -2,12 +2,13 @@ helm/*
 k3s
 kompose
 prometheus-client/main
-
+*.sw*
 /*.html
 
 .DS_Store
 containers/custom_scheduler/custom_scheduler
 
 containers/temp
-
 *.pyc
+*log*
+*INFO*

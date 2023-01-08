@@ -1,0 +1,6 @@
+src,dst,bandwidth
+c1,c2,1
+c2,c3,2
+c3,c4,8
+c4,c1,1
+c1,c3,1
