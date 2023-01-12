@@ -4,18 +4,19 @@ import (
     "fmt"
     "github.com/golang/glog"
     "strconv"
+    "sort"
 )
 
-type OptimalScheduler struct {
+type MaxBwScheduler struct {
     BaseScheduler
 }
 
 
-func NewOptimalScheduler() *OptimalScheduler {
-    return &OptimalScheduler{}
+func NewMaxBwScheduler()(*MaxBwScheduler) {
+    return &MaxBwScheduler{}
 }
 
-func (opt *OptimalScheduler) InitScheduler(nodes NodeMap, routes RouteMap, links LinkMap) {
+func (opt *MaxBwScheduler) InitScheduler(nodes NodeMap, routes RouteMap, links LinkMap) {
    
     opt.ResetState( nodes, routes, links)
     for src, dstPath := range opt.Routes {
@@ -30,7 +31,7 @@ func (opt *OptimalScheduler) InitScheduler(nodes NodeMap, routes RouteMap, links
     opt.Assignments = make(AppCompAssignment, 0)
 }
 
-func (opt *OptimalScheduler) CheckFit(comp Component, nodeId string, nodes NodeMap, links LinkMap) (bool, error) {
+func (opt *MaxBwScheduler) CheckFit(comp Component, nodeId string, nodes NodeMap, links LinkMap) (bool, error) {
     nodeState, exists := nodes[nodeId]
     //glog.Infof("node %s cpu available %d, comp %s needs %d\n", nodeId,  nodeState.CpuCapacity -nodeState.CpuInUse, comp.ComponentId, comp.Cpu)
     //glog.Infof("node %s memory available %d, comd %s needs %d\n", nodeId, nodeState.MemoryCapacity -nodeState.MemoryInUse, comp.ComponentId, comp.Memory)
@@ -62,12 +63,14 @@ func (opt *OptimalScheduler) CheckFit(comp Component, nodeId string, nodes NodeM
     return true, nil
 }
 
-func (opt *OptimalScheduler) SchedulerHelper(app Application, currentAssignment AppCompAssignment, nodes NodeMap, routes RouteMap, links LinkMap) (bool, AppCompAssignment, NodeMap, LinkMap, RouteMap){
+func (opt *MaxBwScheduler) SchedulerHelper(app Application, currentAssignment AppCompAssignment, nodes NodeMap, routes RouteMap, links LinkMap) (bool, AppCompAssignment, NodeMap, LinkMap, RouteMap){
     appAssignment, _ := currentAssignment[app.AppId]
     if len(appAssignment) == len(app.Components){
         return true, deepCopy(currentAssignment), opt.CopyNodes(nodes), links, routes
     }
-     for compId, _ := range app.Components {
+    nodeOrder := opt.GetNodeOrder(nodes, links)
+    compOrder := opt.GetCompOrder(app.Components)
+     for _, compId := range compOrder{
         oldRoutes, oldLinks := opt.CopyRoutes(routes, links)
         oldNodes := opt.CopyNodes(nodes)
         comp, _ := app.Components[compId] 
@@ -75,7 +78,7 @@ func (opt *OptimalScheduler) SchedulerHelper(app Application, currentAssignment 
         if exists {
             continue
         }
-        for nodeId, _ := range nodes {
+        for _, nodeId := range nodeOrder {
             glog.Infof("node Id %s comp id %s cur assignments %d\n", nodeId, compId, len(appAssignment))
             _, exists := currentAssignment[app.AppId][compId]
             if exists {
@@ -107,7 +110,7 @@ func (opt *OptimalScheduler) SchedulerHelper(app Application, currentAssignment 
     }
     return false, currentAssignment, nodes, links, routes
 }
-func (opt *OptimalScheduler) MakeAssignment(nodeId string, componentId string, app Application, nodes NodeMap, routes RouteMap, links LinkMap, assignment AppCompAssignment) (error,  NodeMap, LinkMap, RouteMap){
+func (opt *MaxBwScheduler) MakeAssignment(nodeId string, componentId string, app Application, nodes NodeMap, routes RouteMap, links LinkMap, assignment AppCompAssignment) (error,  NodeMap, LinkMap, RouteMap){
     component, _ := app.Components[componentId]
     tmpnodes := opt.CopyNodes(nodes)
     tmproutes, tmplinks := opt.CopyRoutes(routes, links)
@@ -194,7 +197,72 @@ func (opt *OptimalScheduler) MakeAssignment(nodeId string, componentId string, a
     return nil, nodes, links, routes
 }
 
-func (opt *OptimalScheduler) Schedule(app Application) {
+func (opt *MaxBwScheduler) GetCompOrder(comps map[string]Component)[]string{
+    type CompTotalBw struct{
+        compId string
+        bw      float64
+        degree int
+    }
+    compTotalBw := make([]CompTotalBw, 0)
+    for compId, comp := range comps {
+        bwSum := 0.0
+        for _, bw := range comp.Bandwidth {
+           bwSum += bw
+        }
+    
+        compTotalBw = append(compTotalBw, CompTotalBw{compId:compId, bw: bwSum, degree:len(comp.Bandwidth)})
+    }
+    sort.Slice(compTotalBw, func(i int, j int) bool{
+       if compTotalBw[i].degree >= compTotalBw[j].degree{
+            return true
+       }
+       //if compTotalBw[i].bw == compTotalBw[j].bw{
+       //     return compTotalBw[i].compId > compTotalBw[j].compId
+       //} 
+        return compTotalBw[i].bw >= compTotalBw[j].bw
+    })
+    compOrder := make([]string, 0)
+    for _, compBw := range compTotalBw{
+        compOrder = append(compOrder, compBw.compId)
+    }
+    return compOrder
+}
+
+
+func (opt *MaxBwScheduler) GetNodeOrder(nodes NodeMap, links LinkMap)[]string{
+    type NodeTotalBw struct{
+        nodeId string
+        bw      float64
+        degree int
+    }
+    nodeTotalBw := make([]NodeTotalBw, 0)
+    for node, _ := range nodes {
+        bwSum := 0.0
+        for _, link := range links[node] {
+           bwSum += link.BwCapacity 
+        }
+        nodeTotalBw = append(nodeTotalBw, NodeTotalBw{nodeId:node, bw: bwSum, degree:len(links[node])})
+    }
+    sort.Slice(nodeTotalBw, func(i int, j int) bool{
+        if nodeTotalBw[i].degree >= nodeTotalBw[j].degree {
+            return true
+        }
+        //return false
+        //if nodeTotalBw[i].degree >= nodeTotalBw[j].degree{
+        //    return true
+        //}
+        //    return nodeTotalBw[i].nodeId > nodeTotalBw[j].nodeId
+        //}
+        return false
+    })
+    nodeOrder := make([]string, 0)
+    for _, nodeBw := range nodeTotalBw{
+        nodeOrder = append(nodeOrder, nodeBw.nodeId)
+    }
+    return nodeOrder
+}
+
+func (opt *MaxBwScheduler) Schedule(app Application) {
     currentAssignment := make(AppCompAssignment, 0)
     currentAssignment[app.AppId] = make(map[string]string, 0)
     oldState, oldRoutes, oldLinks := opt.CopyState()
