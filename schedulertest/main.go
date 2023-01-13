@@ -246,7 +246,7 @@ func main() {
 	s := time.Now()
 	opt.Schedule(app)
 	dur := time.Since(s)
-	opt.PrintState()
+	//opt.PrintState()
 	opt.PrintAssignments()
 	fmt.Printf("Scheduling took %.3f ms to execute\n", float64(dur.Microseconds())/1000.0)
 

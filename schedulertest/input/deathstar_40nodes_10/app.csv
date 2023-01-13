@@ -1,0 +1,11 @@
+name,cpu,memory
+nginx-web-server,1,2000
+unique-id-service,1,1000
+movie-id-service,1,1000
+text-service,1,1000
+rating-service,1,1000
+rating-redis,1,1000
+compose-review-service,1,1000
+compose-review-memcached,1,1000
+review-storage-service,1,1000
+review-storage-mongodb,4,4000

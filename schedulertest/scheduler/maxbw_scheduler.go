@@ -216,9 +216,6 @@ func (opt *MaxBwScheduler) GetCompOrder(comps map[string]Component)[]string{
        if compTotalBw[i].degree >= compTotalBw[j].degree{
             return true
        }
-       //if compTotalBw[i].bw == compTotalBw[j].bw{
-       //     return compTotalBw[i].compId > compTotalBw[j].compId
-       //} 
         return compTotalBw[i].bw >= compTotalBw[j].bw
     })
     compOrder := make([]string, 0)
@@ -247,12 +244,6 @@ func (opt *MaxBwScheduler) GetNodeOrder(nodes NodeMap, links LinkMap)[]string{
         if nodeTotalBw[i].degree >= nodeTotalBw[j].degree {
             return true
         }
-        //return false
-        //if nodeTotalBw[i].degree >= nodeTotalBw[j].degree{
-        //    return true
-        //}
-        //    return nodeTotalBw[i].nodeId > nodeTotalBw[j].nodeId
-        //}
         return false
     })
     nodeOrder := make([]string, 0)

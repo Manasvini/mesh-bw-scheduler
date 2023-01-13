@@ -15,7 +15,7 @@ def create_routing_table(adjList, srcNode, dstNode):
         curnode = queue.pop(0)
         visited[curnode] = True
         for node in adjList[curnode]:
-            if not visited[node] and node != curnode and node not in queue:
+            if not visited[node] and node != curnode and node not in queue :
                 queue.append(node)
                 paths[node] = paths[curnode] + [curnode] 
         if visited[dstNode] == True:
@@ -30,15 +30,20 @@ def create_routing_table(adjList, srcNode, dstNode):
     return routing_table
 
 def read_json(filename: str):
+    dataFinal = {}
     with open(filename) as ifh:
         data = json.load(ifh)
-    return data
+        for d in data:
+            if len(data[d]) > 0:
+                dataFinal[d] = data[d]
+    return dataFinal
 
 def save_links(data, filename):
     links = []
     for src in data:
         for dst in data[src]: 
-            links.append({'src':src, 'dst': dst, 'bw_mb':data[src][dst]})
+            links.append({'src':src, 'dst': dst, 'bw_mbps':data[src][dst]})
+        links.append({'src':src, 'dst':src, 'bw_mbps':1000})
     df = pd.DataFrame(links)
     df.to_csv(filename, index=False)
 
@@ -56,7 +61,9 @@ def save_paths(links, filename):
 def save_nodes(links, cpu, memory, filename):
     nodes = []
     for node in links:
-        nodes.append({'nodeId':node, 'cpu':cpu, 'memory_mn':memory})
+        if len(links[node]) == 0:
+            continue 
+        nodes.append({'nodeId':node, 'cpu':cpu, 'memory_mb':memory})
     df = pd.DataFrame(nodes)
     df.to_csv(filename, index=False)
 

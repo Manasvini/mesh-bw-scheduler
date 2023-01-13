@@ -1,0 +1,6 @@
+name,cpu,memory
+nginx-web-server,1,2000
+jaeger,1,1000
+text-service,1,1000
+compose-review-service,1,1000
+compose-review-memcached,1,1000

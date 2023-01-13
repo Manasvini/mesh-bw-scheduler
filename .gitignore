@@ -4,7 +4,7 @@ kompose
 prometheus-client/main
 *.sw*
 /*.html
-
+qmp_*.json
 .DS_Store
 containers/custom_scheduler/custom_scheduler
 

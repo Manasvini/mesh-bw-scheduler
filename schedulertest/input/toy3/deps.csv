@@ -1,0 +1,4 @@
+src,dst,bw_mbps
+c1,c2,5
+c2,c3,5
+c3,c1,5

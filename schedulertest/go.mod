@@ -2,7 +2,7 @@ module github.gatech.edu/cs-epl/mesh-bw-scheduler/schedulertest
 
 go 1.19
 
-replace github.gatech.edu/cs-epl/mesh-bw-scheduler/meshscheduler => /home/epl/projects/mesh/mesh-bw-scheduler/schedulertest/scheduler
+replace github.gatech.edu/cs-epl/mesh-bw-scheduler/meshscheduler => /home/manasvini/projects/westside/mesh/mesh-bw-scheduler/schedulertest/scheduler
 
 require (
 	github.com/gocarina/gocsv v0.0.0-20221216233619-1fea7ae8d380 // indirect
