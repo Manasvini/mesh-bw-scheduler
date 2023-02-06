@@ -171,11 +171,11 @@ func readPaths(filename string, linksMap meshscheduler.LinkMap) meshscheduler.Ro
 					path.PathBw = append(path.PathBw, link)
 					pathsMap[src][dst] = path
 				} else {
-					fmt.Printf("check if path from %s to %s is complete\n", path.PathBw[hoplen-1].Dst, dst)
+					//fmt.Printf("check if path from %s to %s is complete\n", path.PathBw[hoplen-1].Dst, dst)
 					_, exists := completedPaths[path.PathBw[hoplen-1].Dst][dst]
 					if exists {
 						completePath := pathsMap[path.PathBw[hoplen-1].Dst][dst].PathBw
-						fmt.Printf("src = %s dst = %s path from = %s dst = %s is complete\n", src, dst, completePath[0].Dst, completePath[len(completePath)-1].Dst)
+						//fmt.Printf("src = %s dst = %s path from = %s dst = %s is complete\n", src, dst, completePath[0].Dst, completePath[len(completePath)-1].Dst)
 						path.PathBw = append(path.PathBw, completePath...)
 						pathsMap[src][dst] = path
 					}
@@ -241,6 +241,8 @@ func main() {
 		opt = meshscheduler.NewMaxBwScheduler()
 	} else if *scheduler == "simannealing"{
         opt = meshscheduler.NewSimulatedAnnealingScheduler()
+    } else if *scheduler == "tabu"{
+        opt = meshscheduler.NewTabuSearchScheduler()
     }
 	opt.InitScheduler(nodes, paths, links)
 	s := time.Now()

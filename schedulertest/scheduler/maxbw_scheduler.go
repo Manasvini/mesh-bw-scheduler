@@ -213,10 +213,10 @@ func (opt *MaxBwScheduler) GetCompOrder(comps map[string]Component)[]string{
         compTotalBw = append(compTotalBw, CompTotalBw{compId:compId, bw: bwSum, degree:len(comp.Bandwidth)})
     }
     sort.Slice(compTotalBw, func(i int, j int) bool{
-       if compTotalBw[i].degree >= compTotalBw[j].degree{
+       if compTotalBw[i].bw >= compTotalBw[j].bw{
             return true
        }
-        return compTotalBw[i].bw >= compTotalBw[j].bw
+        return false
     })
     compOrder := make([]string, 0)
     for _, compBw := range compTotalBw{
@@ -241,9 +241,13 @@ func (opt *MaxBwScheduler) GetNodeOrder(nodes NodeMap, links LinkMap)[]string{
         nodeTotalBw = append(nodeTotalBw, NodeTotalBw{nodeId:node, bw: bwSum, degree:len(links[node])})
     }
     sort.Slice(nodeTotalBw, func(i int, j int) bool{
-        if nodeTotalBw[i].degree >= nodeTotalBw[j].degree {
+        if nodeTotalBw[i].bw > nodeTotalBw[j].bw {
             return true
-        }
+        } else if nodeTotalBw[i].degree > nodeTotalBw[j].degree && nodeTotalBw[i].bw == nodeTotalBw[j].bw{
+            return true
+        } else if nodeTotalBw[i].bw == nodeTotalBw[j].bw{
+            return nodeTotalBw[i].nodeId > nodeTotalBw[j].nodeId
+        } 
         return false
     })
     nodeOrder := make([]string, 0)

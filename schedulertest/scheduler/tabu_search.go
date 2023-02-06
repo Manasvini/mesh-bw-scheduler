@@ -6,20 +6,18 @@ import (
     "strconv"
     "math/rand"
     "time"
-    "math"
-    "reflect"
 )
 
-type SimulatedAnnealingScheduler struct {
+type TabuSearchScheduler struct {
     BaseScheduler
 }
 
 
-func NewSimulatedAnnealingScheduler()(*SimulatedAnnealingScheduler) {
-    return &SimulatedAnnealingScheduler{}
+func NewTabuSearchScheduler()(*TabuSearchScheduler) {
+    return &TabuSearchScheduler{}
 }
 
-func (opt *SimulatedAnnealingScheduler) InitScheduler(nodes NodeMap, routes RouteMap, links LinkMap) {
+func (opt *TabuSearchScheduler) InitScheduler(nodes NodeMap, routes RouteMap, links LinkMap) {
    
     opt.ResetState( nodes, routes, links)
     for src, dstPath := range opt.Routes {
@@ -34,7 +32,7 @@ func (opt *SimulatedAnnealingScheduler) InitScheduler(nodes NodeMap, routes Rout
     opt.Assignments = make(AppCompAssignment, 0)
 }
 
-func (opt *SimulatedAnnealingScheduler) CheckFit(comp Component, nodeId string, nodes NodeMap, links LinkMap) (bool, error) {
+func (opt *TabuSearchScheduler) CheckFit(comp Component, nodeId string, nodes NodeMap, links LinkMap) (bool, error) {
     nodeState, exists := nodes[nodeId]
     //glog.Infof("node %s cpu available %d, comp %s needs %d\n", nodeId,  nodeState.CpuCapacity -nodeState.CpuInUse, comp.ComponentId, comp.Cpu)
     //glog.Infof("node %s memory available %d, comd %s needs %d\n", nodeId, nodeState.MemoryCapacity -nodeState.MemoryInUse, comp.ComponentId, comp.Memory)
@@ -66,7 +64,7 @@ func (opt *SimulatedAnnealingScheduler) CheckFit(comp Component, nodeId string, 
     return true, nil
 }
 
-func (opt *SimulatedAnnealingScheduler) makeInitialAssignment(app Application, nodes NodeMap, links LinkMap) AppCompAssignment{
+func (opt *TabuSearchScheduler) makeInitialAssignment(app Application, nodes NodeMap, links LinkMap) AppCompAssignment{
     //s := rand.NewSource(time.Now().Unix())
     //r := rand.New(s) // initialize local pseudorandom generator 
 
@@ -77,7 +75,7 @@ func (opt *SimulatedAnnealingScheduler) makeInitialAssignment(app Application, n
     idx := 0
     for i, comp := range compOrder{
         assignment[app.AppId][comp.compId] =  nodeList[idx].nodeId
-        glog.Infof("assign comp %s to node %s \n", comp.compId, nodeList[idx].nodeId)
+        glog.Infof("assign comp %s to node %s idx=%d\n", comp.compId, nodeList[idx].nodeId, idx)
         nodeList[idx].bw -= compOrder[i].bw
         if nodeList[idx].bw <= 0{
             idx += 1
@@ -89,7 +87,7 @@ func (opt *SimulatedAnnealingScheduler) makeInitialAssignment(app Application, n
     return assignment
 }
 
-func (opt *SimulatedAnnealingScheduler) computeCostUtility(app Application, assignment AppCompAssignment, nodes NodeMap, links LinkMap, routes RouteMap) (float64, NodeMap, LinkMap, RouteMap){
+func (opt *TabuSearchScheduler) computeCostUtility(app Application, assignment AppCompAssignment, nodes NodeMap, links LinkMap, routes RouteMap) (float64, NodeMap, LinkMap, RouteMap){
     overconsumptionCpu := 0.0 
     overconsumptionMem := 0.0
     overconsumptionBw := 0.0
@@ -118,7 +116,7 @@ func (opt *SimulatedAnnealingScheduler) computeCostUtility(app Application, assi
                 } else{
                     bwOversum += 100.0 *(route.BwInUse + bw - route.BwCapacity) / float64(route.BwCapacity)
                 }
-                glog.Infof("overcons bw = %f comp = %s dep=%s bw needed=%f\n", bwOversum, compid, dep, bw)
+                glog.Infof("overcons bw = %f comp = %s dep=%s bw needed=%f avail=%f\n", bwOversum, compid, dep, bw, route.BwCapacity)
             }
             if len(app.Components[compid].Bandwidth) > 0{
                 bwOversum /= float64(len(app.Components[compid].Bandwidth))
@@ -134,149 +132,128 @@ func (opt *SimulatedAnnealingScheduler) computeCostUtility(app Application, assi
             glog.Infof("assigned comp %s to node %s\n", compid, nodeid)
             glog.Infof("using node %s cpu=%d mem=%d\n", nodeid, nodes[nodeid].CpuInUse, nodes[nodeid].MemoryInUse)
         }
-        
+
     }
     glog.Infof("cpu = %f mem=%f bw=%f\n", overconsumptionCpu, overconsumptionMem, overconsumptionBw)
     return (overconsumptionBw + overconsumptionMem + overconsumptionCpu)/(3.0 ), nodes, links, routes
 }
 
-func (opt *SimulatedAnnealingScheduler) computeCost(app Application, assignment AppCompAssignment, nodes NodeMap, links LinkMap, routes RouteMap) (float64, NodeMap, LinkMap, RouteMap){
-    violatedComps := make([]string, 0)
-    scheduledComps := make([]string, 0)
-    for compId, nodeId := range assignment[app.AppId]{
-        _, err1 := opt.CheckFit(app.Components[compId], nodeId, nodes, links)
-        err2, newnodes, newlinks, newroutes := opt.MakeAssignment(nodeId, compId, app, nodes, routes, links, assignment)
-        if err1 != nil || err2 != nil{
-            violatedComps = append(violatedComps, compId)
-        } else{
-            scheduledComps = append(scheduledComps, compId)
+
+func (opt *TabuSearchScheduler) isTabuState(assignment AppCompAssignment, assignments []AppCompAssignment, appId string) bool{
+    for idx, assign := range assignments {
+        curAssign := assign[appId]
+        foundState := true
+        for node, comp := range curAssign {
+            newNode,  exists := assignment[appId][comp]
+            if !exists || newNode != node {
+               foundState =false
+                break
+            }
         }
-        nodes = newnodes
-        links, routes = newlinks, newroutes
+        if foundState == true {
+            glog.Infof("state %d is taboo", idx)
+            return true
+        }
     }
-    glog.Infof("scheduled=%d violated=%d\n", len(scheduledComps), len(violatedComps))
-    return float64(len(scheduledComps)), nodes, links, routes
+    return false
 }
 
-func (opt *SimulatedAnnealingScheduler) findNewState(app Application,  compId string, nodes NodeMap, links LinkMap) (string, error){
-    totalBwNeeded := 0.0
-    comp, _ := app.Components[compId]
-    for _, bw := range app.Components[compId].Bandwidth{
-        totalBwNeeded += bw
+func(opt *TabuSearchScheduler) findNeighbors(assignment AppCompAssignment, app Application, nodes NodeMap, links LinkMap) []AppCompAssignment{
+    tmpAssignment := deepCopy(assignment)
+    curAssignment, _ := tmpAssignment[app.AppId]
+    nodeSet := make(map[string]bool, 0)
+    // current node set
+    for _, node := range curAssignment{
+        nodeSet[node] = true
     }
-    assignNode := ""
-    nodeList := make([]string, 0)
-    for nodeId, _ := range nodes{
-        nodeList = append(nodeList, nodeId)
-    }
-    rand.Seed(time.Now().UnixNano())
-    rand.Shuffle(len(nodeList), func(i, j int) {
-        nodeList[i], nodeList[j] = nodeList[j], nodeList[i]
-    })
-    for _, nodeId := range nodeList{
-        node := nodes[nodeId]
-        totalAvailable := 0.0
-        for _, link := range links[nodeId]{
-            bwAvailable := link.BwCapacity - link.BwInUse
-            totalAvailable += bwAvailable
+    glog.Infof("finding new state")
+    // find new node to move some components to such that bw between current node with dependencies and new node is adequate
+    nodeOrder := opt.GetNodeOrder(nodes, links)
+    newAssignments := make([]AppCompAssignment, 0)
+    madeAssignment := false
+    for comp, compnode := range curAssignment {
+        newAssignment := deepCopy(tmpAssignment)
+        rand.Seed(time.Now().UnixNano())
+        rand.Shuffle(len(nodeOrder), func(i, j int) {
+            nodeOrder[i], nodeOrder[j] = nodeOrder[j], nodeOrder[i]
+        })
+        for _, node := range nodeOrder{
+            _, exists := nodeSet[node.nodeId]
+            glog.Infof("test node %s for comp %s\n", node.nodeId, comp)
+            if !exists || node.nodeId != compnode{
+                compTotalBw := 0.0
+                for _, bw := range app.Components[comp].Bandwidth{
+                    compTotalBw += bw
+                }
+                if compTotalBw < node.bw {
+                    glog.Infof("new state: comp total bw = %f node bw = %f node = %s comp=%s\n", compTotalBw, node.bw, node.nodeId, comp)
+                    newAssignment[app.AppId][comp]=node.nodeId
+                
+                    madeAssignment = true
+                    break
+                } 
+            }
         }
-        //_, exists :=  badNodes[nodeId]
-        if totalAvailable >= totalBwNeeded &&  comp.Cpu <= node.CpuCapacity - node.CpuInUse &&  comp.Memory <= node.MemoryCapacity - node.MemoryInUse{
-            assignNode = nodeId
-
-            return assignNode, nil
-        }
-    }
-    return "", &InsufficientResourceError{ResourceType:"Bandwidth", NodeId:"No node"}
-
-}
-func(opt *SimulatedAnnealingScheduler) findNeighbor(assignment AppCompAssignment, app Application, nodes NodeMap, links LinkMap) AppCompAssignment{
-    newAssignment := deepCopy(assignment)
-    curAssignment, _ := newAssignment[app.AppId]
-    keys := reflect.ValueOf(curAssignment).MapKeys()
-    for i := 0; i < len(keys)-1; i++{
-       assignKey0,_ := curAssignment[keys[i].Interface().(string)]
-        newNode, _ := opt.findNewState(app, keys[i].Interface().(string), nodes, links)
-        if len(keys) > 1 {
-            assignKey1 := newNode
-//            assignKey1, _ := curAssignment[keys[1].Interface().(string)]
-            curAssignment[keys[i].Interface().(string)] = assignKey1
-            curAssignment[keys[i+1].Interface().(string)] = assignKey0
-            newAssignment[app.AppId] = curAssignment
-            glog.Infof("comp %s old node=%s new node=%s\n", keys[i].Interface().(string), assignKey0, assignKey1)
-         
-            return newAssignment
+        if madeAssignment {
+            newAssignments = append(newAssignments, newAssignment)
+            madeAssignment = false 
+            opt.LogAssignmentsHelper(newAssignment)
         }
     }
-    return newAssignment
+    glog.Infof("have %d new states\n", len(newAssignments))
+    return newAssignments
 }
 
-func (opt *SimulatedAnnealingScheduler) SchedulerHelper(app Application, nodes NodeMap, routes RouteMap, links LinkMap, maxSteps int) (bool, AppCompAssignment, NodeMap, LinkMap, RouteMap){
-    temperatureBegin := 5.0e+4
-    temperature := temperatureBegin
-    temperatureEnd := .1
-    coolingFactor := .99
-    min := 0.0
-    max := 1.0
-    minCost := float64(MaxUint)
-    initial := true
-    assignment := make(AppCompAssignment, 0)
-    for {
-        tmpNodes := opt.CopyNodes(nodes)
-        tmpRoutes, tmpLinks := opt.CopyRoutes(routes, links)
-        if initial == true{
-            assignment = opt.makeInitialAssignment(app, nodes, links)
-            initial = false
-        }
-        cost1, oldNodes, oldLinks, oldRoutes := opt.computeCostUtility(app, deepCopy(assignment), tmpNodes, tmpLinks, tmpRoutes)
-        glog.Infof("cost = %f temp = %f\n", cost1, temperature)
-        if cost1 <= 0{
-            return true, assignment, tmpNodes, tmpLinks, tmpRoutes
-        }
-        //if cost == len(app.Components) {
-        //    assignment = opt.makeInitialAssignment(app, nodes)
-        ////     
-        //} 
-        if temperature < temperatureEnd{
+func (opt *TabuSearchScheduler) SchedulerHelper(app Application, nodes NodeMap, routes RouteMap, links LinkMap, maxSteps int) (bool, AppCompAssignment, NodeMap, LinkMap, RouteMap){
+    curAssignment := opt.makeInitialAssignment(app, nodes, links)
+    overallBestAssignment := deepCopy(curAssignment)
+    overallBestCost, nodes, links, routes := opt.computeCostUtility(app, overallBestAssignment, nodes, links, routes)
+    tabuList := make([]AppCompAssignment, 0)
+    tabuList = append(tabuList, overallBestAssignment)
+    numSteps := 0
+    oldNodes := opt.CopyNodes(nodes)
+    oldRoutes, oldLinks := opt.CopyRoutes(routes, links)
+    bestAssignment := overallBestAssignment
+    bestCost, bestnodes, bestlinks, bestroutes := opt.computeCostUtility(app, overallBestAssignment, nodes, links, routes) 
+       for {
+        if numSteps == maxSteps {
             break
         }
-        newAssignment := opt.findNeighbor(assignment, app, nodes, links) 
-        cost2, newNodes, newLinks, newRoutes := opt.computeCostUtility(app, deepCopy(newAssignment), tmpNodes, tmpLinks, tmpRoutes)
-        diff :=  float64(cost2 - cost1)
-        nodes = oldNodes
-        links = oldLinks
-         prob := min + rand.Float64() * (max - min)
-        routes = oldRoutes
-        tmp := math.Exp(-diff/temperature)
-        glog.Infof("prob = %f  tmp = %f diff = %f mincost=%f\n", prob, tmp, diff, minCost)
-     
-        if diff < 0 ||  tmp > prob{
-            assignment = newAssignment
-            nodes = newNodes
-            links = newLinks
-            routes = newRoutes
+        neighbors := opt.findNeighbors(bestAssignment, app, nodes, links)
+        //bestCost, bestnodes, bestlinks, bestroutes = opt.computeCostUtility(app, overallBestAssignment, nodes, links, routes) 
+        if bestCost == 0.0{
+            return true, overallBestAssignment, bestnodes, bestlinks, bestroutes
         }
-       
-        if cost2 < cost1 {
-            cost1 = cost2
+        for _, curAssign := range neighbors{
+            curCost, curnodes, curlinks, curroutes := opt.computeCostUtility(app, curAssign, nodes, links,routes)
+            if curCost < bestCost{
+                bestCost = curCost
+                bestAssignment = curAssign
+                bestnodes, bestlinks, bestroutes = curnodes, curlinks, curroutes
+            }
         }
-        if cost1 < minCost {
-            nodes = tmpNodes
-            links = tmpLinks
-            routes = tmpRoutes
-            minCost = cost1
-            assignment = newAssignment
+        if bestCost < overallBestCost && !opt.isTabuState(bestAssignment, tabuList, app.AppId){
+            overallBestCost = bestCost
+            nodes, links, routes = bestnodes, bestlinks, bestroutes
+            overallBestAssignment = bestAssignment
         }
-        if cost1 > 5 *minCost {
-            initial = true
-            glog.Infof("reset")
-        } 
-        temperature *= coolingFactor
+        tabuList = append(tabuList, bestAssignment)
+        numSteps += 1
+    
+        if len(tabuList) == 50{
+            tabuList = tabuList[1:len(tabuList)]
+        }
+        glog.Infof("step = %d cost = %f overall best =%f tabu list size=%d\n", numSteps, bestCost, overallBestCost, len(tabuList))
     }
-    fmt.Printf("cost=%f\n", minCost)
-    return false,nil, nodes, links, routes
+    glog.Infof("best cost = %f\n", overallBestCost)
+    fmt.Printf("cost=%f\n", overallBestCost)
+    if overallBestCost == 0.0{
+            return true, overallBestAssignment, bestnodes, bestlinks, bestroutes
+    }
+   return false, nil, oldNodes, oldLinks, oldRoutes
 }
-func (opt *SimulatedAnnealingScheduler) MakeAssignment(nodeId string, componentId string, app Application, nodes NodeMap, routes RouteMap, links LinkMap, assignment AppCompAssignment) (error,  NodeMap, LinkMap, RouteMap){
+
+func (opt *TabuSearchScheduler) MakeAssignment(nodeId string, componentId string, app Application, nodes NodeMap, routes RouteMap, links LinkMap, assignment AppCompAssignment) (error,  NodeMap, LinkMap, RouteMap){
     component, _ := app.Components[componentId]
     tmpnodes := opt.CopyNodes(nodes)
     tmproutes, tmplinks := opt.CopyRoutes(routes, links)
@@ -361,14 +338,15 @@ func (opt *SimulatedAnnealingScheduler) MakeAssignment(nodeId string, componentI
     nodes = tmpnodes
     routes, links = tmproutes, tmplinks
     return nil, nodes, links, routes
+
 }
 
 
-func (opt *SimulatedAnnealingScheduler) Schedule(app Application) {
+func (opt *TabuSearchScheduler) Schedule(app Application) {
     currentAssignment := make(AppCompAssignment, 0)
     currentAssignment[app.AppId] = make(map[string]string, 0)
     oldState, oldRoutes, oldLinks := opt.CopyState()
-    possible, currentAssignment, nodes, links, routes := opt.SchedulerHelper(app,  oldState, oldRoutes, oldLinks, 1000)
+    possible, currentAssignment, nodes, links, routes := opt.SchedulerHelper(app,  oldState, oldRoutes, oldLinks, 100)
     if possible {
         opt.Nodes, opt.Links, opt.Routes = nodes, links, routes
         opt.UpdatePaths(opt.Links, opt.Routes)

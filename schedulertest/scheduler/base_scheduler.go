@@ -3,7 +3,9 @@ package meshscheduler
 import (
 	"fmt"
 	"github.com/golang/glog"
+    "sort"
 )
+const MaxUint = ^uint(0) 
 
 type BaseScheduler struct {
 	Nodes            NodeMap
@@ -26,14 +28,18 @@ func (opt *BaseScheduler) InitScheduler(nodes NodeMap, routes RouteMap, links Li
 	opt.Assignments = make(AppCompAssignment, 0)
 }
 
-func (opt *BaseScheduler) LogAssignments() {
+func (opt *BaseScheduler) LogAssignmentsHelper(assignment AppCompAssignment) {
 	glog.Info("\nAppId,ComponentId,NodeId\n")
-	for app, comps := range opt.Assignments {
+	for app, comps := range assignment {
 		for comp, nodeId := range comps {
 			glog.Infof("%s,%s,%s\n", app, comp, nodeId)
 		}
 	}
 }
+func (opt *BaseScheduler) LogAssignments() {
+    opt.LogAssignmentsHelper(opt.Assignments)
+}
+
 func (opt *BaseScheduler) PrintAssignments() {
 	fmt.Println("\nAppId,ComponentId,NodeId")
 	for app, comps := range opt.Assignments {
@@ -259,5 +265,52 @@ func (opt *BaseScheduler) UpdatePaths(links LinkMap, routes RouteMap) {
 
 }
 
+type CompTotalBw struct{
+    compId string
+    bw      float64
+    degree int
+}
+func (opt *BaseScheduler) GetCompOrder(comps map[string]Component)[]CompTotalBw{
+    compTotalBw := make([]CompTotalBw, 0)
+    for compId, comp := range comps {
+        bwSum := 0.0
+        for _, bw := range comp.Bandwidth {
+           bwSum += bw
+        }
+    
+        compTotalBw = append(compTotalBw, CompTotalBw{compId:compId, bw: bwSum, degree:len(comp.Bandwidth)})
+    }
+    sort.Slice(compTotalBw, func(i int, j int) bool{
+        return compTotalBw[i].bw >= compTotalBw[j].bw
+    })
+    return compTotalBw
+}
+
+type NodeTotalBw struct{
+        nodeId string
+        bw      float64
+        degree int
+}
+func (opt *BaseScheduler) GetNodeOrder(nodes NodeMap, links LinkMap)[]NodeTotalBw{
+    nodeTotalBw := make([]NodeTotalBw, 0)
+    for node, _ := range nodes {
+        bwSum := 0.0
+        for dst, link := range links[node] {
+            if dst == node{
+                continue
+            }
+            bwSum += link.BwCapacity 
+        }
+        //glog.Infof("node id = %s bw = %f\n", node, bwSum)
+        nodeTotalBw = append(nodeTotalBw, NodeTotalBw{nodeId:node, bw: bwSum, degree:len(links[node])})
+    }
+    sort.Slice(nodeTotalBw, func(i int, j int) bool{
+        if nodeTotalBw[i].bw >= nodeTotalBw[j].bw {
+            return true
+        }
+        return false
+    })
+    return nodeTotalBw
+}
 func (opt *BaseScheduler) Schedule(app Application) {
 }
