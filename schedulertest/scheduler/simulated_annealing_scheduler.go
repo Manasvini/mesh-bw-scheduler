@@ -368,7 +368,7 @@ func (opt *SimulatedAnnealingScheduler) Schedule(app Application) {
     currentAssignment := make(AppCompAssignment, 0)
     currentAssignment[app.AppId] = make(map[string]string, 0)
     oldState, oldRoutes, oldLinks := opt.CopyState()
-    possible, currentAssignment, nodes, links, routes := opt.SchedulerHelper(app,  oldState, oldRoutes, oldLinks, 1000)
+    possible, currentAssignment, nodes, links, routes := opt.SchedulerHelper(app,  oldState, oldRoutes, oldLinks, 100)
     if possible {
         opt.Nodes, opt.Links, opt.Routes = nodes, links, routes
         opt.UpdatePaths(opt.Links, opt.Routes)
