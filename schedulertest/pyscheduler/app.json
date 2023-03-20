@@ -1,0 +1,44 @@
+{
+    "components":[
+        {
+            "comp_id":"c1",
+            "cpu": 4,
+            "memory_mb": 1000
+        },
+        {
+            "comp_id":"c2",
+            "cpu": 2,
+            "memory_mb": 1000
+        },
+        {
+            "comp_id":"c3",
+            "cpu": 4,
+            "memory_mb": 400
+        },
+        {
+            "comp_id":"c4",
+            "cpu": 1,
+            "memory_mb": 10
+        }
+    ], 
+    "dependencies":[
+        {
+            "src":"c1",
+            "dst":"c2",
+            "latency_ms":50,
+            "bw":8
+        },
+        {
+            "src":"c2",
+            "dst":"c3",
+            "latency_ms":50,
+            "bw":2
+        },
+        {
+            "src":"c1",
+            "dst":"c4",
+            "latency_ms":10,
+            "bw":1
+        }
+    ]
+}
