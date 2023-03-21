@@ -19,8 +19,51 @@ class Link:
 
     def get_usage(self):
         return self.used_bw
-      
+     
+    def get_latency(self):
+        return self.latency
+
+class Path:
+    def __init__(self, src, dst, links):
+        self.src = src
+        self.dst = dst
+        self.latency = 0
+        self.bw = 0
+        self.links = links
+        self.set_bottleneck_bw()
+
+    def get_link_available(self, link):
+        return link.get_capacity() - link.get_usage()
+
+
+    def set_bottleneck_bw(self):
+        min_bw = self.get_link_available(self.links[0])
+        for l in self.links:
+            cur_min_bw = self.get_link_available(l)
+            if cur_min_bw < min_bw:
+                min_bw = cur_min_bw
+        self.bw = min_bw
+
+    def update_path_bw(self, bw):
+        for i in range(len(self.links)):
+            l = self.links[i]
+            l.update_usage(bw)
+            self.links[i] = l
     
+    def set_bottleneck_latency(self):
+        max_latency = self.links[0].get_latency()
+        for l in self.links:
+            cur_max_latency = l.get_latency()
+            if cur_max_latency > max_latency:
+                max_latency = cur_max_latency
+        self.latency = max_latency
+
+    def is_bw_usage_possible(self, bw):
+        return bw < self.bw
+
+    def print_path(self):
+        print('src=', self.src, 'dst=', self.dst, 'bw = ', self.bw, 'latency = ', self.latency, 'hops ', [ (l.src, l.dst) for l in self.links])
+
 class Node:
     def __init__(self, node_id, cpu, memory):
         self.available_cpu = cpu
@@ -30,9 +73,14 @@ class Node:
 
         self.used_cpu = 0
         self.used_memory = 0
+            
+        self.paths = {}
 
     def add_link(self, dst_id, latency, bw):
         self.links[node_id] = Link(self.node_id, dst_id, latency, bw)
+
+    def add_path(self, dst_id, path):
+        self.paths[dst_id] = path
 
     def is_cpu_usage_possible(self, cpu):
         if self.used_cpu + cpu <= self.available_cpu:
@@ -62,14 +110,15 @@ class Node:
         return cap
 
     def update_bw_usage(self, node_id, bw):
-        if node_id in self.links:
-            link = self.links[node_id]
-            link.used_bw += bw
-            self.links[node_id] = link
+        if node_id in self.paths:
+            path = self.paths[node_id]
+            path.update_path_bw(bw)
+            path.set_bottleneck_bw()
+            self.paths[node_id] = path
 
     def is_bw_usage_possible(self, node_id, bw):
-        if node_id in self.links:
-            return self.links[node_id].is_usage_possible(bw)
+        if node_id in self.paths:
+            return self.paths[node_id].is_bw_usage_possible(bw)
         return False
 
     def print_usage(self):
