@@ -85,6 +85,7 @@ func schedulePods() error {
 		logger(err)
 		return err
 	}
+	logger(fmt.Sprintf("got %d pods", len(pods)))
 	for _, pod := range pods {
 		err := schedulePod(pod)
 		if err != nil {

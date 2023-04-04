@@ -64,9 +64,9 @@ type Pod struct {
 }
 
 type PodSpec struct {
-	NodeName   string      `json:"nodeName"`
-	Containers []Container `json:"containers"`
-	SchedulerName string   `json:"schedulerName"`
+	NodeName      string      `json:"nodeName"`
+	Containers    []Container `json:"containers"`
+	SchedulerName string      `json:"schedulerName"`
 }
 
 type Container struct {
@@ -124,7 +124,8 @@ type Metadata struct {
 
 type Deployment struct {
 	Kind            string            `json:"kind"`
-	Metadata    	Metadata          `json:"metadata"`
+	ApiVersion      string            `json:"apiVersion"`
+	Metadata        Metadata          `json:"metadata"`
 	ResourceVersion string            `json:"resourceVersion"`
 	Labels          map[string]string `json:"labels"`
 	Annotations     map[string]string `json:"annotations"`

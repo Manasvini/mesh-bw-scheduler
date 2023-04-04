@@ -31,7 +31,7 @@ var (
 	nodesEndpoint     = "/api/v1/nodes"
 	podsEndpoint      = "/api/v1/namespaces/epl/pods/"
 	watchPodsEndpoint = "/api/v1/watch/namespaces/epl/pods"
-	configEndpoint	  = "/apis/apps/v1/namespaces/epl/deployments/custom-scheduler"
+	configEndpoint    = "/apis/apps/v1/namespaces/epl/deployments/epl-scheduler"
 )
 
 func waitForProxy() int {
@@ -57,7 +57,7 @@ func waitForProxy() int {
 
 		return 1
 	}
-	
+
 	return 0
 }
 
@@ -249,9 +249,9 @@ func getConfig() (string, error) {
 		Header: make(http.Header),
 		Method: http.MethodGet,
 		URL: &url.URL{
-			Host:     apiHost,
-			Path:     configEndpoint,
-			Scheme:   "http",
+			Host:   apiHost,
+			Path:   configEndpoint,
+			Scheme: "http",
 		},
 	}
 	request.Header.Set("Accept", "application/json, */*")
@@ -261,12 +261,24 @@ func getConfig() (string, error) {
 		logger(err)
 		return "", err
 	}
-	err = json.NewDecoder(resp.Body).Decode(&deployment)
+	buf := new(bytes.Buffer)
+	buf.ReadFrom(resp.Body)
+	newStr := buf.String()
+	logger(newStr)
+	//err = json.NewDecoder(resp.Body).Decode(&deployment)
+	//logger(fmt.Sprintf("%s", pretty.Formatter(resp.Body)))
+
+	json.Unmarshal([]byte(newStr), &deployment)
+	//logger(fmt.Sprintf("%s", pretty.Formatter(deployment)))
 	if err != nil {
 		logger(err)
 		return "", err
 	}
-
+	logger(fmt.Sprintf("have kind %s", deployment.Kind))
+	logger(fmt.Sprintf("have %d annotations", len(deployment.Metadata.Annotations)))
+	for k, v := range deployment.Metadata.Annotations {
+		logger("annotations k=" + k + " v=" + v)
+	}
 	if val, ok := deployment.Metadata.Annotations["epl/staticinstance"]; ok {
 		return val, nil
 	}
@@ -280,7 +292,7 @@ func fit(pod *Pod) ([]Node, error) {
 		logger(err)
 		return nil, err
 	}
-
+	logger(fmt.Sprintf("got %d nodes", len(nodeList.Items)))
 	config, err := getConfig()
 	if err != nil {
 		logger(err)
