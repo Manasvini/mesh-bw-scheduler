@@ -92,16 +92,18 @@ func (pp *PodProcessor) GetPodDependencyGraph(podList []Pod) map[string]map[stri
 
 // Build an undirected graph of pod dependencies from all unscheduled pods
 // A pod is added to the graph iff all its dependencies are met, and all the pods that are dependent on this pod are also in the list of unscheduled pods
-func (pp *PodProcessor) GetPodGraph() map[string]map[string]bool {
+func (pp *PodProcessor) GetPodGraph() (map[string]map[string]bool, []string) {
 	pp.podLock.Lock()
 	podList := pp.unscheduledPods
 	pp.podLock.Unlock()
 	podGraph := make(map[string]map[string]bool, 0)
 
+	skippedPods := make([]string, 0)
+
 	for _, pod := range podList {
-		//if !pp.IsPodSpecComplete(pod) {
-		//	continue
-		//}
+		if !pp.IsPodSpecComplete(pod) {
+			skippedPods = append(skippedPods, pod.Metadata.Name)
+		}
 		annotations := pod.Metadata.Annotations
 		for k, _ := range annotations {
 			vals := strings.Split(k, "/")
@@ -110,14 +112,11 @@ func (pp *PodProcessor) GetPodGraph() map[string]map[string]bool {
 			}
 			rel, podName := vals[0], vals[2]
 			logger(fmt.Sprintf("pod = %s rel = %s other pod = %s", pod.Metadata.Name, rel, podName))
-			_, exists := podList[podName]
-			if !exists {
-				return nil
-			}
-			_, exists = podGraph[pod.Metadata.Name]
+			_, exists := podGraph[pod.Metadata.Name]
 			if !exists {
 				podGraph[pod.Metadata.Name] = make(map[string]bool, 0)
 			}
+
 			_, exists = podGraph[podName]
 			if !exists {
 				podGraph[podName] = make(map[string]bool, 0)
@@ -138,7 +137,7 @@ func (pp *PodProcessor) GetPodGraph() map[string]map[string]bool {
 		logger("Dependers: " + fmtStr)
 
 	}*/
-	return podGraph
+	return podGraph, skippedPods
 }
 
 func isInList(elem string, list []string) bool {
@@ -160,7 +159,7 @@ func (pp *PodProcessor) GetPodGroup(podName string, podGraph map[string]map[stri
 		if len(queue) == 0 || queue == nil {
 			break
 		}
-		logger(fmt.Sprintf("q has %d pods", len(queue)))
+		//logger(fmt.Sprintf("q has %d pods", len(queue)))
 		pod := queue[0]
 		if len(queue) > 1 {
 
@@ -192,7 +191,7 @@ func (pp *PodProcessor) GetPodGroup(podName string, podGraph map[string]map[stri
 
 // pod group is a set of pods that need to be scheduled together. They represent an application spec
 // We perform an undirected graph traversal and keep track of the connected components in the graph
-func (pp *PodProcessor) GetPodGroups(podGraph map[string]map[string]bool) [][]string {
+func (pp *PodProcessor) GetPodGroups(podGraph map[string]map[string]bool, skippedPods []string) [][]string {
 	visited := make(map[string]bool, 0)
 	podGroups := make([][]string, 0)
 	for {
@@ -205,11 +204,23 @@ func (pp *PodProcessor) GetPodGroups(podGraph map[string]map[string]bool) [][]st
 				continue
 			}
 			podList := pp.GetPodGroup(pod, podGraph)
+
 			logger(fmt.Sprintf("Got %d pods from %s ", len(podList), pod))
+			skip := false
+			for _, p := range podList {
+				if isInList(p, skippedPods) {
+					logger(fmt.Sprintf("Pod %s was skipped, will exclude this pod group", p))
+					skip = true
+					break
+				}
+			}
+
 			for _, p := range podList {
 				visited[p] = true
 			}
-			podGroups = append(podGroups, podList)
+			if !skip {
+				podGroups = append(podGroups, podList)
+			}
 		}
 	}
 	return podGroups
@@ -234,11 +245,11 @@ func (pp *PodProcessor) GetUnscheduledPods() []Pod {
 	pp.podLock.Unlock()
 
 	unscheduled := make([]Pod, 0)
-	podGraph := pp.GetPodGraph()
+	podGraph, skippedPods := pp.GetPodGraph()
 	if len(podGraph) == 0 {
 		return unscheduled
 	}
-	podGroups := pp.GetPodGroups(podGraph)
+	podGroups := pp.GetPodGroups(podGraph, skippedPods)
 	pods := make([]Pod, 0)
 	for _, podName := range podGroups[0] {
 		pod, exists := podList[podName]
