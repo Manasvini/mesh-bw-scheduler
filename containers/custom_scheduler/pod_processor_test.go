@@ -21,6 +21,21 @@ func getPodSimpleTopo() map[string]Pod {
 
 	return pods
 }
+func getPodSimpleTopoIncomplete() map[string]Pod {
+	pods := make(map[string]Pod, 0)
+
+	// p0 --> p1 --> p2
+	ann1 := map[string]string{"dependee/bw/pod_1": "1Mbps", "dependee/latency/pod_1": "10ms"}
+	ann2 := map[string]string{"dependee/bw/pod_2": "1Mbps", "dependee/latency/pod_2": "10ms", "depender/bw/pod_0": "1Mbps", "depender/latency/pod_0": "10ms"}
+	//ann3 := map[string]string{"depender/bw/pod_1": "1Mbps", "depender/latency/pod_1": "10ms"}
+
+	podMeta := Metadata{Name: "pod_0", Annotations: ann1}
+	pods["pod_0"] = Pod{Kind: "pod", Metadata: podMeta}
+	podMeta = Metadata{Name: "pod_1", Annotations: ann2}
+	pods["pod_1"] = Pod{Kind: "pod", Metadata: podMeta}
+
+	return pods
+}
 
 func getPodDisconnectedTopo() map[string]Pod {
 	pods := make(map[string]Pod, 0)
@@ -47,7 +62,18 @@ func getPodDisconnectedTopo() map[string]Pod {
 	return pods
 }
 
-func TestGetPodGraph1(t *testing.T) {
+func TestIncompletePodGraph1(t *testing.T) {
+	pods := getPodSimpleTopoIncomplete()
+	pp := NewPodProcessor()
+	pp.unscheduledPods = pods
+	podGraph := pp.GetPodGraph()
+
+	if nil != podGraph {
+		t.Fatalf("Want empty pod graph got %d instead", len(podGraph))
+	}
+}
+
+func TestGetPodGraph2(t *testing.T) {
 	pods := getPodSimpleTopo()
 	pp := NewPodProcessor()
 	pp.unscheduledPods = pods
