@@ -7,8 +7,11 @@ prometheus-client/main
 qmp_*.json
 .DS_Store
 containers/custom_scheduler/custom_scheduler
-
+schedulertest
 containers/temp
 *.pyc
 *log*
 *INFO*
+*.txt
+.ipynb_checkpoints/*
+scripts/.ipynb_checkpoints/
