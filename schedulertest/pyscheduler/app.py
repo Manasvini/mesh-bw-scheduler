@@ -9,11 +9,12 @@ class Dependency:
         self.bw = bw
 
 class Component:
-    def __init__(self, comp_id, cpu, memory):
+    def __init__(self, comp_id, cpu, memory, gw_bw=0):
         self.cpu = cpu
         self.memory = memory
         self.comp_id = comp_id
         self.deps = {}
+        self.gw_bw = gw_bw
 
     def add_dep(self, dst_comp, latency, bw):
         self.deps[dst_comp] = Dependency(self.comp_id, dst_comp, latency, bw)
@@ -21,7 +22,10 @@ class Component:
 class Application:
     def _init_requirements(self, spec):
         for comp in spec['components']:
-            self.comps[comp['comp_id']] = Component(comp['comp_id'], comp['cpu'], comp['memory_mb'])
+            gw_bw = 0
+            if 'gw_bw' in comp:
+                gw_bw = comp['gw_bw']
+            self.comps[comp['comp_id']] = Component(comp['comp_id'], comp['cpu'], comp['memory_mb'], gw_bw)
             self.deps[comp['comp_id']] = {}
         for dep in spec['dependencies']:
             self.deps[dep['src']][dep['dst']] = Dependency(dep['src'], dep['dst'], dep['latency_ms'], dep['bw'])

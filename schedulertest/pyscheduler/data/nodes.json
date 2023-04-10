@@ -3,27 +3,27 @@
         {
             "node_id":"n1",
             "cpu": 4,
-            "memory_mb": 8000000
+            "memory_mb": 8000
         },
         {
             "node_id":"n2",
             "cpu": 4,
-            "memory_mb": 4000000
+            "memory_mb": 4000
         },
         {
             "node_id":"n3",
             "cpu": 12,
-            "memory_mb": 8000000
+            "memory_mb": 8000
         },
         {
             "node_id":"n4",
             "cpu": 4,
-            "memory_mb": 2000000
+            "memory_mb": 2000
         },
         {
             "node_id":"n5",
             "cpu": 4,
-            "memory_mb": 2000000
+            "memory_mb": 2000
         }
 
     ], 
@@ -50,7 +50,7 @@
             "src":"n3",
             "dst":"n2",
             "latency_ms":20,
-            "bw":5
+            "bw":15
         },
         {
             "src":"n2",

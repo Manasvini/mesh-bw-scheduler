@@ -31,6 +31,7 @@ class Path:
         self.bw = 0
         self.links = links
         self.set_bottleneck_bw()
+        self.available_bw = self.bw
 
     def get_link_available(self, link):
         return link.get_capacity() - link.get_usage()
@@ -52,20 +53,20 @@ class Path:
     
     def set_bottleneck_latency(self):
         max_latency = self.links[0].get_latency()
-        for l in self.links:
+        for l in self.links[1:]:
             cur_max_latency = l.get_latency()
             if cur_max_latency > max_latency:
-                max_latency = cur_max_latency
+                max_latency += cur_max_latency
         self.latency = max_latency
 
     def is_bw_usage_possible(self, bw):
-        return bw < self.bw
+        return bw <= self.bw
 
     def print_path(self):
         print('src=', self.src, 'dst=', self.dst, 'bw = ', self.bw, 'latency = ', self.latency, 'hops ', [ (l.src, l.dst) for l in self.links])
 
 class Node:
-    def __init__(self, node_id, cpu, memory):
+    def __init__(self, node_id, cpu, memory, is_gw=False):
         self.available_cpu = cpu
         self.available_memory = memory
         self.links = {}
@@ -73,7 +74,9 @@ class Node:
 
         self.used_cpu = 0
         self.used_memory = 0
-            
+        
+        self.is_gateway = is_gw
+
         self.paths = {}
 
     def add_link(self, dst_id, latency, bw):
@@ -117,7 +120,10 @@ class Node:
             self.paths[node_id] = path
 
     def is_bw_usage_possible(self, node_id, bw):
+        if node_id == self.node_id:
+            return True
         if node_id in self.paths:
+            print(node_id, self.paths[node_id].bw, self.paths[node_id].available_bw)
             return self.paths[node_id].is_bw_usage_possible(bw)
         return False
 

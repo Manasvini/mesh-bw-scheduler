@@ -1,0 +1,57 @@
+{
+    "nodes":[
+        {
+            "node_id":"n1",
+            "cpu": 2,
+            "memory_mb": 4000
+        },
+        {
+            "node_id":"n2",
+            "cpu": 2,
+            "memory_mb": 4000
+        },
+        {
+            "node_id":"n3",
+            "cpu": 2,
+            "memory_mb": 4000
+        }
+    ], 
+    "links":[
+        {
+            "src":"n1",
+            "dst":"n2",
+            "latency_ms":20,
+            "bw":50
+        },
+        {
+            "src":"n2",
+            "dst":"n1",
+            "latency_ms":20,
+            "bw":10
+        },
+        {
+            "src":"n2",
+            "dst":"n3",
+            "latency_ms":10,
+            "bw":10
+        },
+        {
+            "src":"n3",
+            "dst":"n2",
+            "latency_ms":10,
+            "bw":50
+        },
+        {
+            "src":"n1",
+            "dst":"n3",
+            "latency_ms":10,
+            "bw":50
+        },
+        {
+            "src":"n3",
+            "dst":"n1",
+            "latency_ms":10,
+            "bw":50
+        }
+    ]
+}

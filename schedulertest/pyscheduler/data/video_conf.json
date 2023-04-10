@@ -1,0 +1,11 @@
+{
+    "components":[
+        {
+            "comp_id":"sfu",
+            "cpu": 2,
+            "memory_mb": 1000,
+            "gw_bw": 30
+        }
+    ], 
+    "dependencies":[]
+}
