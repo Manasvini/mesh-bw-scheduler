@@ -1,0 +1,11 @@
+version: "3"
+services:
+  sfu:
+    image: pionwebrtc/ion-sfu:latest-grpc
+    environment:
+      - gaddr=:50051
+      - jaddr=:7000
+    ports:
+      - "5000-5200:5000-5200/udp"
+      - 7000:7000
+      - 50051:50051
