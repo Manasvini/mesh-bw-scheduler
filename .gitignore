@@ -12,6 +12,5 @@ containers/temp
 *.pyc
 *log*
 *INFO*
-*.txt
 .ipynb_checkpoints/*
 scripts/.ipynb_checkpoints/
