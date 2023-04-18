@@ -1,4 +1,4 @@
-module netmon
+module github.gatech.edu/cs-epl/mesh-bw-scheduler/netmon
 
 go 1.19
 
