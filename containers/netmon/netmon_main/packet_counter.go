@@ -21,11 +21,17 @@ import "C"
 const source string = `
 #include "packet.h"
 BPF_HASH(packets);
+BPF_HASH(packetsize);
+
 int hello_packet(struct xdp_md *ctx) {
     u64 counter = 0;
+	u64 cur_pkt_size=0;
+	u64 size = 0;
+	u64 *pktsize;
     u64 key = 0;
     u64 *p;
     key = parse_ipv4_dest(ctx);
+	cur_pkt_size = get_pkt_size(ctx);
     if (key != 0) {
         p = packets.lookup(&key);
         if (p != 0) {
@@ -33,7 +39,16 @@ int hello_packet(struct xdp_md *ctx) {
         }
         counter++;
         packets.update(&key, &counter);
+	}
+	if (key != 0){
+		p = packetsize.lookup(&key);
+		if (p != 0) {
+			size = *p;
+		}
+		size +=  cur_pkt_size;
+		packetsize.update(&key, &size);
     }
+
     return XDP_PASS;
 }
 `
@@ -51,6 +66,7 @@ func int2ip(nn uint32) net.IP {
 
 type BPFRunner struct {
 	PktStats *bpf.Table
+	PktSize  *bpf.Table
 	device   string
 	module   *bpf.Module
 }
@@ -82,7 +98,8 @@ func NewBPFRunner(device string) *BPFRunner {
 	fmt.Println("Counting packets, hit CTRL+C to stop")
 
 	pktcnt := bpf.NewTable(module.TableId("packets"), module)
-	bpfRunner := &BPFRunner{PktStats: pktcnt, device: device, module: module}
+	pktsize := bpf.NewTable(module.TableId("packetsize"), module)
+	bpfRunner := &BPFRunner{PktStats: pktcnt, device: device, module: module, PktSize: pktsize}
 
 	return bpfRunner
 }
@@ -95,6 +112,15 @@ func (runner *BPFRunner) PrintStats() {
 
 		if value > 0 {
 			fmt.Printf("%s: %v pkts\n", int2ip(key), value)
+		}
+	}
+	fmt.Printf("\n{IP address}: {total bytes}\n")
+	for it := runner.PktSize.Iter(); it.Next(); {
+		key := bpf.GetHostByteOrder().Uint32(it.Key())
+		value := bpf.GetHostByteOrder().Uint64(it.Leaf())
+
+		if value > 0 {
+			fmt.Printf("%s: %v bytes\n", int2ip(key), value)
 		}
 	}
 }

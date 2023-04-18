@@ -41,3 +41,20 @@ static inline int parse_ipv4_dest( struct xdp_md *ctx) {
 	}
 	return daddr;
 }
+
+static inline int get_pkt_size( struct xdp_md *ctx) {
+    void *data = (void *)(long)ctx->data;
+    void *data_end = (void *)(long)ctx->data_end;
+    struct ethhdr *eth = data;
+    if (data + sizeof(struct ethhdr) > data_end)
+        return 0;
+	int size = 0;
+    // Check that it's an IP packet
+    if (bpf_ntohs(eth->h_proto) == ETH_P_IP)
+    {
+     	struct iphdr *iph = data + sizeof(struct ethhdr);
+    	if (data + sizeof(struct ethhdr) + sizeof(struct iphdr) <= data_end)
+            size = ctx->data_end - ctx->data;
+	}
+	return size;
+}
