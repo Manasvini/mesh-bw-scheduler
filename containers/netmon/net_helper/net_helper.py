@@ -31,6 +31,7 @@ def run_iperf(host):
     client.server_hostname = host
     client.port = 5201
     res = client.run()
+    print(res.json)
     if 'error' in res.json:
         return res.json
     return {'host':host, 'snd': res.json['end']['streams'][0]['sender']['bits_per_second'], 'rcv':res.json['end']['streams'][0]['receiver']['bits_per_second']}
@@ -84,13 +85,16 @@ def get_hosts():
 def get_bw():
     hostname = request.args.get('host')
     #iperf_hosts = get_hosts()
+    print(hostname)
     results = [run_iperf(hostname)]
+    print(len(results))
     final_results = []
     for res in results:
         print(res)
         if 'error' in res:
             continue
         final_results.append({'host':res['host'], 'snd':res['snd'], 'rcv':res['rcv']})
+    print(final_results)
     return json.dumps({'bandwidthResults':final_results})
 
 

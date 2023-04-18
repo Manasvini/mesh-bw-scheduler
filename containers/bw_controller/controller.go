@@ -15,21 +15,23 @@ const SND_BW = "istio_tcp_sent_bytes_total"
 const RCV_BW = "istio_tcp_received_bytes_total"
 
 type Controller struct {
-	promClient api.Client
-	pods       PodSet
-	podDeps    PodDeps
-	nodes      []string
-	links      LinkSet
-	paths      PathSet
-	metrics    []string
+	promClient   api.Client
+	netmonClient *NetmonClient
+	pods         PodSet
+	podDeps      PodDeps
+	nodes        []string
+	links        LinkSet
+	paths        PathSet
+	metrics      []string
 }
 
-func NewController(prometheus string, metrics []string) *Controller {
+func NewController(prometheus string, netmonAddrs []string, metrics []string) *Controller {
 	client, err := api.NewClient(api.Config{Address: prometheus})
 	if err != nil {
 		log.Fatalln("Error connect to the prometheus: ", err)
 	}
-	controller := &Controller{promClient: client, metrics: metrics}
+	netmonClient := NewNetmonClient(netmonAddrs)
+	controller := &Controller{promClient: client, metrics: metrics, netmonClient: netmonClient}
 	return controller
 }
 
@@ -38,6 +40,11 @@ func (controller *Controller) UpdatePodMetrics() {
 		controller.UpdatePrometheusMetric(metric)
 	}
 }
+
+func (controller *Controller) UpdateNodeMetrics() {
+	controller.netmonClient.GetStats()
+}
+
 func (controller *Controller) UpdatePrometheusMetric(metric string) {
 	fmt.Println(metric)
 	v1api := v1.NewAPI(controller.promClient)

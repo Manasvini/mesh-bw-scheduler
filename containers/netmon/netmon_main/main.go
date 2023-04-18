@@ -14,7 +14,7 @@ import (
 	"sync"
 	"time"
 
-	pb "github.gatech.edu/cs-epl/mesh-bw-scheduler/netmon/proto"
+	pb "github.gatech.edu/cs-epl/mesh-bw-scheduler/netmon"
 	"google.golang.org/grpc"
 )
 
@@ -36,7 +36,14 @@ func readConfig(configfile string) []string {
 		log.Fatalf("unable to read file: %v", err)
 	}
 	hosts := strings.Split(string(body), "\n")
-	return hosts
+	hostsFinal := make([]string, 0)
+	for _, h := range hosts {
+		if len(h) > 1 {
+			hostsFinal = append(hostsFinal, h)
+		}
+		fmt.Printf("Got host %s\n", h)
+	}
+	return hostsFinal
 }
 
 type server struct {
@@ -51,6 +58,7 @@ type server struct {
 
 func (s *server) QueryBwStats(hostname string) []byte {
 	reqURL := "http://0.0.0.0:6000"
+	fmt.Printf("host = %s\n", hostname)
 	res, err := s.netClient.Get(reqURL + "/bw?host=" + hostname)
 	if err != nil {
 		fmt.Printf("client: could not create request: %s\n", err)
@@ -121,6 +129,7 @@ func (s *server) GetNetInfo(ctx context.Context, in *pb.NetInfoRequest) (*pb.Net
 func (s *server) GetUpdatedNetStats() (BandwidthResults, TracerouteResults) {
 	var allBwInfo BandwidthResults
 	for _, host := range s.hosts {
+		fmt.Printf("host = %s\n", host)
 		bwResponse := s.QueryBwStats(host)
 		bwInfo := GetBwResults(bwResponse)
 		if len(bwInfo.BandwidthResults) == 0 {
