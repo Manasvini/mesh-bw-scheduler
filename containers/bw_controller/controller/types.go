@@ -1,4 +1,4 @@
-package main
+package bw_controller
 
 type Pod struct {
 	podId        string

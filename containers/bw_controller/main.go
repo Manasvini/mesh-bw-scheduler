@@ -5,12 +5,8 @@ import (
 	"flag"
 	"io/ioutil"
 	"log"
-	"time"
-)
 
-var (
-	prometheus string        = "http://0.0.0.0:9090/"
-	timeout    time.Duration = time.Second * 30
+	bw_controller "github.gatech.edu/cs-epl/mesh-bw-scheduler/bwcontroller"
 )
 
 func parseConfig(filename string) Config {
@@ -32,7 +28,13 @@ func main() {
 	var configFile string
 	flag.StringVar(&configFile, "config", "./config.json", "Config file path")
 	config := parseConfig(configFile)
-	controller := NewController(config.PromAddr, config.NetmonAddrs, config.PromMetrics)
+	promClient := bw_controller.NewPrometheusClient(config.PromAddr, config.PromMetrics)
+	kubeClient := bw_controller.NewKubeClient(config.KubeProxyAddr, config.KubeNodesEndpoint, config.KubePodsEndpoint, config.KubeNamespaces)
+	netmonClient := bw_controller.NewNetmonClient(config.NetmonAddrs)
+	controller := bw_controller.NewController(promClient, netmonClient, kubeClient)
+	controller.UpdateNodes()
+	controller.UpdatePods()
 	controller.UpdatePodMetrics()
-	controller.UpdateNodeMetrics()
+	controller.UpdateNetMetrics()
+	controller.EvaluateDeployment()
 }

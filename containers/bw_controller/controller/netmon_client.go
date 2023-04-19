@@ -1,9 +1,10 @@
-package main
+package bw_controller
 
 import (
 	"context"
 	"fmt"
 	"log"
+	"strings"
 	"time"
 
 	pb "github.gatech.edu/cs-epl/mesh-bw-scheduler/netmon"
@@ -81,30 +82,33 @@ func (netmonClient *NetmonClient) ComputePathBw(links LinkSet, paths *PathSet) {
 	}
 }
 
-func (netmonClient *NetmonClient) GetStats() {
+func (netmonClient *NetmonClient) GetStats() (LinkSet, PathSet) {
 	links := make(LinkSet, 0)
 	paths := make(PathSet, 0)
 	for addr, _ := range netmonClient.clients {
 		curLinks, curPaths := netmonClient.GetStatsOne(addr)
 		if curLinks != nil && curPaths != nil {
-			_, existsP := curPaths[addr]
-			_, existsL := curLinks[addr]
+			host := strings.Split(addr, ":")[0]
+			_, existsP := curPaths[host]
+			_, existsL := curLinks[host]
 			if !existsP || !existsL {
 				fmt.Printf("No links or paths\n")
 				continue
 			}
-			paths[addr] = curPaths[addr]
-			links[addr] = curLinks[addr]
-			fmt.Printf("add %d links to %s \n", len(curLinks[addr]), addr)
+			paths[host] = curPaths[host]
+			links[host] = curLinks[host]
+			fmt.Printf("add %d links to %s \n", len(curLinks[host]), host)
 		}
 	}
 	netmonClient.ComputePathBw(links, &paths)
+	return links, paths
 }
 
 func (netmonClient *NetmonClient) GetStatsOne(address string) (LinkSet, PathSet) {
 	var links LinkSet
 	var paths PathSet
 
+	host := strings.Split(address, ":")[0]
 	client, exists := netmonClient.clients[address]
 	if !exists {
 		return links, paths
@@ -123,19 +127,19 @@ func (netmonClient *NetmonClient) GetStatsOne(address string) (LinkSet, PathSet)
 
 	paths = make(PathSet, 0)
 	pMap := make(map[string]Path, 0)
-	paths[address] = pMap
+	paths[host] = pMap
 	for _, tr := range trInfo {
-		path := Path{source: address, destination: tr.Host, hops: tr.Hops}
+		path := Path{source: host, destination: tr.Host, hops: tr.Hops}
 		_, exists := pMap[tr.Host]
 		if !exists {
 			pMap[tr.Host] = path
 		}
 	}
-	paths[address] = pMap
+	paths[host] = pMap
 
 	links = make(LinkSet, 0)
 	lMap := make(map[string]Link, 0)
-	links[address] = lMap
+	links[host] = lMap
 	for _, bw := range bwInfos {
 		link := Link{source: address, destination: bw.Host, bandwidth: float64(bw.SendBw)}
 		_, exists = lMap[bw.Host]
@@ -146,7 +150,8 @@ func (netmonClient *NetmonClient) GetStatsOne(address string) (LinkSet, PathSet)
 		if exists && len(path.hops) == 1 && address != bw.Host {
 			path.bandwidth = float64(bw.SendBw)
 		}
+		fmt.Printf("Got bw for %s to %s\n", host, bw.Host)
 	}
-	links[address] = lMap
+	links[host] = lMap
 	return links, paths
 }

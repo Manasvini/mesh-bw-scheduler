@@ -1,4 +1,4 @@
-package main
+package bw_controller
 
 import (
 	"fmt"

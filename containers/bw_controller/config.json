@@ -8,5 +8,13 @@
 	"NetmonAddrs":[
 		"192.168.160.42:50051"
 		
+	],
+	"KubeProxyAddr": "127.0.0.1:8001",
+	"KubeNodesEndpoint": "/api/v1/nodes",
+	"KubePodsEndpoint" : "/api/v1/namespaces/%s/pods/",
+	"KubeNamespaces" :[
+		"epl",
+		"socialnetwork",
+		"camera"
 	]
 }

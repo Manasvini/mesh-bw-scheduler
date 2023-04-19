@@ -9,7 +9,7 @@ containers/custom_scheduler/custom_scheduler
 schedulertest
 containers/temp
 *.pyc
-*log*
+*log.*
 *INFO*
 .ipynb_checkpoints/*
 scripts/.ipynb_checkpoints/
