@@ -36,10 +36,10 @@ func (pp *PodProcessor) AreAllRelatedPodsPresent(pod Pod, relationship string) b
 	podList := pp.unscheduledPods
 	pp.podLock.Unlock()
 	annotations := pod.Metadata.Annotations
-	// format: dependee/bw/PODNAME / dependee/latency/PODNAME
+	// format: dependee.bw.PODNAME / dependee.latency.PODNAME
 	for k, _ := range annotations {
 		if strings.Contains(k, relationship) {
-			vals := strings.Split(k, "/")
+			vals := strings.Split(k, ".")
 			if len(vals) < 3 {
 				logger(fmt.Sprintf("ERROR: Incorrect annotation format for pod dependency %s", k))
 			}
@@ -71,7 +71,7 @@ func (pp *PodProcessor) GetPodDependencyGraph(podList []Pod) map[string]map[stri
 	for _, pod := range podList {
 		annotations := pod.Metadata.Annotations
 		for k, _ := range annotations {
-			vals := strings.Split(k, "/")
+			vals := strings.Split(k, ".")
 			if len(vals) < 3 {
 				logger(fmt.Sprintf("ERROR: Incorrect annotation format for pod dependency %s", k))
 			}
@@ -106,7 +106,7 @@ func (pp *PodProcessor) GetPodGraph() (map[string]map[string]bool, []string) {
 		}
 		annotations := pod.Metadata.Annotations
 		for k, _ := range annotations {
-			vals := strings.Split(k, "/")
+			vals := strings.Split(k, ".")
 			if len(vals) < 3 {
 				logger(fmt.Sprintf("ERROR: Incorrect annotation format for pod dependency %s", k))
 			}
