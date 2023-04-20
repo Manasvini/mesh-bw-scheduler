@@ -2,6 +2,7 @@ package bw_controller
 
 import (
 	"fmt"
+	"sort"
 	"strconv"
 	"strings"
 )
@@ -16,6 +17,7 @@ type Controller struct {
 	nodes        map[string]string // ip -> name map
 	linksFree    LinkSet
 	pathsFree    PathSet
+	pathsUsed    TrafficSet
 	metrics      []string
 }
 
@@ -27,6 +29,7 @@ func NewController(promClient *PromClient, netmonClient *NetmonClient, kubeClien
 	controller.nodes = make(map[string]string, 0)
 	controller.linksFree = make(LinkSet, 0)
 	controller.pathsFree = make(PathSet, 0)
+	controller.pathsUsed = make(TrafficSet, 0)
 	return controller
 }
 
@@ -80,7 +83,7 @@ func (controller *Controller) UpdatePodMetrics() {
 
 // Update network bw available between each pair of nodes
 func (controller *Controller) UpdateNetMetrics() {
-	links, paths := controller.netmonClient.GetStats()
+	links, paths, traffics := controller.netmonClient.GetStats()
 	for src, dstLinks := range links {
 		for dst, link := range dstLinks {
 
@@ -100,7 +103,6 @@ func (controller *Controller) UpdateNetMetrics() {
 			controller.linksFree[srcNode] = srcLinks
 		}
 	}
-
 	for src, dstPaths := range paths {
 		for dst, path := range dstPaths {
 
@@ -110,12 +112,33 @@ func (controller *Controller) UpdateNetMetrics() {
 				fmt.Println("either source or destination dopn't exist!")
 			}
 			fmt.Printf("src = %s dst = %s cap = %f\n", srcNode, dstNode, path.bandwidth)
-			srcPaths, pExists := controller.pathsFree[srcNode]
+			_, pExists := controller.pathsFree[srcNode]
 			if !pExists {
-				srcPaths = make(map[string]Path, 0)
+				controller.pathsFree[srcNode] = make(map[string]Path, 0)
+
 			}
+			srcPaths, _ := controller.pathsFree[srcNode]
 			srcPaths[dstNode] = path
 			controller.pathsFree[srcNode] = srcPaths
+		}
+	}
+
+	for src, dstTrafs := range traffics {
+		for dst, traffic := range dstTrafs {
+
+			srcNode, exists := controller.nodes[src]
+			dstNode, dexists := controller.nodes[dst]
+			if !exists || !dexists {
+				fmt.Println("either source or destination dopn't exist!")
+			}
+			fmt.Printf("src = %s dst = %s cap = %f\n", srcNode, dstNode, traffic.bytes)
+			srcTraf, tExists := controller.pathsUsed[srcNode]
+			if !tExists {
+				controller.pathsUsed[srcNode] = make(map[string]Traffic, 0)
+			}
+			srcTraf, _ = controller.pathsUsed[srcNode]
+			srcTraf[dstNode] = traffic
+			controller.pathsUsed[srcNode] = srcTraf
 		}
 	}
 
@@ -213,18 +236,82 @@ func (controller *Controller) UpdatePods() {
 
 }
 
+func (controller *Controller) getPodsOnNode(nodeName string) []Pod {
+	podList := make([]Pod, 0)
+	for _, pod := range controller.pods {
+		if pod.deployedNode == nodeName {
+			podList = append(podList, pod)
+		}
+	}
+	return podList
+}
+
+func (controller *Controller) getNodes() []string {
+	nodeNames := make([]string, 0)
+	for _, node := range controller.nodes {
+		nodeNames = append(nodeNames, node)
+	}
+	return nodeNames
+}
+
+func (controller *Controller) CheckPodReqSatisfiedOne(bwNeeded map[string]map[string]float64,
+	bwAvailable map[string]map[string]float64,
+	pod Pod) (bool, map[string]float64, float64) /* dep pod -> dep bw shortfall, total shortfall*/ {
+	podDeps, exists := controller.podDepReq[pod.podName]
+	shortfall := make(map[string]float64, 0)
+	totalShortfall := 0.0
+	if exists {
+		for dst, dep := range podDeps {
+			dstPod, _ := controller.pods[dst]
+			actual, _ := controller.podDepActual[pod.podName][dst]
+			dstNode := dstPod.deployedNode
+			if actual.bandwidth+bwAvailable[pod.deployedNode][dstNode] < dep.bandwidth {
+				diff := dep.bandwidth - actual.bandwidth + bwAvailable[pod.deployedNode][dstNode]
+				shortfall[dstNode] = diff
+				totalShortfall += diff
+			}
+		}
+		if len(shortfall) > 0 {
+			return false, shortfall, totalShortfall
+		}
+	}
+	return true, nil, 0
+}
+
+func (controller *Controller) findPodsToReschedule(bwNeeded map[string]map[string]float64,
+	bwAvailable map[string]map[string]float64,
+	node string) (bool, Pod) {
+	pList := make(PairList, 0)
+
+	podList := controller.getPodsOnNode(node)
+	for _, pod := range podList {
+		satisfied, _, totalShortfall := controller.CheckPodReqSatisfiedOne(bwNeeded, bwAvailable, pod)
+		if !satisfied {
+			pList = append(pList, Pair{Key: pod.podName, Value: totalShortfall})
+		}
+	}
+	if len(pList) == 0 {
+		return false, Pod{}
+	}
+	sort.Sort(pList)
+	podToReschedule, _ := controller.pods[pList[0].Key]
+	return true, podToReschedule
+}
+
 // evalauate if the current deployment satisfies the pod requirement.
 // Make a list of pods which need to be rescheduled
 // For all the pods that the controller knows of, find the bw used by the pod and the bw available to the pod
 // Check if the node has sufficient bw to all dependees of the pod
 func (controller *Controller) EvaluateDeployment() {
 	fmt.Printf("REQ\n")
-
+	bwNeeded := make(map[string]map[string]float64, 0)
+	bwAvailable := make(map[string]map[string]float64, 0)
 	for src, srcPaths := range controller.pathsFree {
 		for dst, _ := range srcPaths {
 			fmt.Printf("src = %s dst = %s\n", src, dst)
 		}
 	}
+	// initialize bw needed at each node
 	for src, podDeps := range controller.podDepReq {
 		for dst, podReq := range podDeps {
 			podActual, exists := controller.podDepActual[src][dst]
@@ -232,20 +319,66 @@ func (controller *Controller) EvaluateDeployment() {
 				fmt.Printf("Pod dependency src = %s dst = %s bw req = %f actual = %f\n", src, dst, podReq.bandwidth, podActual.bandwidth)
 				srcPod, _ := controller.pods[src]
 				dstPod, _ := controller.pods[dst]
-				srcPaths, nodeExists := controller.pathsFree[srcPod.deployedNode]
 				fmt.Printf("node for %s = %s and %s = %s \n", src, srcPod.deployedNode, dst, dstPod.deployedNode)
 				if srcPod.deployedNode == dstPod.deployedNode {
 					logger(fmt.Sprintf("pod %s and %s on same node, skipping", src, dst))
 					continue
 				}
-				if nodeExists {
+				_, exists := bwNeeded[srcPod.deployedNode]
+				if !exists {
+					bwNeeded[srcPod.deployedNode] = make(map[string]float64, 0)
 
-					path, pathExists := srcPaths[dstPod.deployedNode]
-					if pathExists {
-						fmt.Printf("available bw = %f\n", path.bandwidth)
+				}
+				_, exists = bwNeeded[srcPod.deployedNode][dstPod.deployedNode]
+				if !exists {
+					bwNeeded[srcPod.deployedNode][dstPod.deployedNode] = 0
+				}
+				bwNeeded[srcPod.deployedNode][dstPod.deployedNode] += podReq.bandwidth
+
+				srcNodeBws, exists := controller.pathsFree[srcPod.deployedNode]
+				if exists {
+					_, availExists := bwAvailable[srcPod.deployedNode]
+					if !availExists {
+						bwAvailable[srcPod.deployedNode] = make(map[string]float64, 0)
+						bwAvailable[srcPod.deployedNode][dstPod.deployedNode] = 0
+					}
+					_, dExists := controller.pathsFree[dstPod.deployedNode]
+					if dExists {
+						bwAvailable[srcPod.deployedNode][dstPod.deployedNode] = srcNodeBws[dstPod.deployedNode].bandwidth
 					}
 				}
 			}
 		}
 	}
+
+	// compute bw free by subtracting bw used by pods deployed on each node
+	for src, podDeps := range controller.podDepReq {
+		for dst, _ := range podDeps {
+			podActual, exists := controller.podDepActual[src][dst]
+			if exists {
+				srcPod, _ := controller.pods[src]
+				dstPod, _ := controller.pods[dst]
+				if srcPod.deployedNode == dstPod.deployedNode {
+					continue
+				}
+				srcBws, exists := bwAvailable[srcPod.deployedNode]
+				if exists {
+					bw, dExists := srcBws[dstPod.deployedNode]
+					if dExists {
+						bw -= podActual.bandwidth
+						srcBws[dstPod.deployedNode] = bw
+					}
+				}
+				bwAvailable[srcPod.deployedNode] = srcBws
+			}
+		}
+	}
+	nodes := controller.getNodes()
+	for _, node := range nodes {
+		needToReschedule, pod := controller.findPodsToReschedule(bwNeeded, bwAvailable, node)
+		if needToReschedule {
+			fmt.Printf("Pod %s needs to be rescheduled\n", pod.podName)
+		}
+	}
+
 }

@@ -37,7 +37,7 @@ static inline int parse_ipv4_dest( struct xdp_md *ctx) {
     {
      	struct iphdr *iph = data + sizeof(struct ethhdr);
     	if (data + sizeof(struct ethhdr) + sizeof(struct iphdr) <= data_end)
-            daddr = iph->daddr;
+            daddr = iph->saddr;
 	}
 	return daddr;
 }

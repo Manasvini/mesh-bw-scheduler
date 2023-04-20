@@ -104,6 +104,18 @@ func NewBPFRunner(device string) *BPFRunner {
 	return bpfRunner
 }
 
+func (runner *BPFRunner) GetStats() map[string]float64 {
+	trafficMap := make(map[string]float64, 0)
+	for it := runner.PktSize.Iter(); it.Next(); {
+		key := bpf.GetHostByteOrder().Uint32(it.Key())
+		value := bpf.GetHostByteOrder().Uint64(it.Leaf())
+		trafficMap[fmt.Sprintf("%s", int2ip(key))] = float64(value)
+		if value > 0 {
+			fmt.Printf("%s: %v bytes\n", int2ip(key), value)
+		}
+	}
+	return trafficMap
+}
 func (runner *BPFRunner) PrintStats() {
 	fmt.Printf("\n{IP address}: {total pkts}\n")
 	for it := runner.PktStats.Iter(); it.Next(); {

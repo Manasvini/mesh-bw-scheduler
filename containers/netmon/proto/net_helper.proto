@@ -23,6 +23,7 @@ message BandwidthInfo {
 	string host = 1;
 	float sendBw = 2;
 	float receiveBw = 3;
+	float recvBwUsed = 4;
 }
 
 message TracerouteInfo {

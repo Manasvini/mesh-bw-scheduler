@@ -111,9 +111,15 @@ func GetTrResults(trResponse []byte) TracerouteResults {
 func (s *server) GetNetInfo(ctx context.Context, in *pb.NetInfoRequest) (*pb.NetInfoReply, error) {
 	log.Printf("Received: req")
 	s.mu.Lock()
+	bwUsed := s.bpfRunner.GetStats()
 	bwInfos := make([]*pb.BandwidthInfo, 0)
 	for _, bw := range s.BwCache.BandwidthResults {
+		trafficSent, exists := bwUsed[bw.Host]
+
 		bwInfo := pb.BandwidthInfo{Host: bw.Host, SendBw: float32(bw.Snd), ReceiveBw: float32(bw.Rcv)}
+		if exists {
+			bwInfo.RecvBwUsed = float32(trafficSent)
+		}
 		bwInfos = append(bwInfos, &bwInfo)
 	}
 	trInfos := make([]*pb.TracerouteInfo, 0)

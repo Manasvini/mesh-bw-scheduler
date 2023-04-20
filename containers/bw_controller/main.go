@@ -34,7 +34,7 @@ func main() {
 	controller := bw_controller.NewController(promClient, netmonClient, kubeClient)
 	controller.UpdateNodes()
 	controller.UpdatePods()
-	//controller.UpdatePodMetrics()
+	controller.UpdatePodMetrics()
 	controller.UpdateNetMetrics()
-	//controller.EvaluateDeployment()
+	controller.EvaluateDeployment()
 }
