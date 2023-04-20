@@ -30,14 +30,39 @@ func NewPrometheusClient(address string, metrics []string) *PromClient {
 	return client
 }
 
-func (client *PromClient) UpdatePodMetrics(pods *PodSet, podDeps *PodDeps) {
+func (client *PromClient) GetPodMetrics() (PodSet, PodDeps) {
+
+	pods := make(PodSet, 0)
+	podDeps := make(PodDeps, 0)
 	for _, metric := range client.metrics {
-		*pods, *podDeps = client.updateMetric(metric, *pods, *podDeps)
+		curPods, curPodDeps := client.updateMetric(metric)
+		for podName, curPod := range curPods {
+			pods[podName] = curPod
+			_, exists := podDeps[podName]
+			if !exists {
+				podDeps[podName] = make(map[string]PodDependency, 0)
+			}
+		}
+		for src, depPods := range curPodDeps {
+			for dst, dep := range depPods {
+				podDeps[src][dst] = dep
+			}
+		}
 	}
+	for src, deps := range podDeps {
+		for dst, dep := range deps {
+			logger(fmt.Sprintf("Got dep %s -> %s bw = %f\n", src, dst, dep.bandwidth))
+		}
+	}
+	logger(fmt.Sprintf("Got %d pods", len(pods)))
+	return pods, podDeps
+
 }
 
-func (client *PromClient) updateMetric(metric string, pods PodSet, podDeps PodDeps) (PodSet, PodDeps) {
+func (client *PromClient) updateMetric(metric string) (PodSet, PodDeps) {
 	fmt.Println(metric)
+	pods := make(PodSet, 0)
+	podDeps := make(PodDeps, 0)
 	fmt.Printf("controller knows about %d pods\n", len(pods))
 	v1api := v1.NewAPI(client.promClient)
 	ctx, cancel := context.WithTimeout(context.Background(), TIMEOUT)
@@ -72,43 +97,39 @@ func (client *PromClient) updateMetric(metric string, pods PodSet, podDeps PodDe
 				//fmt.Printf("metric = %s src = %s dest = %s metric value = %s\n", metric, src, dst, value.Value)
 				srcStr := string(src)
 				dstStr := string(dst)
+				_, srcExist := pods[srcStr]
+				_, dstExist := pods[dstStr]
+				if !srcExist {
+					pods[srcStr] = Pod{podName: srcStr}
+					podDeps[srcStr] = make(map[string]PodDependency, 0)
+				}
+				if !dstExist {
+					pods[dstStr] = Pod{podName: dstStr}
+					podDeps[dstStr] = make(map[string]PodDependency, 0)
+				}
 				if metric == SND_BW {
-					srcPod, srcExist := pods[srcStr]
-					dstPod, dstExist := pods[dstStr]
-
-					if srcExist && dstExist {
-						srcpname, dstpname := srcPod.podId, dstPod.podId
-
-						depPods, exist := podDeps[srcpname]
-						if exist {
-							depReq, reqExist := depPods[dstpname]
-							if reqExist {
-								depReq.bandwidth = float64(value.Value)
-								depPods[dstpname] = depReq
-								podDeps[srcpname] = depPods
-
-								logger(fmt.Sprintf("Got metric pod %s -> %s snd bw = %f", srcpname, dstpname, depReq.bandwidth))
-							}
-						}
+					srcpname, dstpname := srcStr, dstStr
+					depPods, _ := podDeps[srcpname]
+					depReq, depExist := depPods[dstpname]
+					if !depExist {
+						depReq = PodDependency{source: srcStr, destination: dstStr, bandwidth: 0, latency: 0}
 					}
+					depReq.bandwidth = float64(value.Value)
+					depPods[dstpname] = depReq
+					podDeps[srcpname] = depPods
+
+					//logger(fmt.Sprintf("Got metric pod %s -> %s snd bw = %f", srcpname, dstpname, depReq.bandwidth))
 				} else if metric == RCV_BW {
-					srcPod, srcExist := pods[srcStr]
-					dstPod, dstExist := pods[dstStr]
-
-					if srcExist && dstExist {
-						srcpname, dstpname := srcPod.podId, dstPod.podId
-						depPods, exist := podDeps[dstpname]
-						if exist {
-							depReq, reqExist := depPods[srcpname]
-							if reqExist {
-								depReq.bandwidth = float64(value.Value)
-								depPods[srcpname] = depReq
-								podDeps[dstpname] = depPods
-								logger(fmt.Sprintf("Got metric pod %s -> %s recv bw = %f", srcpname, dstpname, depReq.bandwidth))
-							}
-						}
+					srcpname, dstpname := srcStr, dstStr
+					depPods, _ := podDeps[dstpname]
+					depReq, depExist := depPods[srcpname]
+					if !depExist {
+						depReq = PodDependency{source: dstStr, destination: srcStr, bandwidth: 0, latency: 0}
 					}
-
+					depReq.bandwidth = float64(value.Value)
+					depPods[srcpname] = depReq
+					podDeps[dstpname] = depPods
+					//logger(fmt.Sprintf("Got metric pod %s -> %s recv bw = %f", srcpname, dstpname, depReq.bandwidth))
 				}
 			} else {
 				for tag, val := range value.Metric {

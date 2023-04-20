@@ -25,6 +25,8 @@ func NewController(promClient *PromClient, netmonClient *NetmonClient, kubeClien
 	controller.podDepActual = make(PodDeps, 0)
 	controller.pods = make(PodSet, 0)
 	controller.nodes = make(map[string]string, 0)
+	controller.linksFree = make(LinkSet, 0)
+	controller.pathsFree = make(PathSet, 0)
 	return controller
 }
 
@@ -42,12 +44,43 @@ func (controller *Controller) UpdateNodes() {
 	}
 }
 func (controller *Controller) UpdatePodMetrics() {
-	controller.promClient.UpdatePodMetrics(&(controller.pods), &(controller.podDepActual))
+	_, podDeps := controller.promClient.GetPodMetrics()
+	for src, deps := range podDeps {
+		fmt.Printf("src = %s\n", src)
+		_, exists := controller.pods[src]
+		if !exists {
+			continue
+		}
+		fmt.Printf("controller knows pod %s\n", src)
+		podReqs, reqExists := controller.podDepReq[src]
+		if !reqExists {
+			continue
+		}
+		podActuals, actualExists := controller.podDepActual[src]
+		if !actualExists {
+			podActuals = make(map[string]PodDependency, 0)
+		}
+		fmt.Println("Process deps for pod %s\n", src)
+		for dst, podDep := range deps {
+			_, exists := podReqs[dst]
+			if !exists {
+				continue
+			}
+			podActual, exists := podActuals[dst]
+			if !exists {
+				podActual = podDep
+			}
+			fmt.Printf("Got actual %s -> %s bw = %f\n", src, dst, podDep.bandwidth)
+			podActual.bandwidth = podDep.bandwidth
+			podActuals[dst] = podActual
+		}
+		controller.podDepActual[src] = podActuals
+	}
 }
 
 // Update network bw available between each pair of nodes
 func (controller *Controller) UpdateNetMetrics() {
-	links, _ := controller.netmonClient.GetStats()
+	links, paths := controller.netmonClient.GetStats()
 	for src, dstLinks := range links {
 		for dst, link := range dstLinks {
 
@@ -57,6 +90,32 @@ func (controller *Controller) UpdateNetMetrics() {
 				fmt.Println("either source or destination dopn't exist!")
 			}
 			fmt.Printf("src = %s dst = %s cap = %f\n", srcNode, dstNode, link.bandwidth)
+			_, lExists := controller.linksFree[srcNode]
+			if !lExists {
+				controller.linksFree[srcNode] = make(map[string]Link, 0)
+
+			}
+			srcLinks, _ := controller.linksFree[srcNode]
+			srcLinks[dstNode] = link
+			controller.linksFree[srcNode] = srcLinks
+		}
+	}
+
+	for src, dstPaths := range paths {
+		for dst, path := range dstPaths {
+
+			srcNode, exists := controller.nodes[src]
+			dstNode, dexists := controller.nodes[dst]
+			if !exists || !dexists {
+				fmt.Println("either source or destination dopn't exist!")
+			}
+			fmt.Printf("src = %s dst = %s cap = %f\n", srcNode, dstNode, path.bandwidth)
+			srcPaths, pExists := controller.pathsFree[srcNode]
+			if !pExists {
+				srcPaths = make(map[string]Path, 0)
+			}
+			srcPaths[dstNode] = path
+			controller.pathsFree[srcNode] = srcPaths
 		}
 	}
 
@@ -86,7 +145,7 @@ func (controller *Controller) UpdatePods() {
 			podName := getPodName(kubePod.Metadata.Name)
 			podInfo := Pod{podName: podName, podId: kubePod.Metadata.Name, deployedNode: kubePod.Spec.NodeName}
 			podSet[podName] = podInfo
-			logger(fmt.Sprintf("Got pod %s", kubePod.Metadata.Name))
+			//logger(fmt.Sprintf("Got pod %s", kubePod.Metadata.Name))
 			podDeps[podName] = make(map[string]PodDependency, 0)
 		}
 	}
@@ -159,11 +218,33 @@ func (controller *Controller) UpdatePods() {
 // For all the pods that the controller knows of, find the bw used by the pod and the bw available to the pod
 // Check if the node has sufficient bw to all dependees of the pod
 func (controller *Controller) EvaluateDeployment() {
-	for srcPod, podDeps := range controller.podDepReq {
-		for dstPod, podReq := range podDeps {
-			podActual, exists := controller.podDepActual[srcPod][dstPod]
+	fmt.Printf("REQ\n")
+
+	for src, srcPaths := range controller.pathsFree {
+		for dst, _ := range srcPaths {
+			fmt.Printf("src = %s dst = %s\n", src, dst)
+		}
+	}
+	for src, podDeps := range controller.podDepReq {
+		for dst, podReq := range podDeps {
+			podActual, exists := controller.podDepActual[src][dst]
 			if exists {
-				fmt.Printf("Pod dependency src = %s dst = %s bw req = %f actual = %f\n", srcPod, dstPod, podReq.bandwidth, podActual.bandwidth)
+				fmt.Printf("Pod dependency src = %s dst = %s bw req = %f actual = %f\n", src, dst, podReq.bandwidth, podActual.bandwidth)
+				srcPod, _ := controller.pods[src]
+				dstPod, _ := controller.pods[dst]
+				srcPaths, nodeExists := controller.pathsFree[srcPod.deployedNode]
+				fmt.Printf("node for %s = %s and %s = %s \n", src, srcPod.deployedNode, dst, dstPod.deployedNode)
+				if srcPod.deployedNode == dstPod.deployedNode {
+					logger(fmt.Sprintf("pod %s and %s on same node, skipping", src, dst))
+					continue
+				}
+				if nodeExists {
+
+					path, pathExists := srcPaths[dstPod.deployedNode]
+					if pathExists {
+						fmt.Printf("available bw = %f\n", path.bandwidth)
+					}
+				}
 			}
 		}
 	}

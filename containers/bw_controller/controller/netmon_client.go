@@ -89,14 +89,28 @@ func (netmonClient *NetmonClient) GetStats() (LinkSet, PathSet) {
 		curLinks, curPaths := netmonClient.GetStatsOne(addr)
 		if curLinks != nil && curPaths != nil {
 			host := strings.Split(addr, ":")[0]
-			_, existsP := curPaths[host]
-			_, existsL := curLinks[host]
+			srcPaths, existsP := curPaths[host]
+			srcLinks, existsL := curLinks[host]
 			if !existsP || !existsL {
 				fmt.Printf("No links or paths\n")
 				continue
 			}
-			paths[host] = curPaths[host]
-			links[host] = curLinks[host]
+			_, exists := links[host]
+			if !exists {
+				links[host] = make(map[string]Link, 0)
+			}
+			_, exists = paths[host]
+			if !exists {
+				paths[host] = make(map[string]Path, 0)
+			}
+			for dst, path := range srcPaths {
+				paths[host][dst] = path
+				logger(fmt.Sprintf("added path %s to %s with bw = %f\n", host, dst, path.bandwidth))
+			}
+			for dst, link := range srcLinks {
+				links[host][dst] = link
+			}
+
 			fmt.Printf("add %d links to %s \n", len(curLinks[host]), host)
 		}
 	}
@@ -147,10 +161,12 @@ func (netmonClient *NetmonClient) GetStatsOne(address string) (LinkSet, PathSet)
 			lMap[bw.Host] = link
 		}
 		path, exists := pMap[bw.Host]
-		if exists && len(path.hops) == 1 && address != bw.Host {
+		fmt.Printf("src = %s dst = %s hops=%d bw = %f\n", host, bw.Host, len(path.hops), bw.SendBw)
+		if exists && len(path.hops) == 1 && host != bw.Host {
 			path.bandwidth = float64(bw.SendBw)
 		}
-		fmt.Printf("Got bw for %s to %s\n", host, bw.Host)
+		pMap[bw.Host] = path
+		fmt.Printf("Got bw for %s to %s = %f\n", host, bw.Host, bw.SendBw)
 	}
 	links[host] = lMap
 	return links, paths
