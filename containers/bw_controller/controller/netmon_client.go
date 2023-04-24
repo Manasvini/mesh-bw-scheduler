@@ -132,7 +132,7 @@ func (netmonClient *NetmonClient) GetStats() (LinkSet, PathSet, TrafficSet) {
 func (netmonClient *NetmonClient) GetStatsOne(address string) (LinkSet, PathSet, TrafficSet) {
 	var links LinkSet
 	var paths PathSet
-
+	logger("host= " + address)
 	traffic := make(TrafficSet, 0)
 
 	host := strings.Split(address, ":")[0]
@@ -148,9 +148,9 @@ func (netmonClient *NetmonClient) GetStatsOne(address string) (LinkSet, PathSet,
 		log.Fatalf("could not greet: %v", err)
 	}
 	bwInfos := response.BwInfo
-	fmt.Printf("Got %d bw stats\n", len(bwInfos))
+	logger(fmt.Sprintf("Got %d bw stats\n", len(bwInfos)))
 	trInfo := response.TrInfo
-	fmt.Printf("Got %d traceroutes\n", len(trInfo))
+	logger(fmt.Sprintf("Got %d traceroutes\n", len(trInfo)))
 
 	paths = make(PathSet, 0)
 	pMap := make(map[string]Path, 0)
@@ -181,17 +181,18 @@ func (netmonClient *NetmonClient) GetStatsOne(address string) (LinkSet, PathSet,
 		if !exists {
 			tMap = make(map[string]Traffic, 0)
 		}
+
 		tMap[tDst] = Traffic{source: tSrc, destination: tDst, bytes: float64(bw.RecvBwUsed)}
-		fmt.Printf("Got traffic src = %s dst = %s bytes = %f\n", tSrc, tDst, bw.RecvBwUsed)
+		logger(fmt.Sprintf("Got traffic src = %s dst = %s bytes = %f\n", tSrc, tDst, bw.RecvBwUsed))
 		traffic[tSrc] = tMap
 
 		path, exists := pMap[bw.Host]
-		fmt.Printf("src = %s dst = %s hops=%d bw = %f\n", host, bw.Host, len(path.hops), bw.SendBw)
+		logger(fmt.Sprintf("src = %s dst = %s hops=%d bw = %f\n", host, bw.Host, len(path.hops), bw.SendBw))
 		if exists && len(path.hops) == 1 && host != bw.Host {
 			path.bandwidth = float64(bw.SendBw)
 		}
 		pMap[bw.Host] = path
-		fmt.Printf("Got bw for %s to %s = %f\n", host, bw.Host, bw.SendBw)
+		logger(fmt.Sprintf("Got bw for %s to %s = %f\n", host, bw.Host, bw.SendBw))
 	}
 	links[host] = lMap
 	return links, paths, traffic

@@ -4,6 +4,7 @@ type Pod struct {
 	podId        string
 	deployedNode string
 	podName      string
+	namespace    string
 }
 
 type PodDependency struct {

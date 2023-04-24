@@ -6,7 +6,7 @@ export PATH=$PATH:/usr/local/go/bin >> ~/.bashrc
 
 source ~/.bashrc 
 
-sudo apt install -y bison build-essential cmake flex git libedit-dev \
+sudo apt install -y traceroute bison build-essential cmake flex git libedit-dev \
   llvm-10  llvm10.0-dev clang-10 libclang-10.0-dev python zlib1g-dev libelf-dev libfl-dev python3-setuptools
 git clone --recurse-submodules  https://github.com/iovisor/bcc.git
 

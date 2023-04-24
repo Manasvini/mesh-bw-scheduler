@@ -5,6 +5,10 @@ import (
 	"flag"
 	"io/ioutil"
 	"log"
+	"os"
+	"os/signal"
+	"syscall"
+	"time"
 
 	bw_controller "github.gatech.edu/cs-epl/mesh-bw-scheduler/bwcontroller"
 )
@@ -29,12 +33,20 @@ func main() {
 	flag.StringVar(&configFile, "config", "./config.json", "Config file path")
 	config := parseConfig(configFile)
 	promClient := bw_controller.NewPrometheusClient(config.PromAddr, config.PromMetrics)
-	kubeClient := bw_controller.NewKubeClient(config.KubeProxyAddr, config.KubeNodesEndpoint, config.KubePodsEndpoint, config.KubeNamespaces)
+	kubeClient := bw_controller.NewKubeClient(config.KubeProxyAddr, config.KubeNodesEndpoint, config.KubePodsEndpoint, config.KubeDeleteEndpoint, config.KubeNamespaces)
 	netmonClient := bw_controller.NewNetmonClient(config.NetmonAddrs)
 	controller := bw_controller.NewController(promClient, netmonClient, kubeClient)
-	controller.UpdateNodes()
-	controller.UpdatePods()
-	controller.UpdatePodMetrics()
-	controller.UpdateNetMetrics()
-	controller.EvaluateDeployment()
+
+	monCh := controller.MonitorState(time.Duration(config.MonDurationSeconds) * time.Second)
+	signalChannel := make(chan os.Signal, 2)
+	signal.Notify(signalChannel, os.Interrupt, syscall.SIGTERM)
+
+	sig := <-signalChannel
+	switch sig {
+	case os.Interrupt:
+		monCh <- true
+	case syscall.SIGTERM:
+		//handle SIGTERM
+		monCh <- true
+	}
 }

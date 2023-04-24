@@ -5,6 +5,7 @@ import (
 	"sort"
 	"strconv"
 	"strings"
+	"time"
 )
 
 type Controller struct {
@@ -166,7 +167,7 @@ func (controller *Controller) UpdatePods() {
 	for _, podList := range podLists {
 		for _, kubePod := range podList.Items {
 			podName := getPodName(kubePod.Metadata.Name)
-			podInfo := Pod{podName: podName, podId: kubePod.Metadata.Name, deployedNode: kubePod.Spec.NodeName}
+			podInfo := Pod{podName: podName, podId: kubePod.Metadata.Name, deployedNode: kubePod.Spec.NodeName, namespace: kubePod.Metadata.Namespace}
 			podSet[podName] = podInfo
 			//logger(fmt.Sprintf("Got pod %s", kubePod.Metadata.Name))
 			podDeps[podName] = make(map[string]PodDependency, 0)
@@ -211,12 +212,8 @@ func (controller *Controller) UpdatePods() {
 		}
 	}
 	for pname, pod := range podSet {
-		_, cExists := controller.pods[pname]
-		if !cExists {
-			controller.pods[pname] = pod
-
-		}
-		_, cExists = controller.podDepReq[pname]
+		controller.pods[pname] = pod
+		_, cExists := controller.podDepReq[pname]
 		if !cExists {
 			controller.podDepReq[pname] = make(map[string]PodDependency, 0)
 		}
@@ -265,9 +262,11 @@ func (controller *Controller) CheckPodReqSatisfiedOne(bwNeeded map[string]map[st
 			dstPod, _ := controller.pods[dst]
 			actual, _ := controller.podDepActual[pod.podName][dst]
 			dstNode := dstPod.deployedNode
-			if actual.bandwidth+bwAvailable[pod.deployedNode][dstNode] < dep.bandwidth {
+			if dstNode != pod.deployedNode && actual.bandwidth+bwAvailable[pod.deployedNode][dstNode] < dep.bandwidth {
 				diff := dep.bandwidth - actual.bandwidth + bwAvailable[pod.deployedNode][dstNode]
+				logger(fmt.Sprintf("Node %s src pod %s dst pod %s dst Node %s diff %f\n", pod.deployedNode, pod.podName, dst, dstNode, diff))
 				shortfall[dstNode] = diff
+
 				totalShortfall += diff
 			}
 		}
@@ -286,6 +285,7 @@ func (controller *Controller) findPodsToReschedule(bwNeeded map[string]map[strin
 	podList := controller.getPodsOnNode(node)
 	for _, pod := range podList {
 		satisfied, _, totalShortfall := controller.CheckPodReqSatisfiedOne(bwNeeded, bwAvailable, pod)
+		logger(fmt.Sprintf("pod = %s shortfall=%f node=%s\n", pod.podName, totalShortfall, pod.deployedNode))
 		if !satisfied {
 			pList = append(pList, Pair{Key: pod.podName, Value: totalShortfall})
 		}
@@ -308,7 +308,7 @@ func (controller *Controller) EvaluateDeployment() {
 	bwAvailable := make(map[string]map[string]float64, 0)
 	for src, srcPaths := range controller.pathsFree {
 		for dst, _ := range srcPaths {
-			fmt.Printf("src = %s dst = %s\n", src, dst)
+			logger(fmt.Sprintf("src = %s dst = %s\n", src, dst))
 		}
 	}
 	// initialize bw needed at each node
@@ -316,10 +316,10 @@ func (controller *Controller) EvaluateDeployment() {
 		for dst, podReq := range podDeps {
 			podActual, exists := controller.podDepActual[src][dst]
 			if exists {
-				fmt.Printf("Pod dependency src = %s dst = %s bw req = %f actual = %f\n", src, dst, podReq.bandwidth, podActual.bandwidth)
+				logger(fmt.Sprintf("Pod dependency src = %s dst = %s bw req = %f actual = %f\n", src, dst, podReq.bandwidth, podActual.bandwidth))
 				srcPod, _ := controller.pods[src]
 				dstPod, _ := controller.pods[dst]
-				fmt.Printf("node for %s = %s and %s = %s \n", src, srcPod.deployedNode, dst, dstPod.deployedNode)
+				logger(fmt.Sprintf("node for %s = %s and %s = %s \n", src, srcPod.deployedNode, dst, dstPod.deployedNode))
 				if srcPod.deployedNode == dstPod.deployedNode {
 					logger(fmt.Sprintf("pod %s and %s on same node, skipping", src, dst))
 					continue
@@ -377,8 +377,31 @@ func (controller *Controller) EvaluateDeployment() {
 	for _, node := range nodes {
 		needToReschedule, pod := controller.findPodsToReschedule(bwNeeded, bwAvailable, node)
 		if needToReschedule {
-			fmt.Printf("Pod %s needs to be rescheduled\n", pod.podName)
+			fmt.Printf("Pod %s ns %s needs to be rescheduled\n", pod.podName, pod.namespace)
+			controller.kubeClient.DeletePod(pod.podId, pod.namespace)
 		}
 	}
 
+}
+
+func (controller *Controller) MonitorState(delay time.Duration) chan bool {
+	stop := make(chan bool)
+	go func() {
+		logger("Monitor started")
+		for {
+
+			controller.UpdateNodes()
+			controller.UpdatePods()
+			controller.UpdatePodMetrics()
+			controller.UpdateNetMetrics()
+			controller.EvaluateDeployment()
+			select {
+			case <-time.After(delay):
+			case <-stop:
+				logger("Monitor stopped")
+				return
+			}
+		}
+	}()
+	return stop
 }

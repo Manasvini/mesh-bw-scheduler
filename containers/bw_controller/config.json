@@ -6,15 +6,19 @@
 	],
 	"PromAddr": "http://0.0.0.0:9090/",
 	"NetmonAddrs":[
-		"192.168.160.42:50051"
-		
+		"192.168.160.42:50051",
+		"192.168.160.43:50051",
+		"192.168.160.44:50051",
+		"192.168.160.45:50051"
 	],
 	"KubeProxyAddr": "127.0.0.1:8001",
 	"KubeNodesEndpoint": "/api/v1/nodes",
 	"KubePodsEndpoint" : "/api/v1/namespaces/%s/pods/",
+	"KubeDeleteEndpoint": "/api/v1/namespaces/%s/pods/%s",
 	"KubeNamespaces" :[
 		"epl",
 		"socialnetwork",
 		"camera"
-	]
+	],
+	"MonDurationSeconds":15
 }

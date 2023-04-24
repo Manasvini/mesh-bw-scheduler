@@ -23,14 +23,15 @@ import (
 )
 
 type KubeClient struct {
-	address       string
-	namespaces    []string
-	nodesEndpoint string
-	podsEndpoint  string
+	address        string
+	namespaces     []string
+	nodesEndpoint  string
+	podsEndpoint   string
+	deleteEndpoint string
 }
 
-func NewKubeClient(address string, nodesEndpoint string, podsEndpoint string, namespaces []string) *KubeClient {
-	client := &KubeClient{address: address, nodesEndpoint: nodesEndpoint, podsEndpoint: podsEndpoint, namespaces: namespaces}
+func NewKubeClient(address string, nodesEndpoint string, podsEndpoint string, deleteEndpoint string, namespaces []string) *KubeClient {
+	client := &KubeClient{address: address, nodesEndpoint: nodesEndpoint, podsEndpoint: podsEndpoint, deleteEndpoint: deleteEndpoint, namespaces: namespaces}
 	success := client.WaitForProxy()
 	if !success {
 		panic("Unable to connect to K3s proxy")
@@ -130,4 +131,31 @@ func (client *KubeClient) GetPodsInNamespace(ns string) (*PodList, error) {
 		return nil, err
 	}
 	return &podList, nil
+}
+
+func (client *KubeClient) DeletePod(podname string, namespace string) error {
+
+	v := url.Values{}
+	v.Add("fieldSelector", "status.phase=Running")
+
+	request := &http.Request{
+		Header: make(http.Header),
+		Method: http.MethodDelete,
+		URL: &url.URL{
+			Host:     client.address,
+			Path:     fmt.Sprintf(client.deleteEndpoint, namespace, podname),
+			RawQuery: v.Encode(),
+			Scheme:   "http",
+		},
+	}
+	request.Header.Set("Accept", "application/json, */*")
+
+	resp, err := http.DefaultClient.Do(request)
+
+	if err != nil {
+		return nil
+	}
+	logger(fmt.Sprintf("got response %s", resp.Body))
+
+	return err
 }
