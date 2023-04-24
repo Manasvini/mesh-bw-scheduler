@@ -18,7 +18,7 @@ The setup is a little wonky because bcc (BPF Compiler Collection) from IOVisor i
 Setup the dependencies first  
 ```shell  
 $ sudo apt install -y bison build-essential cmake flex git libedit-dev \
-  llvm10 llvm10.0-dev clang-10 libclang-10-.0dev python zlib1g-dev libelf-dev libfl-dev python3-setuptools  
+  llvm10 llvm10.0-dev clang-10 libclang-10.0dev python zlib1g-dev libelf-dev libfl-dev python3-setuptools  
 ```   
 Clone the bcc repo:  
 ```shell  
