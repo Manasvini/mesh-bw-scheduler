@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: epl-bw-controller
+  name: epl-bw-controller
+  namespace: epl
+spec:
+  selector:
+    matchLabels:
+      app: epl-bw-controller
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: epl-bw-controller
+        name: epl-bw-controller
+    spec:
+      serviceAccount: default
+      containers:
+        - name: epl-bw-controller
+          image: bw-controller:latest
+          imagePullPolicy: Never
+          resources:
+            requests:
+              cpu: '0.1'
+        - name: sidecar-proxy
+          image: sidecar:latest
+          imagePullPolicy: Never
+
