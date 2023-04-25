@@ -159,7 +159,7 @@ func TestDepGraphComponents(t *testing.T) {
 	wantPodGraph := map[string]map[string]bool{"pod_0": {"pod_1": true}, "pod_1": {"pod_2": true}}
 
 	podList := make([]Pod, 0)
-	for _, podName := range podgroups[0] {
+	for podName, _ := range podgroups[0] {
 		podList = append(podList, pods[podName])
 		fmt.Printf("pod = %s\n", podName)
 	}
@@ -181,7 +181,7 @@ func TestDepGraphIncompleteComponents(t *testing.T) {
 
 	wantPodGraph := map[string]map[string]bool{"pod_4": {"pod_5": true}}
 	podList := make([]Pod, 0)
-	for _, podName := range podgroups[0] {
+	for podName, _ := range podgroups[0] {
 		podList = append(podList, pods[podName])
 	}
 
