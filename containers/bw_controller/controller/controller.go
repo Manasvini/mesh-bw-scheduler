@@ -6,31 +6,33 @@ import (
 	"strconv"
 	"strings"
 	"time"
+
+	netmon_client "github.gatech.edu/cs-epl/mesh-bw-scheduler/netmon_client"
 )
 
 type Controller struct {
 	promClient   *PromClient
-	netmonClient *NetmonClient
+	netmonClient *netmon_client.NetmonClient
 	kubeClient   *KubeClient
 	pods         PodSet
 	podDepActual PodDeps
 	podDepReq    PodDeps
 	nodes        map[string]string // ip -> name map
-	linksFree    LinkSet
-	pathsFree    PathSet
-	pathsUsed    TrafficSet
+	linksFree    netmon_client.LinkSet
+	pathsFree    netmon_client.PathSet
+	pathsUsed    netmon_client.TrafficSet
 	metrics      []string
 }
 
-func NewController(promClient *PromClient, netmonClient *NetmonClient, kubeClient *KubeClient) *Controller {
+func NewController(promClient *PromClient, netmonClient *netmon_client.NetmonClient, kubeClient *KubeClient) *Controller {
 	controller := &Controller{promClient: promClient, netmonClient: netmonClient, kubeClient: kubeClient}
 	controller.podDepReq = make(PodDeps, 0)
 	controller.podDepActual = make(PodDeps, 0)
 	controller.pods = make(PodSet, 0)
 	controller.nodes = make(map[string]string, 0)
-	controller.linksFree = make(LinkSet, 0)
-	controller.pathsFree = make(PathSet, 0)
-	controller.pathsUsed = make(TrafficSet, 0)
+	controller.linksFree = make(netmon_client.LinkSet, 0)
+	controller.pathsFree = make(netmon_client.PathSet, 0)
+	controller.pathsUsed = make(netmon_client.TrafficSet, 0)
 	return controller
 }
 
@@ -93,10 +95,10 @@ func (controller *Controller) UpdateNetMetrics() {
 			if !exists || !dexists {
 				fmt.Println("either source or destination dopn't exist!")
 			}
-			fmt.Printf("src = %s dst = %s cap = %f\n", srcNode, dstNode, link.bandwidth)
+			fmt.Printf("src = %s dst = %s cap = %f\n", srcNode, dstNode, link.Bandwidth)
 			_, lExists := controller.linksFree[srcNode]
 			if !lExists {
-				controller.linksFree[srcNode] = make(map[string]Link, 0)
+				controller.linksFree[srcNode] = make(map[string]netmon_client.Link, 0)
 
 			}
 			srcLinks, _ := controller.linksFree[srcNode]
@@ -112,10 +114,10 @@ func (controller *Controller) UpdateNetMetrics() {
 			if !exists || !dexists {
 				fmt.Println("either source or destination dopn't exist!")
 			}
-			fmt.Printf("src = %s dst = %s cap = %f\n", srcNode, dstNode, path.bandwidth)
+			fmt.Printf("src = %s dst = %s cap = %f\n", srcNode, dstNode, path.Bandwidth)
 			_, pExists := controller.pathsFree[srcNode]
 			if !pExists {
-				controller.pathsFree[srcNode] = make(map[string]Path, 0)
+				controller.pathsFree[srcNode] = make(map[string]netmon_client.Path, 0)
 
 			}
 			srcPaths, _ := controller.pathsFree[srcNode]
@@ -132,10 +134,10 @@ func (controller *Controller) UpdateNetMetrics() {
 			if !exists || !dexists {
 				fmt.Println("either source or destination dopn't exist!")
 			}
-			fmt.Printf("src = %s dst = %s cap = %f\n", srcNode, dstNode, traffic.bytes)
+			fmt.Printf("src = %s dst = %s cap = %f\n", srcNode, dstNode, traffic.Bytes)
 			srcTraf, tExists := controller.pathsUsed[srcNode]
 			if !tExists {
-				controller.pathsUsed[srcNode] = make(map[string]Traffic, 0)
+				controller.pathsUsed[srcNode] = make(map[string]netmon_client.Traffic, 0)
 			}
 			srcTraf, _ = controller.pathsUsed[srcNode]
 			srcTraf[dstNode] = traffic
@@ -344,7 +346,7 @@ func (controller *Controller) EvaluateDeployment() {
 					}
 					_, dExists := controller.pathsFree[dstPod.deployedNode]
 					if dExists {
-						bwAvailable[srcPod.deployedNode][dstPod.deployedNode] = srcNodeBws[dstPod.deployedNode].bandwidth
+						bwAvailable[srcPod.deployedNode][dstPod.deployedNode] = srcNodeBws[dstPod.deployedNode].Bandwidth
 					}
 				}
 			}

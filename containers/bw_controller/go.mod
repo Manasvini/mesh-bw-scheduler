@@ -6,7 +6,10 @@ replace github.gatech.edu/cs-epl/mesh-bw-scheduler/bwcontroller => /home/cvuser/
 
 replace github.gatech.edu/cs-epl/mesh-bw-scheduler/netmon => /home/cvuser/mesh-bw-scheduler/containers/netmon/proto
 
-require github.gatech.edu/cs-epl/mesh-bw-scheduler/bwcontroller v0.0.0-00010101000000-000000000000
+require (
+	github.gatech.edu/cs-epl/mesh-bw-scheduler/bwcontroller v0.0.0-00010101000000-000000000000
+	github.gatech.edu/cs-epl/mesh-bw-scheduler/netmon_client v0.0.0-00010101000000-000000000000
+)
 
 require (
 	github.com/golang/protobuf v1.5.3 // indirect
@@ -23,3 +26,5 @@ require (
 	google.golang.org/grpc v1.54.0 // indirect
 	google.golang.org/protobuf v1.30.0 // indirect
 )
+
+replace github.gatech.edu/cs-epl/mesh-bw-scheduler/netmon_client => /home/cvuser/mesh-bw-scheduler/containers/netmon/netmon_client

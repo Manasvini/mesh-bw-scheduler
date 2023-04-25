@@ -11,6 +11,7 @@ import (
 	"time"
 
 	bw_controller "github.gatech.edu/cs-epl/mesh-bw-scheduler/bwcontroller"
+	netmon_client "github.gatech.edu/cs-epl/mesh-bw-scheduler/netmon_client"
 )
 
 func parseConfig(filename string) Config {
@@ -34,7 +35,7 @@ func main() {
 	config := parseConfig(configFile)
 	promClient := bw_controller.NewPrometheusClient(config.PromAddr, config.PromMetrics)
 	kubeClient := bw_controller.NewKubeClient(config.KubeProxyAddr, config.KubeNodesEndpoint, config.KubePodsEndpoint, config.KubeDeleteEndpoint, config.KubeNamespaces)
-	netmonClient := bw_controller.NewNetmonClient(config.NetmonAddrs)
+	netmonClient := netmon_client.NewNetmonClient(config.NetmonAddrs)
 	controller := bw_controller.NewController(promClient, netmonClient, kubeClient)
 
 	monCh := controller.MonitorState(time.Duration(config.MonDurationSeconds) * time.Second)
