@@ -178,14 +178,14 @@ func (controller *Controller) UpdatePods() {
 			podName := getPodName(kubePod.Metadata.Name)
 			for k, v := range kubePod.Metadata.Annotations {
 
-				if strings.Contains(k, "dependee") {
+				if strings.Contains(k, "bw") || strings.Contains(k, "latency") {
 					vals := strings.Split(k, ".")
 					if len(vals) < 3 {
 						logger(fmt.Sprintf("ERROR: Incorrect annotation format for pod dependency %s", k))
 					}
 
 					dependeeName := vals[1]
-					qtyName := vals[2]
+					qtyName := vals[0]
 					qty, err := strconv.ParseFloat(v, 64)
 					if err != nil {
 						logger("error parsing float value " + v)
