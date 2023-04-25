@@ -18,6 +18,8 @@ import (
 	"os/signal"
 	"sync"
 	"syscall"
+
+	netmon_client "github.gatech.edu/cs-epl/mesh-bw-scheduler/netmon_client"
 )
 
 var (
@@ -28,6 +30,8 @@ var (
 	podsEndpoint      = "/api/v1/namespaces/%s/pods/"
 	watchPodsEndpoint = "/api/v1/watch/namespaces/%s/pods"
 	configEndpoint    = "/apis/apps/v1/namespaces/epl/deployments/epl-scheduler"
+	metricsEndpoint   = "/apis/metrics.k8s.io/v1beta1/nodes"
+	addrs             = []string{"192.168.160.42:50051"}
 )
 
 const schedulerName = "epl-scheduler"
@@ -41,11 +45,13 @@ func main() {
 		nodesEndpoint:     nodesEndpoint,
 		podsEndpoint:      podsEndpoint,
 		watchPodsEndpoint: watchPodsEndpoint,
+		metricsEndpoint:   metricsEndpoint,
 		configEndpoint:    configEndpoint,
 		namespaces:        ns}
+
 	done := client.WaitForProxy()
 
-	dagSched := &DagScheduler{client: &client, processorLock: &sync.Mutex{}, podProcessor: NewPodProcessor()}
+	dagSched := &DagScheduler{client: &client, processorLock: &sync.Mutex{}, podProcessor: NewPodProcessor(), netmonClient: netmon_client.NewNetmonClient(addrs)}
 	if done == 0 {
 		logger("Failed to connect to proxy.")
 		os.Exit(0)

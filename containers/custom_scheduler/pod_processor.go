@@ -164,7 +164,7 @@ func isInList(elem string, list []string) bool {
 }
 
 // Perform bfs starting from PodName
-func (pp *PodProcessor) GetPodGroup(podName string, podGraph map[string]map[string]bool) []string {
+func (pp *PodProcessor) GetPodGroup(podName string, podGraph map[string]map[string]bool) map[string]map[string]bool {
 	visited := make(map[string]bool, 0)
 	visited[podName] = true
 	queue := make([]string, 0)
@@ -194,20 +194,26 @@ func (pp *PodProcessor) GetPodGroup(podName string, podGraph map[string]map[stri
 			}
 		}
 	}
-	podList := make([]string, 0)
+	//podList := make([]string, 0)
+	podSubgraph := make(map[string]map[string]bool, 0)
 	for pod, v := range visited {
 		if v == true {
-			podList = append(podList, pod)
+			//podList = append(podList, pod)
+			podSubgraph[pod] = make(map[string]bool, 0)
+			for neighbor, _ := range podGraph[pod] {
+				podSubgraph[pod][neighbor] = true
+			}
+
 		}
 	}
-	return podList
+	return podSubgraph
 }
 
 // pod group is a set of pods that need to be scheduled together. They represent an application spec
 // We perform an undirected graph traversal and keep track of the connected components in the graph
-func (pp *PodProcessor) GetPodGroups(podGraph map[string]map[string]bool, skippedPods []string) [][]string {
+func (pp *PodProcessor) GetPodGroups(podGraph map[string]map[string]bool, skippedPods []string) []map[string]map[string]bool {
 	visited := make(map[string]bool, 0)
-	podGroups := make([][]string, 0)
+	podGroups := make([]map[string]map[string]bool, 0)
 	for {
 		if len(visited) == len(podGraph) {
 			break
@@ -217,11 +223,11 @@ func (pp *PodProcessor) GetPodGroups(podGraph map[string]map[string]bool, skippe
 			if exists {
 				continue
 			}
-			podList := pp.GetPodGroup(pod, podGraph)
+			podSubgraph := pp.GetPodGroup(pod, podGraph)
 
-			logger(fmt.Sprintf("Got %d pods from %s ", len(podList), pod))
+			logger(fmt.Sprintf("Got %d pods from %s ", len(podSubgraph), pod))
 			skip := false
-			for _, p := range podList {
+			for p, _ := range podSubgraph {
 				if isInList(p, skippedPods) {
 					logger(fmt.Sprintf("Pod %s was skipped, will exclude this pod group", p))
 					skip = true
@@ -229,11 +235,11 @@ func (pp *PodProcessor) GetPodGroups(podGraph map[string]map[string]bool, skippe
 				}
 			}
 
-			for _, p := range podList {
+			for p, _ := range podSubgraph {
 				visited[p] = true
 			}
 			if !skip {
-				podGroups = append(podGroups, podList)
+				podGroups = append(podGroups, podSubgraph)
 			}
 		}
 	}
@@ -253,25 +259,26 @@ func (pp *PodProcessor) MarkScheduled(pods []Pod) {
 }
 
 // return first pod group that is unscheduled
-func (pp *PodProcessor) GetUnscheduledPods() []Pod {
+func (pp *PodProcessor) GetUnscheduledPods() (map[string]Pod, map[string]map[string]bool) {
 	pp.podLock.Lock()
 	podList := pp.unscheduledPods
 	pp.podLock.Unlock()
 
-	unscheduled := make([]Pod, 0)
+	unscheduled := make(map[string]Pod, 0)
+	podGroup := make(map[string]map[string]bool, 0)
 	podGraph, skippedPods := pp.GetPodGraph()
 	if len(podGraph) == 0 {
-		return unscheduled
+		return unscheduled, podGroup
 	}
 	podGroups := pp.GetPodGroups(podGraph, skippedPods)
-	pods := make([]Pod, 0)
-	for _, podName := range podGroups[0] {
+
+	for podName, _ := range podGroups[0] {
 		pod, exists := podList[podName]
 		if exists {
-			pods = append(pods, pod)
+			unscheduled[podName] = pod
 		} else {
 			panic("Unknown pod " + podName)
 		}
 	}
-	return pods
+	return unscheduled, podGroups[0]
 }

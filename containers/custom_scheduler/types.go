@@ -123,6 +123,22 @@ type Metadata struct {
 	Uid             string            `json:"uid"`
 }
 
+type NodeMetricsList struct {
+	NodeMetrics []NodeMetric
+}
+type NodeMetric struct {
+	Metadata NodeMetadata `json:"metadata"`
+	Usage    UsageData    `json:"usage"`
+}
+
+type NodeMetadata struct {
+	Name string `json:"name"`
+}
+
+type UsageData struct {
+	Cpu    string `json:"cpu"`
+	Memory string `json:"memory"`
+}
 type Deployment struct {
 	Kind            string            `json:"kind"`
 	ApiVersion      string            `json:"apiVersion"`

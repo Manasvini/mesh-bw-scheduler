@@ -17,10 +17,13 @@ import (
 	"fmt"
 	"sync"
 	"time"
+
+	netmon_client "github.gatech.edu/cs-epl/mesh-bw-scheduler/netmon_client"
 )
 
 type DagScheduler struct {
 	client        *KubeClient
+	netmonClient  *netmon_client.NetmonClient
 	podProcessor  *PodProcessor
 	processorLock *sync.Mutex
 }
@@ -90,10 +93,16 @@ func (sched *DagScheduler) SchedulePods() error {
 	sched.processorLock.Lock()
 	defer sched.processorLock.Unlock()
 	// returns the dag of unscheduled pods
-	pods := sched.podProcessor.GetUnscheduledPods()
-
+	pods, podGraph := sched.podProcessor.GetUnscheduledPods()
+	links, paths, traffics := sched.netmonClient.GetStats()
+	logger(fmt.Sprintf("got %d links %d paths and %d traffics", len(links), len(paths), len(traffics)))
 	// TODO Add code to perform topo sort etc
 	logger(fmt.Sprintf("got %d pods", len(pods)))
+	for src, srcDeps := range podGraph {
+		for dst, _ := range srcDeps {
+			logger(fmt.Sprintf("Got dep %s -> %s", src, dst))
+		}
+	}
 	for _, pod := range pods {
 		err := sched.SchedulePod(&pod)
 		if err != nil {
@@ -105,7 +114,9 @@ func (sched *DagScheduler) SchedulePods() error {
 
 // TODO fix Fit() to check if topology constraints are met
 func (sched *DagScheduler) Fit(pod *Pod) ([]Node, error) {
+
 	nodeList, err := sched.client.GetNodes()
+
 	if err != nil {
 		logger(err)
 		return nil, err

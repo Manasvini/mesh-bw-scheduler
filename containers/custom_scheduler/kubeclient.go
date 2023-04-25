@@ -33,6 +33,7 @@ type KubeClient struct {
 	configEndpoint    string
 	podsEndpoint      string
 	namespaces        []string
+	metricsEndpoint   string
 }
 
 func (client *KubeClient) WaitForProxy() int {
@@ -94,6 +95,33 @@ func (client *KubeClient) PostEvent(event Event, ns string) error {
 		return errors.New("Event: Unexpected HTTP status code" + resp.Status)
 	}
 	return nil
+}
+
+func (client *KubeClient) GetNodeMetrics() (*NodeMetricsList, error) {
+	var nodeMetricsList NodeMetricsList
+
+	request := &http.Request{
+		Header: make(http.Header),
+		Method: http.MethodGet,
+		URL: &url.URL{
+			Host:   client.apiHost,
+			Path:   client.metricsEndpoint,
+			Scheme: "http",
+		},
+	}
+	request.Header.Set("Accept", "application/json, */*")
+
+	resp, err := http.DefaultClient.Do(request)
+	if err != nil {
+		return nil, err
+	}
+
+	err = json.NewDecoder(resp.Body).Decode(&nodeMetricsList)
+	if err != nil {
+		return nil, err
+	}
+
+	return &nodeMetricsList, nil
 }
 
 func (client *KubeClient) GetNodes() (*NodeList, error) {
