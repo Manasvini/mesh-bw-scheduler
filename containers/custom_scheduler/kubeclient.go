@@ -24,17 +24,18 @@ import (
 	"time"
 )
 
-var (
-	apiHost           = "127.0.0.1:8001"
-	bindingsEndpoint  = "/api/v1/namespaces/epl/pods/%s/binding/"
-	eventsEndpoint    = "/api/v1/watch/namespaces/epl/events"
-	nodesEndpoint     = "/api/v1/nodes"
-	podsEndpoint      = "/api/v1/namespaces/epl/pods/"
-	watchPodsEndpoint = "/api/v1/watch/namespaces/epl/pods"
-	configEndpoint    = "/apis/apps/v1/namespaces/epl/deployments/epl-scheduler"
-)
+type KubeClient struct {
+	apiHost           string
+	bindingsEndpoint  string
+	eventsEndpoint    string
+	nodesEndpoint     string
+	watchPodsEndpoint string
+	configEndpoint    string
+	podsEndpoint      string
+	namespaces        []string
+}
 
-func waitForProxy() int {
+func (client *KubeClient) WaitForProxy() int {
 	logger("Waiting for proxy to start")
 
 	for i := 1; i < 5; i++ {
@@ -44,7 +45,7 @@ func waitForProxy() int {
 			Header: make(http.Header),
 			Method: http.MethodGet,
 			URL: &url.URL{
-				Host:   apiHost,
+				Host:   client.apiHost,
 				Path:   "",
 				Scheme: "http",
 			},
@@ -61,7 +62,7 @@ func waitForProxy() int {
 	return 0
 }
 
-func postEvent(event Event) error {
+func (client *KubeClient) PostEvent(event Event, ns string) error {
 	var b []byte
 	body := bytes.NewBuffer(b)
 	err := json.NewEncoder(body).Encode(event)
@@ -76,8 +77,8 @@ func postEvent(event Event) error {
 		Header:        make(http.Header),
 		Method:        http.MethodPost,
 		URL: &url.URL{
-			Host:   apiHost,
-			Path:   eventsEndpoint,
+			Host:   client.apiHost,
+			Path:   fmt.Sprintf(client.eventsEndpoint, ns),
 			Scheme: "http",
 		},
 	}
@@ -95,15 +96,15 @@ func postEvent(event Event) error {
 	return nil
 }
 
-func getNodes() (*NodeList, error) {
+func (client *KubeClient) GetNodes() (*NodeList, error) {
 	var nodeList NodeList
 
 	request := &http.Request{
 		Header: make(http.Header),
 		Method: http.MethodGet,
 		URL: &url.URL{
-			Host:   apiHost,
-			Path:   nodesEndpoint,
+			Host:   client.apiHost,
+			Path:   client.nodesEndpoint,
 			Scheme: "http",
 		},
 	}
@@ -122,60 +123,86 @@ func getNodes() (*NodeList, error) {
 	return &nodeList, nil
 }
 
-func watchUnscheduledPods() (<-chan Pod, <-chan error) {
+func (client *KubeClient) WatchUnscheduledPods() (<-chan Pod, <-chan error) {
 	pods := make(chan Pod)
 	errc := make(chan error, 1)
 
 	v := url.Values{}
 	v.Set("fieldSelector", "spec.nodeName=")
 
-	request := &http.Request{
-		Header: make(http.Header),
-		Method: http.MethodGet,
-		URL: &url.URL{
-			Host:     apiHost,
-			Path:     watchPodsEndpoint,
-			RawQuery: v.Encode(),
-			Scheme:   "http",
-		},
-	}
-	request.Header.Set("Accept", "application/json, */*")
+	//request := &http.Request{
+	//	Header: make(http.Header),
+	//	Method: http.MethodGet,
+	//	URL: &url.URL{
+	//		Host:     client.apiHost,
+	//		Path:     client.watchPodsEndpoint,
+	//		RawQuery: v.Encode(),
+	//		Scheme:   "http",
+	//	},
+	//}
+	//request.Header.Set("Accept", "application/json, */*")
 
 	go func() {
 		for {
-			resp, err := http.DefaultClient.Do(request)
-			if err != nil {
-				errc <- err
-				time.Sleep(5 * time.Second)
-				continue
-			}
-
-			if resp.StatusCode != 200 {
-				errc <- errors.New("Invalid status code: " + resp.Status)
-				time.Sleep(5 * time.Second)
-				continue
-			}
-
-			decoder := json.NewDecoder(resp.Body)
-			for {
-				var event PodWatchEvent
-				err = decoder.Decode(&event)
+			for _, ns := range client.namespaces {
+				request := &http.Request{
+					Header: make(http.Header),
+					Method: http.MethodGet,
+					URL: &url.URL{
+						Host:     client.apiHost,
+						Path:     fmt.Sprintf(client.watchPodsEndpoint, ns),
+						RawQuery: v.Encode(),
+						Scheme:   "http",
+					},
+				}
+				resp, err := http.DefaultClient.Do(request)
 				if err != nil {
 					errc <- err
-					break
+					//time.Sleep(5 * time.Second)
+					continue
 				}
 
-				if event.Type == "ADDED" {
-					pods <- event.Object
+				if resp.StatusCode != 200 {
+					errc <- errors.New("Invalid status code: " + resp.Status)
+					//time.Sleep(5 * time.Second)
+					continue
+				}
+
+				decoder := json.NewDecoder(resp.Body)
+				for {
+					var event PodWatchEvent
+					err = decoder.Decode(&event)
+					if err != nil {
+						errc <- err
+						break
+					}
+
+					if event.Type == "ADDED" {
+						pods <- event.Object
+					}
 				}
 			}
+			time.Sleep(5 * time.Second)
 		}
 	}()
 
 	return pods, errc
 }
 
-func getUnscheduledPods() ([]*Pod, error) {
+func (client KubeClient) GetUnscheduledPods() ([]*Pod, error) {
+	pods := make([]*Pod, 0)
+	for _, ns := range client.namespaces {
+		curpods, err := client.GetUnscheduledPodsOne(ns)
+		if err == nil {
+			pods = append(pods, curpods...)
+		} else {
+			logger(fmt.Sprintf("Got error %v", err))
+		}
+	}
+	return pods, nil
+}
+
+func (client KubeClient) GetUnscheduledPodsOne(ns string) ([]*Pod, error) {
 	var podList PodList
 	unscheduledPods := make([]*Pod, 0)
 
@@ -186,8 +213,8 @@ func getUnscheduledPods() ([]*Pod, error) {
 		Header: make(http.Header),
 		Method: http.MethodGet,
 		URL: &url.URL{
-			Host:     apiHost,
-			Path:     podsEndpoint,
+			Host:     client.apiHost,
+			Path:     fmt.Sprintf(client.podsEndpoint, ns),
 			RawQuery: v.Encode(),
 			Scheme:   "http",
 		},
@@ -212,7 +239,20 @@ func getUnscheduledPods() ([]*Pod, error) {
 	return unscheduledPods, nil
 }
 
-func getPods() (*PodList, error) {
+func (client *KubeClient) GetPods() ([]*PodList, error) {
+	podLists := make([]*PodList, 0)
+	for _, ns := range client.namespaces {
+		plist, err := client.getPodsOne(ns)
+		if err == nil {
+			podLists = append(podLists, plist)
+		} else {
+			logger(fmt.Sprintf("Got error %v", err))
+		}
+	}
+	return podLists, nil
+
+}
+func (client *KubeClient) getPodsOne(ns string) (*PodList, error) {
 	var podList PodList
 
 	v := url.Values{}
@@ -223,8 +263,8 @@ func getPods() (*PodList, error) {
 		Header: make(http.Header),
 		Method: http.MethodGet,
 		URL: &url.URL{
-			Host:     apiHost,
-			Path:     podsEndpoint,
+			Host:     client.apiHost,
+			Path:     fmt.Sprintf(client.podsEndpoint, ns),
 			RawQuery: v.Encode(),
 			Scheme:   "http",
 		},
@@ -242,7 +282,7 @@ func getPods() (*PodList, error) {
 	return &podList, nil
 }
 
-func getConfig() (string, error) {
+func (client *KubeClient) GetConfig() (string, error) {
 	var deployment Deployment
 
 	request := &http.Request{
@@ -286,60 +326,11 @@ func getConfig() (string, error) {
 	return "", nil
 }
 
-func fit(pod *Pod) ([]Node, error) {
-	nodeList, err := getNodes()
-	if err != nil {
-		logger(err)
-		return nil, err
-	}
-	logger(fmt.Sprintf("got %d nodes", len(nodeList.Items)))
-	config, err := getConfig()
-	if err != nil {
-		logger(err)
-		return nil, err
-	}
-
-	logger("Found config: " + string(config))
-
-	var nodes []Node
-
-	for _, node := range nodeList.Items {
-		if node.Metadata.Name == config {
-			nodes = append(nodes, node)
-		}
-	}
-
-	if (len(nodes) == 0) || (config == "") {
-		logger("Failed to schedule pod " + pod.Metadata.Name)
-		// Emit a Kubernetes event that the Pod failed to be scheduled.
-		// timestamp := time.Now().UTC().Format(time.RFC3339)
-		// event := Event{
-		// 	Count:          1,
-		// 	Message:        fmt.Sprintf("pod (%s) failed to fit in any node\n", pod.Metadata.Name),
-		// 	Reason:         "FailedScheduling",
-		// 	LastTimestamp:  timestamp,
-		// 	FirstTimestamp: timestamp,
-		// 	Type:           "Warning",
-		// 	Source:         EventSource{Component: "epl-scheduler"},
-		// 	InvolvedObject: ObjectReference{
-		// 		Kind:      "Pod",
-		// 		Name:      pod.Metadata.Name,
-		// 		Namespace: "epl",
-		// 		Uid:       pod.Metadata.Uid,
-		// 	},
-		// }
-
-		// postEvent(event)
-	}
-
-	return nodes, nil
-}
-
-func bind(pod *Pod, node Node) error {
+func (client *KubeClient) Bind(pod *Pod, node Node) error {
 	binding := Binding{
 		ApiVersion: "v1",
 		Kind:       "Binding",
-		Metadata:   Metadata{Name: pod.Metadata.Name},
+		Metadata:   Metadata{Name: pod.Metadata.Name, Namespace: pod.Metadata.Namespace, Annotations: pod.Metadata.Annotations},
 		Target: Target{
 			ApiVersion: "v1",
 			Kind:       "Node",
@@ -362,7 +353,7 @@ func bind(pod *Pod, node Node) error {
 		Method:        http.MethodPost,
 		URL: &url.URL{
 			Host:   apiHost,
-			Path:   fmt.Sprintf(bindingsEndpoint, pod.Metadata.Name),
+			Path:   fmt.Sprintf(client.bindingsEndpoint, pod.Metadata.Namespace, pod.Metadata.Name),
 			Scheme: "http",
 		},
 	}

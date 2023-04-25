@@ -20,13 +20,32 @@ import (
 	"syscall"
 )
 
+var (
+	apiHost           = "127.0.0.1:8001"
+	bindingsEndpoint  = "/api/v1/namespaces/%s/pods/%s/binding/"
+	eventsEndpoint    = "/api/v1/watch/namespaces/%s/events"
+	nodesEndpoint     = "/api/v1/nodes"
+	podsEndpoint      = "/api/v1/namespaces/%s/pods/"
+	watchPodsEndpoint = "/api/v1/watch/namespaces/%s/pods"
+	configEndpoint    = "/apis/apps/v1/namespaces/epl/deployments/epl-scheduler"
+)
+
 const schedulerName = "epl-scheduler"
 
 func main() {
 	logger("Starting epl scheduler...")
+	ns := []string{"epl"}
+	client := KubeClient{apiHost: apiHost,
+		bindingsEndpoint:  bindingsEndpoint,
+		eventsEndpoint:    eventsEndpoint,
+		nodesEndpoint:     nodesEndpoint,
+		podsEndpoint:      podsEndpoint,
+		watchPodsEndpoint: watchPodsEndpoint,
+		configEndpoint:    configEndpoint,
+		namespaces:        ns}
+	done := client.WaitForProxy()
 
-	done := waitForProxy()
-
+	dagSched := &DagScheduler{client: &client, processorLock: &sync.Mutex{}, podProcessor: NewPodProcessor()}
 	if done == 0 {
 		logger("Failed to connect to proxy.")
 		os.Exit(0)
@@ -38,10 +57,10 @@ func main() {
 	var wg sync.WaitGroup
 
 	wg.Add(1)
-	go monitorUnscheduledPods(doneChan, &wg)
+	go dagSched.MonitorUnscheduledPods(doneChan, &wg)
 
 	wg.Add(1)
-	go reconcileUnscheduledPods(30, doneChan, &wg)
+	go dagSched.ReconcileUnscheduledPods(30, doneChan, &wg)
 
 	signalChan := make(chan os.Signal, 1)
 	signal.Notify(signalChan, syscall.SIGINT, syscall.SIGTERM)

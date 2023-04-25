@@ -107,7 +107,15 @@ func (pp *PodProcessor) GetPodGraph() (map[string]map[string]bool, []string) {
 		if !pp.IsPodSpecComplete(pod) {
 			skippedPods = append(skippedPods, pod.Metadata.Name)
 		}
+
 		annotations := pod.Metadata.Annotations
+		if len(annotations) == 0 {
+			_, exists := podGraph[pod.Metadata.Name]
+			if !exists {
+				podGraph[pod.Metadata.Name] = make(map[string]bool, 0)
+			}
+			continue
+		}
 		for k, _ := range annotations {
 			vals := strings.Split(k, ".")
 			if len(vals) < 2 {
