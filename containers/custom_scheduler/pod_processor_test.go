@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"testing"
 )
 
@@ -8,9 +9,9 @@ func getPodSimpleTopo() map[string]Pod {
 	pods := make(map[string]Pod, 0)
 
 	// p0 --> p1 --> p2
-	ann1 := map[string]string{"dependee/bw/pod_1": "1Mbps", "dependee/latency/pod_1": "10ms"}
-	ann2 := map[string]string{"dependee/bw/pod_2": "1Mbps", "dependee/latency/pod_2": "10ms", "depender/bw/pod_0": "1Mbps", "depender/latency/pod_0": "10ms"}
-	ann3 := map[string]string{"depender/bw/pod_1": "1Mbps", "depender/latency/pod_1": "10ms"}
+	ann1 := map[string]string{"dependson.pod_1": "yes", "bw.pod_1": "1Mbps", "latency.pod_1": "10ms"}
+	ann2 := map[string]string{"dependson.pod_2": "yes", "bw.pod_2": "1Mbps", "latency.pod_2": "10ms", "dependedby.pod_0": "yes", "bw.pod_1": "1Mbps", "latency.pod_0": "10ms"}
+	ann3 := map[string]string{"dependedby.pod_1": "yes", "bw.pod_1": "1Mbps", "latency.pod_1": "10ms"}
 
 	podMeta := Metadata{Name: "pod_0", Annotations: ann1}
 	pods["pod_0"] = Pod{Kind: "pod", Metadata: podMeta}
@@ -25,8 +26,8 @@ func getPodSimpleTopoIncomplete() map[string]Pod {
 	pods := make(map[string]Pod, 0)
 
 	// p0 --> p1 --> p2
-	ann1 := map[string]string{"dependee/bw/pod_1": "1Mbps", "dependee/latency/pod_1": "10ms"}
-	ann2 := map[string]string{"dependee/bw/pod_2": "1Mbps", "dependee/latency/pod_2": "10ms", "depender/bw/pod_0": "1Mbps", "depender/latency/pod_0": "10ms"}
+	ann1 := map[string]string{"dependson.pod_1": "yes", "bw.pod_1": "1Mbps", "latency.pod_1": "10ms"}
+	ann2 := map[string]string{"dependson.pod_2": "yes", "bw.pod_2": "1Mbps", "latency.pod_2": "10ms", "dependedby.pod_0": "yes", "bw.pod_1": "1Mbps", "latency.pod_0": "10ms"}
 	//ann3 := map[string]string{"depender/bw/pod_1": "1Mbps", "depender/latency/pod_1": "10ms"}
 
 	podMeta := Metadata{Name: "pod_0", Annotations: ann1}
@@ -41,12 +42,12 @@ func getPodDisconnectedTopo() map[string]Pod {
 	pods := make(map[string]Pod, 0)
 
 	// p0 --> p1 --> p2 p4 --> p5
-	ann1 := map[string]string{"dependee/bw/pod_1": "1Mbps", "dependee/latency/pod_1": "10ms"}
-	ann2 := map[string]string{"dependee/bw/pod_2": "1Mbps", "dependee/latency/pod_2": "10ms", "depender/bw/pod_0": "1Mbps", "depender/latency/pod_0": "10ms"}
-	ann3 := map[string]string{"depender/bw/pod_1": "1Mbps", "depender/latency/pod_1": "10ms"}
+	ann1 := map[string]string{"dependson.pod_1": "yes", "bw.pod_1": "1Mbps", "latency.pod_1": "10ms"}
+	ann2 := map[string]string{"dependson.pod_2": "yes", "bw.pod_2": "1Mbps", "latency.pod_2": "10ms", "dependedby.pod_0": "yes", "bw.pod_1": "1Mbps", "latency.pod_0": "10ms"}
+	ann3 := map[string]string{"dependedby.pod_1": "yes", "bw.pod_1": "1Mbps", "latency.pod_1": "10ms"}
 
-	ann4 := map[string]string{"dependee/bw/pod_5": "1Mbps", "dependee/latency/pod_5": "10ms"}
-	ann5 := map[string]string{"depender/bw/pod_4": "1Mbps", "depender/latency/pod_5": "10ms"}
+	ann4 := map[string]string{"dependson.pod_5": "yes", "bw.pod_5": "1Mbps", "latency.pod_5": "10ms"}
+	ann5 := map[string]string{"dependedby.pod_4": "yes", "bw.pod_4": "1Mbps", "latency.pod_4": "10ms"}
 
 	podMeta := Metadata{Name: "pod_0", Annotations: ann1}
 	pods["pod_0"] = Pod{Kind: "pod", Metadata: podMeta}
@@ -66,12 +67,12 @@ func getPodDisconnectedTopoIncomplete() map[string]Pod {
 	pods := make(map[string]Pod, 0)
 
 	// p0 --> p1 --> p2 p4 --> p5
-	ann1 := map[string]string{"dependee/bw/pod_1": "1Mbps", "dependee/latency/pod_1": "10ms"}
-	ann2 := map[string]string{"dependee/bw/pod_2": "1Mbps", "dependee/latency/pod_2": "10ms", "depender/bw/pod_0": "1Mbps", "depender/latency/pod_0": "10ms"}
-	//ann3 := map[string]string{"depender/bw/pod_1": "1Mbps", "depender/latency/pod_1": "10ms"}
+	ann1 := map[string]string{"dependson.pod_1": "yes", "bw.pod_1": "1Mbps", "latency.pod_1": "10ms"}
+	ann2 := map[string]string{"dependson.pod_2": "yes", "bw.pod_2": "1Mbps", "latency.pod_2": "10ms", "dependedby.pod_0": "yes", "bw.pod_1": "1Mbps", "latency.pod_0": "10ms"}
+	//	ann3 := map[string]string{"dependedby.pod_1": "yes", "bw.pod_1":"1Mbps", "latency.pod_1": "10ms"}
 
-	ann4 := map[string]string{"dependee/bw/pod_5": "1Mbps", "dependee/latency/pod_5": "10ms"}
-	ann5 := map[string]string{"depender/bw/pod_4": "1Mbps", "depender/latency/pod_5": "10ms"}
+	ann4 := map[string]string{"dependson.pod_5": "yes", "bw.pod_5": "1Mbps", "latency.pod_5": "10ms"}
+	ann5 := map[string]string{"dependedby.pod_4": "yes", "bw.pod_4": "1Mbps", "latency.pod_4": "10ms"}
 
 	podMeta := Metadata{Name: "pod_0", Annotations: ann1}
 	pods["pod_0"] = Pod{Kind: "pod", Metadata: podMeta}
@@ -160,6 +161,7 @@ func TestDepGraphComponents(t *testing.T) {
 	podList := make([]Pod, 0)
 	for _, podName := range podgroups[0] {
 		podList = append(podList, pods[podName])
+		fmt.Printf("pod = %s\n", podName)
 	}
 
 	depGraph := pp.GetPodDependencyGraph(podList)

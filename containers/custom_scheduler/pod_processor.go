@@ -30,20 +30,23 @@ func (pp *PodProcessor) AddPod(pod Pod) {
 }
 
 func (pp *PodProcessor) AreAllRelatedPodsPresent(pod Pod, relationship string) bool {
-	// Dependee: for a pod, check if all its dependee pods (i.e., the pods that THIS pod depends on) are present
-	// Depender: for a pod, check if all its depender pods (i.e., all pods that depend on THIS pod) are present
+	// Dependson: for a pod, check if all  the pods that THIS pod depends on are present
+	// Dependedby: for a pod, check if all pods that depend on THIS pod are present
 	pp.podLock.Lock()
 	podList := pp.unscheduledPods
 	pp.podLock.Unlock()
 	annotations := pod.Metadata.Annotations
-	// format: dependee.bw.PODNAME / dependee.latency.PODNAME
+	// format: dependedby.PODNAME
 	for k, _ := range annotations {
 		if strings.Contains(k, relationship) {
 			vals := strings.Split(k, ".")
-			if len(vals) < 3 {
+			if len(vals) < 2 {
 				logger(fmt.Sprintf("ERROR: Incorrect annotation format for pod dependency %s", k))
 			}
-			podName := vals[2]
+			if relationship != vals[0] {
+				continue
+			}
+			podName := vals[1]
 			_, isPodPresent := podList[podName]
 			if !isPodPresent {
 				return false
@@ -54,10 +57,10 @@ func (pp *PodProcessor) AreAllRelatedPodsPresent(pod Pod, relationship string) b
 }
 
 func (pp *PodProcessor) AreAllDependersPresent(pod Pod) bool {
-	return pp.AreAllRelatedPodsPresent(pod, "depender")
+	return pp.AreAllRelatedPodsPresent(pod, "dependedby")
 }
 func (pp *PodProcessor) AreAllDependeesPresent(pod Pod) bool {
-	return pp.AreAllRelatedPodsPresent(pod, "dependee")
+	return pp.AreAllRelatedPodsPresent(pod, "dependson")
 }
 
 func (pp *PodProcessor) IsPodSpecComplete(pod Pod) bool {
@@ -72,11 +75,11 @@ func (pp *PodProcessor) GetPodDependencyGraph(podList []Pod) map[string]map[stri
 		annotations := pod.Metadata.Annotations
 		for k, _ := range annotations {
 			vals := strings.Split(k, ".")
-			if len(vals) < 3 {
+			if len(vals) < 2 {
 				logger(fmt.Sprintf("ERROR: Incorrect annotation format for pod dependency %s", k))
 			}
-			relationship, podName := vals[0], vals[2]
-			if relationship == "depender" {
+			relationship, podName := vals[0], vals[1]
+			if relationship != "dependson" {
 				continue
 			}
 			_, exists := podGraph[pod.Metadata.Name]
@@ -107,10 +110,13 @@ func (pp *PodProcessor) GetPodGraph() (map[string]map[string]bool, []string) {
 		annotations := pod.Metadata.Annotations
 		for k, _ := range annotations {
 			vals := strings.Split(k, ".")
-			if len(vals) < 3 {
+			if len(vals) < 2 {
 				logger(fmt.Sprintf("ERROR: Incorrect annotation format for pod dependency %s", k))
 			}
-			rel, podName := vals[0], vals[2]
+			rel, podName := vals[0], vals[1]
+			if "dependson" != rel && "dependedby" != rel {
+				continue
+			}
 			logger(fmt.Sprintf("pod = %s rel = %s other pod = %s", pod.Metadata.Name, rel, podName))
 			_, exists := podGraph[pod.Metadata.Name]
 			if !exists {
