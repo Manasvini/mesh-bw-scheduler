@@ -124,7 +124,7 @@ type Metadata struct {
 }
 
 type NodeMetricsList struct {
-	NodeMetrics []NodeMetric
+	Items []NodeMetric
 }
 type NodeMetric struct {
 	Metadata NodeMetadata `json:"metadata"`

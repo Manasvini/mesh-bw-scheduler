@@ -30,6 +30,17 @@ func find(val string, vals []string) bool {
 	return false
 }
 
+func getNeighbors(node string, graph map[string]map[string]bool) []string {
+	neighbors := make([]string, 0)
+	for src, deps := range graph {
+		_, exists := deps[node]
+		if exists {
+			neighbors = append(neighbors, src)
+		}
+	}
+	return neighbors
+}
+
 func topoSort(podDeps map[string]map[string]bool) []string {
 	indegrees := computeIndegrees(podDeps)
 	zeroIndegreeNodes := findZeroIndegrees(indegrees)
