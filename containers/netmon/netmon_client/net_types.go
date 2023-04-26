@@ -25,3 +25,8 @@ type Traffic struct {
 }
 
 type TrafficSet map[string]map[string]Traffic
+
+type NetmonClientIntf interface {
+	Close()
+	getStats() (LinkSet, PathSet, TrafficSet)
+}

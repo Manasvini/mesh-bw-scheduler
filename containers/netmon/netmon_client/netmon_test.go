@@ -25,9 +25,9 @@ func GetNetInfo(maxHops int) (LinkSet, PathSet) {
 		if !pExists {
 			pMap = make(map[string]Path, 0)
 		}
-		link := Link{source: src, destination: dst, bandwidth: float64(i + 1)}
+		link := Link{Source: src, Destination: dst, Bandwidth: float64(i + 1)}
 		hops := []string{dst}
-		path := Path{source: src, destination: dst, bandwidth: float64(i + 1), hops: hops}
+		path := Path{Source: src, Destination: dst, Bandwidth: float64(i + 1), Hops: hops}
 		lMap[dst] = link
 		pMap[dst] = path
 		paths[src] = pMap
@@ -40,10 +40,10 @@ func GetNetInfo(maxHops int) (LinkSet, PathSet) {
 		if !pExists {
 			pMap = make(map[string]Path, 0)
 		}
-		link = Link{source: dst, destination: src, bandwidth: float64(i + 1)}
+		link = Link{Source: dst, Destination: src, Bandwidth: float64(i + 1)}
 		lMap[src] = link
 		hops = []string{src}
-		path = Path{source: dst, destination: src, bandwidth: float64(i + 1), hops: hops}
+		path = Path{Source: dst, Destination: src, Bandwidth: float64(i + 1), Hops: hops}
 		pMap[src] = path
 		paths[dst] = pMap
 	}
@@ -75,7 +75,7 @@ func GetNetInfo(maxHops int) (LinkSet, PathSet) {
 
 			}
 			fmt.Printf("hops = %d\n", len(hops))
-			path := Path{source: src, destination: dst, hops: hops}
+			path := Path{Source: src, Destination: dst, Hops: hops}
 			pMap, exists := paths[src]
 			if !exists {
 				pMap = make(map[string]Path, 0)
@@ -90,7 +90,7 @@ func GetNetInfo(maxHops int) (LinkSet, PathSet) {
 func TestUpdatePaths1(t *testing.T) {
 	links, paths := GetNetInfo(2)
 	dummyClient := NetmonClient{}
-	dummyClient.ComputePathBw(links, &paths)
+	dummyClient.computePathBw(links, &paths)
 	if len(paths) != 2 {
 		t.Fatalf("Expected 2 nodes, got %d\n", len(paths))
 	}
@@ -99,7 +99,7 @@ func TestUpdatePaths1(t *testing.T) {
 func TestUpdatePaths2(t *testing.T) {
 	links, paths := GetNetInfo(3)
 	dummyClient := NetmonClient{}
-	dummyClient.ComputePathBw(links, &paths)
+	dummyClient.computePathBw(links, &paths)
 	if len(paths) != 3 {
 		t.Fatalf("Expected 3 nodes, got %d\n", len(paths))
 	}
@@ -108,8 +108,8 @@ func TestUpdatePaths2(t *testing.T) {
 			t.Fatalf("Expected 2 nodes, got %d instead\n", len(pMap))
 		}
 		for _, path := range pMap {
-			if path.bandwidth > 1.0 {
-				t.Fatalf("Expected bottleneck bw 1, got %f instead", path.bandwidth)
+			if path.Bandwidth > 1.0 {
+				t.Fatalf("Expected bottleneck bw 1, got %f instead", path.Bandwidth)
 			}
 		}
 	}

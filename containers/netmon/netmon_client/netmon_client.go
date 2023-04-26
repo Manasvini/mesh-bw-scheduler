@@ -39,7 +39,7 @@ func (netmonClient *NetmonClient) Close() {
 	}
 }
 
-func (netmonClient *NetmonClient) ComputePathBw(links LinkSet, paths *PathSet) {
+func (netmonClient *NetmonClient) computePathBw(links LinkSet, paths *PathSet) {
 	maxPLen := 1
 	for _, pSet := range *paths {
 		for _, path := range pSet {
@@ -87,7 +87,7 @@ func (netmonClient *NetmonClient) GetStats() (LinkSet, PathSet, TrafficSet) {
 	paths := make(PathSet, 0)
 	traffics := make(TrafficSet, 0)
 	for addr, _ := range netmonClient.clients {
-		curLinks, curPaths, curTraffic := netmonClient.GetStatsOne(addr)
+		curLinks, curPaths, curTraffic := netmonClient.getStatsOne(addr)
 		if curLinks != nil && curPaths != nil {
 			host := strings.Split(addr, ":")[0]
 			srcPaths, existsP := curPaths[host]
@@ -125,11 +125,11 @@ func (netmonClient *NetmonClient) GetStats() (LinkSet, PathSet, TrafficSet) {
 			fmt.Printf("add %d links to %s \n", len(curLinks[host]), host)
 		}
 	}
-	netmonClient.ComputePathBw(links, &paths)
+	netmonClient.computePathBw(links, &paths)
 	return links, paths, traffics
 }
 
-func (netmonClient *NetmonClient) GetStatsOne(address string) (LinkSet, PathSet, TrafficSet) {
+func (netmonClient *NetmonClient) getStatsOne(address string) (LinkSet, PathSet, TrafficSet) {
 	var links LinkSet
 	var paths PathSet
 	logger("host= " + address)
