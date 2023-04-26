@@ -29,3 +29,13 @@ func sortNodes(resources []Resource) {
 	sort.Sort(Resources(resources))
 
 }
+
+type KubeClientIntf interface {
+	GetNodes() (*NodeList, error)
+	WatchUnscheduledPods() (<-chan Pod, <-chan error)
+	WaitForProxy() int
+	GetNodeMetrics() (*NodeMetricsList, error)
+	GetUnscheduledPods() ([]*Pod, error)
+	GetPods() ([]*PodList, error)
+	Bind(pod Pod, node Node) error
+}

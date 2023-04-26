@@ -220,7 +220,7 @@ func (client *KubeClient) WatchUnscheduledPods() (<-chan Pod, <-chan error) {
 func (client KubeClient) GetUnscheduledPods() ([]*Pod, error) {
 	pods := make([]*Pod, 0)
 	for _, ns := range client.namespaces {
-		curpods, err := client.GetUnscheduledPodsOne(ns)
+		curpods, err := client.getUnscheduledPodsOne(ns)
 		if err == nil {
 			pods = append(pods, curpods...)
 		} else {
@@ -230,7 +230,7 @@ func (client KubeClient) GetUnscheduledPods() ([]*Pod, error) {
 	return pods, nil
 }
 
-func (client KubeClient) GetUnscheduledPodsOne(ns string) ([]*Pod, error) {
+func (client KubeClient) getUnscheduledPodsOne(ns string) ([]*Pod, error) {
 	var podList PodList
 	unscheduledPods := make([]*Pod, 0)
 
@@ -310,51 +310,7 @@ func (client *KubeClient) getPodsOne(ns string) (*PodList, error) {
 	return &podList, nil
 }
 
-func (client *KubeClient) GetConfig() (string, error) {
-	var deployment Deployment
-
-	request := &http.Request{
-		Header: make(http.Header),
-		Method: http.MethodGet,
-		URL: &url.URL{
-			Host:   apiHost,
-			Path:   configEndpoint,
-			Scheme: "http",
-		},
-	}
-	request.Header.Set("Accept", "application/json, */*")
-
-	resp, err := http.DefaultClient.Do(request)
-	if err != nil {
-		logger(err)
-		return "", err
-	}
-	buf := new(bytes.Buffer)
-	buf.ReadFrom(resp.Body)
-	newStr := buf.String()
-	logger(newStr)
-	//err = json.NewDecoder(resp.Body).Decode(&deployment)
-	//logger(fmt.Sprintf("%s", pretty.Formatter(resp.Body)))
-
-	json.Unmarshal([]byte(newStr), &deployment)
-	//logger(fmt.Sprintf("%s", pretty.Formatter(deployment)))
-	if err != nil {
-		logger(err)
-		return "", err
-	}
-	logger(fmt.Sprintf("have kind %s", deployment.Kind))
-	logger(fmt.Sprintf("have %d annotations", len(deployment.Metadata.Annotations)))
-	for k, v := range deployment.Metadata.Annotations {
-		logger("annotations k=" + k + " v=" + v)
-	}
-	if val, ok := deployment.Metadata.Annotations["epl/staticinstance"]; ok {
-		return val, nil
-	}
-
-	return "", nil
-}
-
-func (client *KubeClient) Bind(pod *Pod, node Node) error {
+func (client *KubeClient) Bind(pod Pod, node Node) error {
 	binding := Binding{
 		ApiVersion: "v1",
 		Kind:       "Binding",

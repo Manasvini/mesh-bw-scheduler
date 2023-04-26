@@ -25,8 +25,8 @@ import (
 )
 
 type DagScheduler struct {
-	client        *KubeClient
-	netmonClient  *netmon_client.NetmonClient
+	client        KubeClientIntf
+	netmonClient  netmon_client.NetmonClientIntf
 	podProcessor  *PodProcessor
 	processorLock *sync.Mutex
 }
@@ -35,7 +35,8 @@ func (sched *DagScheduler) ReconcileUnscheduledPods(interval int, done chan stru
 	for {
 		select {
 		case <-time.After(time.Duration(interval) * time.Second):
-			err := sched.SchedulePods()
+			assignment, pods, nodes := sched.SchedulePods()
+			err := sched.AssignPods(assignment, pods, nodes)
 			if err != nil {
 				logger(err)
 			}
@@ -75,16 +76,8 @@ func (sched *DagScheduler) MonitorUnscheduledPods(done chan struct{}, wg *sync.W
 	}
 }
 
-func (sched *DagScheduler) SchedulePod(pod *Pod) error {
-	nodes, err := sched.FitPod(pod)
-	if err != nil {
-		logger(err)
-		return err
-	}
-	if len(nodes) == 0 {
-		return fmt.Errorf("Unable to schedule pod (%s) failed to fit in any node", pod.Metadata.Name)
-	}
-	err = sched.client.Bind(pod, nodes[0])
+func (sched *DagScheduler) SchedulePod(pod Pod, node Node) error {
+	err := sched.client.Bind(pod, node)
 	if err != nil {
 		logger(err)
 		return err
@@ -152,9 +145,7 @@ func (sched *DagScheduler) getNetResourcesRemaining(paths netmon_client.PathSet,
 	return availableCap
 }
 
-func (sched *DagScheduler) Fit(pod Pod, node Node,
-	nodeResource Resource,
-	availableBw netmon_client.PathSet) bool {
+func (sched *DagScheduler) GetPodResource(pod Pod) Resource {
 	podResource := Resource{cpu: 0, memory: 0}
 	for _, container := range pod.Spec.Containers {
 		containerCpu, exists := container.Resources.Requests["cpu"]
@@ -169,6 +160,14 @@ func (sched *DagScheduler) Fit(pod Pod, node Node,
 			podResource.memory += memRes.Value()
 		}
 	}
+	return podResource
+
+}
+
+func (sched *DagScheduler) Fit(pod Pod, node Node,
+	nodeResource Resource,
+	availableBw netmon_client.PathSet) bool {
+	podResource := sched.GetPodResource(pod)
 	podBw := 0.0
 	for k, v := range pod.Metadata.Annotations {
 		vals := strings.Split(k, ".")
@@ -189,17 +188,17 @@ func (sched *DagScheduler) Fit(pod Pod, node Node,
 		nodeBw += bw.Bandwidth
 	}
 
-	logger(fmt.Sprintf("Pod %s cpu = %f memory = %f bw = %f  Node %s cpu = %f memory = %f bw = %f", pod.Metadata.Name, podResource.cpu, podResource.memory, podBw, node.Metadata.Name, nodeResource.cpu, nodeResource.memory, nodeBw))
+	logger(fmt.Sprintf("Pod %s cpu = %d memory = %d bw = %f  Node %s cpu = %d memory = %d bw = %f", pod.Metadata.Name, podResource.cpu, podResource.memory, podBw, node.Metadata.Name, nodeResource.cpu, nodeResource.memory, nodeBw))
 	if podResource.cpu < nodeResource.cpu {
-		logger(fmt.Sprintf("pod %s node %s insufficient CPU"))
+		logger(fmt.Sprintf("pod %s node %s insufficient CPU", pod.Metadata.Name, node.Metadata.Name))
 		return false
 	}
 	if podResource.memory < nodeResource.memory {
-		logger(fmt.Sprintf("pod %s node %s insufficient memory"))
+		logger(fmt.Sprintf("pod %s node %s insufficient memory", pod.Metadata.Name, node.Metadata.Name))
 		return false
 	}
 	if podBw < nodeBw {
-		logger(fmt.Sprintf("pod %s node %s insufficient bw"))
+		logger(fmt.Sprintf("pod %s node %s insufficient bw", pod.Metadata.Name, node.Metadata.Name))
 		return false
 	}
 	return true
@@ -248,7 +247,7 @@ func getNodeWithName(nodeName string, nodes *NodeList) Node {
 	return node
 }
 
-func (sched *DagScheduler) SchedulePods() error {
+func (sched *DagScheduler) SchedulePods() (map[string]string, map[string]Pod, *NodeList) {
 	sched.processorLock.Lock()
 	defer sched.processorLock.Unlock()
 	// returns the dag of unscheduled pods
@@ -277,76 +276,48 @@ func (sched *DagScheduler) SchedulePods() error {
 	podAssignment := make(map[string]string, 0)
 	madeAssignment := false
 	candidateNodeIdx := 0
-	candidateNodeRes := nodeResList[candidateNodeIdx]
-	candidateNode := getNodeWithName(candidateNodeRes.name, nodes)
 
 	for {
 		if len(scheduledPods) == len(pods) {
 			break
 		}
+		if candidateNodeIdx == len(nodeResList) {
+			break
+		}
 		if madeAssignment {
 			sortNodes(nodeResList)
+			candidateNodeIdx = 0
 		}
+		candidateNodeRes := nodeResList[candidateNodeIdx]
+		candidateNode := getNodeWithName(candidateNodeRes.name, nodes)
 
-		if sched.Fit(pods[podToSchedule], candidateNode, candidateNodeRes, netResources) &&
-			sched.AreDepsSatisfied(pods[podToSchedule], candidateNode,
-				podAssignment, netResources) {
+		if sched.Fit(pods[podToSchedule], candidateNode, candidateNodeRes, netResources) && sched.AreDepsSatisfied(pods[podToSchedule], candidateNode,
+			podAssignment, netResources) {
 			logger(fmt.Sprintf("Found node %s for pod %s", candidateNode.Metadata.Name, podToSchedule))
+			podAssignment[podToSchedule] = candidateNode.Metadata.Name
+			podResource := sched.GetPodResource(pods[podToSchedule])
+			candidateNodeRes.cpu -= podResource.cpu
+			candidateNodeRes.memory -= podResource.memory
+			nodeResources[candidateNodeRes.name] = candidateNodeRes
+			nodeResList[candidateNodeIdx] = candidateNodeRes
+			madeAssignment = true
+		} else {
+			candidateNodeIdx += 1
+			madeAssignment = false
 		}
 
 	}
-
-	return nil
+	return podAssignment, pods, nodes
 }
 
-// TODO fix Fit() to check if topology constraints are met
-func (sched *DagScheduler) FitPod(pod *Pod) ([]Node, error) {
-
-	//	nodeList, err := sched.client.GetNodes()
-	//
-	//	if err != nil {
-	//		logger(err)
-	//		return nil, err
-	//	}
-	//	logger(fmt.Sprintf("Got %d nodes", len(nodeList.Items)))
-	//	config, err := sched.client.GetConfig()
-	//	if err != nil {
-	//		logger(err)
-	//		return nil, err
-	//	}
-	//
-	//	logger("Found config: " + string(config))
-	//
-	var nodes []Node
-	//
-	//	for _, node := range nodeList.Items {
-	//		if node.Metadata.Name == config {
-	//			nodes = append(nodes, node)
-	//		}
-	//	}
-	//
-	//	if (len(nodes) == 0) || (config == "") {
-	//		logger("Failed to schedule pod " + pod.Metadata.Name)
-	// Emit a Kubernetes event that the Pod failed to be scheduled.
-	// timestamp := time.Now().UTC().Format(time.RFC3339)
-	// event := Event{
-	// 	Count:          1,
-	// 	Message:        fmt.Sprintf("pod (%s) failed to fit in any node\n", pod.Metadata.Name),
-	// 	Reason:         "FailedScheduling",
-	// 	LastTimestamp:  timestamp,
-	// 	FirstTimestamp: timestamp,
-	// 	Type:           "Warning",
-	// 	Source:         EventSource{Component: "epl-scheduler"},
-	// 	InvolvedObject: ObjectReference{
-	// 		Kind:      "Pod",
-	// 		Name:      pod.Metadata.Name,
-	// 		Namespace: "epl",
-	// 		Uid:       pod.Metadata.Uid,
-	// 	},
-	// }
-
-	// postEvent(event)
-	//	}
-
-	return nodes, nil
+func (sched *DagScheduler) AssignPods(podAssignment map[string]string, pods map[string]Pod, nodes *NodeList) error {
+	for pod, nodeName := range podAssignment {
+		node := getNodeWithName(nodeName, nodes)
+		err := sched.SchedulePod(pods[pod], node)
+		if err != nil {
+			logger(fmt.Sprintf("Got error %v", err))
+		}
+		return err
+	}
+	return nil
 }
