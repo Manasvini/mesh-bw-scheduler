@@ -243,23 +243,27 @@ func (sched *DagScheduler) AreDepsSatisfied(currentPod Pod, currentNode Node, no
 	return true
 }
 
-func (sched *DagScheduler) getNextPod(currentPod string, assignedPods map[string]string, allPods []string, podGraph map[string]map[string]bool) (string, bool) {
+func (sched *DagScheduler) getNextPod(currentPod string, assignedPods map[string]string, allPods []string, podGraph map[string]map[string]bool) ([]string, bool) {
 	neighbors := getNeighbors(currentPod, podGraph)
 	if len(neighbors) > 0 {
+		unscheduled := make([]string, 0)
 		for _, n := range neighbors {
 			_, exists := assignedPods[n]
 			if !exists {
-				return n, true
+				unscheduled = append(unscheduled, n)
 			}
+		}
+		if len(unscheduled) > 0 {
+			return unscheduled, true
 		}
 	}
 	for _, p := range allPods {
 		_, exists := assignedPods[p]
 		if !exists {
-			return p, true
+			return []string{p}, true
 		}
 	}
-	return "", false
+	return []string{""}, false
 }
 
 func getNodeWithName(nodeName string, nodes *NodeList) Node {
@@ -300,7 +304,7 @@ func (sched *DagScheduler) SchedulePods() (map[string]string, map[string]Pod, *N
 	podAssignment := make(map[string]string, 0)
 	madeAssignment := false
 	candidateNodeIdx := 0
-
+	unscheduledNeighbors := make([]string, 0)
 	for {
 		logger(fmt.Sprintf("Have %d pods to schedule candidate idx = %d", len(pods)-len(podAssignment), candidateNodeIdx))
 		if len(podAssignment) == len(pods) {
@@ -314,11 +318,22 @@ func (sched *DagScheduler) SchedulePods() (map[string]string, map[string]Pod, *N
 			candidateNodeIdx = 0
 			// TODO do something smarter here, like processing neighbor pods instead of topo sorted pods
 			//podIdx += 1
-			nextPod, exists := sched.getNextPod(podToSchedule, podAssignment, topoOrder, podGraph)
-			if !exists {
-				break
+			if len(unscheduledNeighbors) == 0 {
+				nextPods, exists := sched.getNextPod(podToSchedule, podAssignment, topoOrder, podGraph)
+				if !exists {
+					break
+				}
+
+				podToSchedule = nextPods[0]
+				if len(nextPods) > 1 {
+					unscheduledNeighbors = nextPods[1:]
+				}
+			} else {
+				podToSchedule = unscheduledNeighbors[0]
+				numPods := len(unscheduledNeighbors)
+
+				unscheduledNeighbors = unscheduledNeighbors[1:numPods]
 			}
-			podToSchedule = nextPod
 			madeAssignment = false
 		}
 		logger(fmt.Sprintf("Assign pod %s", podToSchedule))
