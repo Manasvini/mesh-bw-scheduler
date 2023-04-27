@@ -243,6 +243,25 @@ func (sched *DagScheduler) AreDepsSatisfied(currentPod Pod, currentNode Node, no
 	return true
 }
 
+func (sched *DagScheduler) getNextPod(currentPod string, assignedPods map[string]string, allPods []string, podGraph map[string]map[string]bool) (string, bool) {
+	neighbors := getNeighbors(currentPod, podGraph)
+	if len(neighbors) > 0 {
+		for _, n := range neighbors {
+			_, exists := assignedPods[n]
+			if !exists {
+				return n, true
+			}
+		}
+	}
+	for _, p := range allPods {
+		_, exists := assignedPods[p]
+		if !exists {
+			return p, true
+		}
+	}
+	return "", false
+}
+
 func getNodeWithName(nodeName string, nodes *NodeList) Node {
 	var node Node
 	for _, n := range nodes.Items {
@@ -293,8 +312,13 @@ func (sched *DagScheduler) SchedulePods() (map[string]string, map[string]Pod, *N
 		if madeAssignment {
 			sortNodes(nodeResList)
 			candidateNodeIdx = 0
-			podIdx += 1
-			podToSchedule = topoOrder[podIdx]
+			// TODO do something smarter here, like processing neighbor pods instead of topo sorted pods
+			//podIdx += 1
+			nextPod, exists := sched.getNextPod(podToSchedule, podAssignment, topoOrder, podGraph)
+			if !exists {
+				break
+			}
+			podToSchedule = nextPod
 			madeAssignment = false
 		}
 		logger(fmt.Sprintf("Assign pod %s", podToSchedule))
