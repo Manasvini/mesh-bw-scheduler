@@ -208,7 +208,7 @@ func (sched *DagScheduler) Fit(pod Pod, node Node,
 
 }
 
-func (sched *DagScheduler) AreDepsSatisfied(currentPod Pod, currentNode Node,
+func (sched *DagScheduler) AreDepsSatisfied(currentPod Pod, currentNode Node, nodes *NodeList,
 	assignments map[string]string,
 	availableBws netmon_client.PathSet) bool {
 	for k, v := range currentPod.Metadata.Annotations {
@@ -221,14 +221,17 @@ func (sched *DagScheduler) AreDepsSatisfied(currentPod Pod, currentNode Node,
 		} else {
 			continue
 		}
+		logger(fmt.Sprintf("pod %s -> %s needs %f", currentPod.Metadata.Name, podName, bw))
 		nodeIp, _ := currentNode.Metadata.Annotations["flannel.alpha.coreos.com/public-ip"]
 		nodeBws, exists := availableBws[nodeIp]
 		dstNode, exists := assignments[podName]
 		if !exists {
 			continue
 		}
+		dstNodeInfo := getNodeWithName(dstNode, nodes)
+		dstNodeIp := dstNodeInfo.Metadata.Annotations["flannel.alpha.coreos.com/public-ip"]
 
-		path, dExists := nodeBws[dstNode]
+		path, dExists := nodeBws[dstNodeIp]
 		if !dExists {
 			return false
 		}
@@ -298,7 +301,7 @@ func (sched *DagScheduler) SchedulePods() (map[string]string, map[string]Pod, *N
 		candidateNodeRes := nodeResList[candidateNodeIdx]
 		candidateNode := getNodeWithName(candidateNodeRes.name, nodes)
 
-		if sched.Fit(pods[podToSchedule], candidateNode, candidateNodeRes, netResources) && sched.AreDepsSatisfied(pods[podToSchedule], candidateNode,
+		if sched.Fit(pods[podToSchedule], candidateNode, candidateNodeRes, netResources) && sched.AreDepsSatisfied(pods[podToSchedule], candidateNode, nodes,
 			podAssignment, netResources) {
 			logger(fmt.Sprintf("Found node %s for pod %s", candidateNode.Metadata.Name, podToSchedule))
 			podAssignment[podToSchedule] = candidateNode.Metadata.Name
@@ -310,6 +313,7 @@ func (sched *DagScheduler) SchedulePods() (map[string]string, map[string]Pod, *N
 			madeAssignment = true
 
 		} else {
+			logger(fmt.Sprintf("%s does not fit on %s", podToSchedule, candidateNodeRes.name))
 			candidateNodeIdx += 1
 			madeAssignment = false
 		}
