@@ -49,6 +49,7 @@ func (pp *PodProcessor) AreAllRelatedPodsPresent(pod Pod, relationship string) b
 			podName := vals[1]
 			_, isPodPresent := podList[podName]
 			if !isPodPresent {
+				logger("Pod " + podName + " not found")
 				return false
 			}
 		}
@@ -105,6 +106,7 @@ func (pp *PodProcessor) GetPodGraph() (map[string]map[string]bool, []string) {
 
 	for _, pod := range podList {
 		if !pp.IsPodSpecComplete(pod) {
+			logger(fmt.Sprintf("Pod %s was skipped", pod.Metadata.Name))
 			skippedPods = append(skippedPods, pod.Metadata.Name)
 		}
 
@@ -201,7 +203,15 @@ func (pp *PodProcessor) GetPodGroup(podName string, podGraph map[string]map[stri
 			//podList = append(podList, pod)
 			podSubgraph[pod] = make(map[string]bool, 0)
 			for neighbor, _ := range podGraph[pod] {
-				podSubgraph[pod][neighbor] = true
+				podInfo, _ := pp.unscheduledPods[pod]
+				for ann, _ := range podInfo.Metadata.Annotations {
+					vals := strings.Split(ann, ".")
+					if vals[0] == "dependson" && neighbor == vals[1] {
+						podSubgraph[pod][neighbor] = true
+						logger(fmt.Sprintf("added %s -> %s", pod, neighbor))
+						break
+					}
+				}
 			}
 
 		}

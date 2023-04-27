@@ -39,7 +39,7 @@ func (netmonClient *NetmonClient) Close() {
 	}
 }
 
-func (netmonClient *NetmonClient) computePathBw(links LinkSet, paths *PathSet) {
+func (netmonClient *NetmonClient) ComputePathBw(links LinkSet, paths *PathSet) {
 	maxPLen := 1
 	for _, pSet := range *paths {
 		for _, path := range pSet {
@@ -125,7 +125,7 @@ func (netmonClient *NetmonClient) GetStats() (LinkSet, PathSet, TrafficSet) {
 			fmt.Printf("add %d links to %s \n", len(curLinks[host]), host)
 		}
 	}
-	netmonClient.computePathBw(links, &paths)
+	netmonClient.ComputePathBw(links, &paths)
 	return links, paths, traffics
 }
 

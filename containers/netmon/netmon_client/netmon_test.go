@@ -90,7 +90,7 @@ func GetNetInfo(maxHops int) (LinkSet, PathSet) {
 func TestUpdatePaths1(t *testing.T) {
 	links, paths := GetNetInfo(2)
 	dummyClient := NetmonClient{}
-	dummyClient.computePathBw(links, &paths)
+	dummyClient.ComputePathBw(links, &paths)
 	if len(paths) != 2 {
 		t.Fatalf("Expected 2 nodes, got %d\n", len(paths))
 	}
@@ -99,7 +99,7 @@ func TestUpdatePaths1(t *testing.T) {
 func TestUpdatePaths2(t *testing.T) {
 	links, paths := GetNetInfo(3)
 	dummyClient := NetmonClient{}
-	dummyClient.computePathBw(links, &paths)
+	dummyClient.ComputePathBw(links, &paths)
 	if len(paths) != 3 {
 		t.Fatalf("Expected 3 nodes, got %d\n", len(paths))
 	}

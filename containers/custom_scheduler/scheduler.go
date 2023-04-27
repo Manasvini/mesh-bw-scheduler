@@ -189,15 +189,15 @@ func (sched *DagScheduler) Fit(pod Pod, node Node,
 	}
 
 	logger(fmt.Sprintf("Pod %s cpu = %d memory = %d bw = %f  Node %s cpu = %d memory = %d bw = %f", pod.Metadata.Name, podResource.cpu, podResource.memory, podBw, node.Metadata.Name, nodeResource.cpu, nodeResource.memory, nodeBw))
-	if podResource.cpu < nodeResource.cpu {
+	if podResource.cpu > nodeResource.cpu {
 		logger(fmt.Sprintf("pod %s node %s insufficient CPU", pod.Metadata.Name, node.Metadata.Name))
 		return false
 	}
-	if podResource.memory < nodeResource.memory {
+	if podResource.memory > nodeResource.memory {
 		logger(fmt.Sprintf("pod %s node %s insufficient memory", pod.Metadata.Name, node.Metadata.Name))
 		return false
 	}
-	if podBw < nodeBw {
+	if podBw > nodeBw {
 		logger(fmt.Sprintf("pod %s node %s insufficient bw", pod.Metadata.Name, node.Metadata.Name))
 		return false
 	}
@@ -252,7 +252,7 @@ func (sched *DagScheduler) SchedulePods() (map[string]string, map[string]Pod, *N
 	defer sched.processorLock.Unlock()
 	// returns the dag of unscheduled pods
 	pods, podGraph := sched.podProcessor.GetUnscheduledPods()
-	logger(fmt.Sprintf("got %d pods", len(pods)))
+	logger(fmt.Sprintf("got %d pods and %d podgraph", len(pods), len(podGraph)))
 
 	_, paths, traffics := sched.netmonClient.GetStats()
 
