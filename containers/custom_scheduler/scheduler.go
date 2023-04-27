@@ -138,6 +138,7 @@ func (sched *DagScheduler) getNetResourcesRemaining(paths netmon_client.PathSet,
 			if !exists {
 				continue
 			}
+			logger(fmt.Sprintf("src %s dst %s available %f traf %f", src, dst, bwInfo.Bandwidth, traf.Bytes))
 			bwInfo.Bandwidth -= traf.Bytes
 			trafs[dst] = bwInfo
 		}
@@ -179,13 +180,15 @@ func (sched *DagScheduler) Fit(pod Pod, node Node,
 
 	nodeBw := 0.0
 	nodeIp, _ := node.Metadata.Annotations["flannel.alpha.coreos.com/public-ip"]
+	logger(fmt.Sprintf("node name %s ip %s", node.Metadata.Name, nodeIp))
 	nodeBws, exists := availableBw[nodeIp]
 	if !exists {
 		logger("Error: No bw info for node " + node.Metadata.Name)
 		return false
 	}
-	for _, bw := range nodeBws {
+	for dst, bw := range nodeBws {
 		nodeBw += bw.Bandwidth
+		logger(fmt.Sprintf("add dst %s bw %f", dst, bw.Bandwidth))
 	}
 
 	logger(fmt.Sprintf("Pod %s cpu = %d memory = %d bw = %f  Node %s cpu = %d memory = %d bw = %f", pod.Metadata.Name, podResource.cpu, podResource.memory, podBw, node.Metadata.Name, nodeResource.cpu, nodeResource.memory, nodeBw))
@@ -270,15 +273,15 @@ func (sched *DagScheduler) SchedulePods() (map[string]string, map[string]Pod, *N
 		nodeResList = append(nodeResList, nr)
 	}
 	sortNodes(nodeResList)
-
-	podToSchedule := topoOrder[0]
-	scheduledPods := make(map[string]bool, 0)
+	podIdx := 0
+	podToSchedule := topoOrder[podIdx]
 	podAssignment := make(map[string]string, 0)
 	madeAssignment := false
 	candidateNodeIdx := 0
 
 	for {
-		if len(scheduledPods) == len(pods) {
+		logger(fmt.Sprintf("Have %d pods to schedule candidate idx = %d", len(pods)-len(podAssignment), candidateNodeIdx))
+		if len(podAssignment) == len(pods) {
 			break
 		}
 		if candidateNodeIdx == len(nodeResList) {
@@ -287,7 +290,11 @@ func (sched *DagScheduler) SchedulePods() (map[string]string, map[string]Pod, *N
 		if madeAssignment {
 			sortNodes(nodeResList)
 			candidateNodeIdx = 0
+			podIdx += 1
+			podToSchedule = topoOrder[podIdx]
+			madeAssignment = false
 		}
+		logger(fmt.Sprintf("Assign pod %s", podToSchedule))
 		candidateNodeRes := nodeResList[candidateNodeIdx]
 		candidateNode := getNodeWithName(candidateNodeRes.name, nodes)
 
@@ -301,6 +308,7 @@ func (sched *DagScheduler) SchedulePods() (map[string]string, map[string]Pod, *N
 			nodeResources[candidateNodeRes.name] = candidateNodeRes
 			nodeResList[candidateNodeIdx] = candidateNodeRes
 			madeAssignment = true
+
 		} else {
 			candidateNodeIdx += 1
 			madeAssignment = false

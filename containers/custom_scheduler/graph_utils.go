@@ -54,7 +54,6 @@ func topoSort(podDeps map[string]map[string]bool) []string {
 		}
 		curNode := zeroIndegreeNodes[0]
 		topoSortOrder = append(topoSortOrder, curNode)
-		logger("added node " + curNode + " to topo")
 		if len(zeroIndegreeNodes) > 1 {
 			zeroIndegreeNodes = zeroIndegreeNodes[1:len(zeroIndegreeNodes)]
 		} else {
@@ -69,11 +68,9 @@ func topoSort(podDeps map[string]map[string]bool) []string {
 			}
 
 			val, _ := indegrees[src]
-			logger(fmt.Sprintf("%s has indegree %d", src, val))
 			if val == 0 {
 				if !find(src, topoSortOrder) && !find(src, zeroIndegreeNodes) {
 					zeroIndegreeNodes = append(zeroIndegreeNodes, src)
-					logger("added " + src + " to topo")
 				}
 			}
 		}
