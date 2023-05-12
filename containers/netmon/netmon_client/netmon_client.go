@@ -132,7 +132,7 @@ func (netmonClient *NetmonClient) GetStats() (LinkSet, PathSet, TrafficSet) {
 func (netmonClient *NetmonClient) getStatsOne(address string) (LinkSet, PathSet, TrafficSet) {
 	var links LinkSet
 	var paths PathSet
-	logger("host= " + address)
+	fmt.Printf("host= " + address)
 	traffic := make(TrafficSet, 0)
 
 	host := strings.Split(address, ":")[0]
@@ -188,12 +188,13 @@ func (netmonClient *NetmonClient) getStatsOne(address string) (LinkSet, PathSet,
 
 		path, exists := pMap[bw.Host]
 		logger(fmt.Sprintf("src = %s dst = %s hops=%d bw = %f\n", host, bw.Host, len(path.Hops), bw.SendBw))
-		if exists && len(path.Hops) == 1 && host != bw.Host {
+		if exists && len(path.Hops) == 1 {
 			path.Bandwidth = float64(bw.SendBw)
 		}
 		pMap[bw.Host] = path
-		logger(fmt.Sprintf("Got bw for %s to %s = %f\n", host, bw.Host, bw.SendBw))
+		logger(fmt.Sprintf("Got bw for %s to %s = %f\n", host, bw.Host, path.Bandwidth))
 	}
 	links[host] = lMap
+	paths[host] = pMap
 	return links, paths, traffic
 }

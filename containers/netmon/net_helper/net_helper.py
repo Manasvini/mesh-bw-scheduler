@@ -103,11 +103,13 @@ def parse_args():
     ap = argparse.ArgumentParser()
     ap.add_argument('-c', '--config', required=False,
                     help = 'path to config file', default = './config.json')
+    ap.add_argument('-i', '--ip', required=False,
+                    help = 'ip address of host', default = '0.0.0.0')
     return ap.parse_args()    
 
 if __name__ == "__main__":
     args = parse_args()
     port = int(os.environ.get('PORT', 6000))
     config = get_config(args.config)
-    app.run(debug=True, host='0.0.0.0', port=port)
+    app.run(debug=True, host=args.ip, port=port)
 

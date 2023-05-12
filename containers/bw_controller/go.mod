@@ -2,9 +2,9 @@ module controller_main
 
 go 1.19
 
-replace github.gatech.edu/cs-epl/mesh-bw-scheduler/bwcontroller => /home/cvuser/mesh-bw-scheduler/containers/bw_controller/controller
+replace github.gatech.edu/cs-epl/mesh-bw-scheduler/bwcontroller => /home/epl/projects/mesh/mesh-bw-scheduler/containers/bw_controller/controller
 
-replace github.gatech.edu/cs-epl/mesh-bw-scheduler/netmon => /home/cvuser/mesh-bw-scheduler/containers/netmon/proto
+replace github.gatech.edu/cs-epl/mesh-bw-scheduler/netmon => /home/epl/projects/mesh/mesh-bw-scheduler/containers/netmon/proto
 
 require (
 	github.gatech.edu/cs-epl/mesh-bw-scheduler/bwcontroller v0.0.0-00010101000000-000000000000
@@ -27,4 +27,4 @@ require (
 	google.golang.org/protobuf v1.30.0 // indirect
 )
 
-replace github.gatech.edu/cs-epl/mesh-bw-scheduler/netmon_client => /home/cvuser/mesh-bw-scheduler/containers/netmon/netmon_client
+replace github.gatech.edu/cs-epl/mesh-bw-scheduler/netmon_client => /home/epl/projects/mesh/mesh-bw-scheduler/containers/netmon/netmon_client

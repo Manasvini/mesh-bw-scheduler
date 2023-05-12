@@ -18,6 +18,6 @@ require (
 	k8s.io/apimachinery v0.27.1 // indirect
 )
 
-replace github.gatech.edu/cs-epl/mesh-bw-scheduler/netmon_client => /home/cvuser/mesh-bw-scheduler/containers/netmon/netmon_client
+replace github.gatech.edu/cs-epl/mesh-bw-scheduler/netmon_client => "/users/msethu0/mesh-bw-scheduler//containers/netmon/netmon_client"
 
-replace github.gatech.edu/cs-epl/mesh-bw-scheduler/netmon => /home/cvuser/mesh-bw-scheduler/containers/netmon/proto
+replace github.gatech.edu/cs-epl/mesh-bw-scheduler/netmon => "/users/msethu0/mesh-bw-scheduler//containers/netmon/proto"

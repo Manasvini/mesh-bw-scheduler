@@ -11,24 +11,51 @@ import (
 type PodProcessor struct {
 	unscheduledPods map[string]Pod // pod name to pod mapping
 	podLock         *sync.Mutex
+	client          KubeClientIntf
 }
 
-func NewPodProcessor() *PodProcessor {
+func NewPodProcessor(kcl KubeClientIntf) *PodProcessor {
 	mu := &sync.Mutex{}
 	unscheduledPods := make(map[string]Pod, 0)
-	pp := &PodProcessor{unscheduledPods: unscheduledPods, podLock: mu}
+	pp := &PodProcessor{unscheduledPods: unscheduledPods, podLock: mu, client: kcl}
 	logger("Created pod processor")
 	return pp
 }
+func getPodName(podId string) string {
+	pName := ""
+	vals := strings.Split(podId, "-")
+	for i := 0; i < len(vals)-2; i++ {
+		pName += vals[i]
+		if i < len(vals)-3 {
+			pName += "-"
+		}
 
+	}
+	return pName
+}
 func (pp *PodProcessor) AddPod(pod Pod) {
 	pp.podLock.Lock()
-	pp.unscheduledPods[pod.Metadata.Name] = pod
+	pName := getPodName(pod.Metadata.Name)
+
+	pp.unscheduledPods[pName] = pod
 
 	pp.podLock.Unlock()
-	logger("Added pod " + pod.Metadata.Name + " to unscheduled pods")
+	logger("Added pod " + pName + " to unscheduled pods")
 }
 
+func (pp *PodProcessor) IsPodInList(podList []*PodList, podName string) bool {
+	for _, pList := range podList {
+		for _, pod := range pList.Items {
+			pName := getPodName(pod.Metadata.Name)
+			if pName == podName && pod.Status.Phase == "Running" {
+				return true
+			}
+		}
+
+	}
+	return false
+
+}
 func (pp *PodProcessor) AreAllRelatedPodsPresent(pod Pod, relationship string) bool {
 	// Dependson: for a pod, check if all  the pods that THIS pod depends on are present
 	// Dependedby: for a pod, check if all pods that depend on THIS pod are present
@@ -37,6 +64,11 @@ func (pp *PodProcessor) AreAllRelatedPodsPresent(pod Pod, relationship string) b
 	pp.podLock.Unlock()
 	annotations := pod.Metadata.Annotations
 	// format: dependedby.PODNAME
+	allPods, err := pp.client.GetPods()
+	if err != nil {
+		logger(fmt.Sprintf("Got error: %v", err))
+	}
+	logger(fmt.Sprintf("find %s for pod %s", relationship, pod.Metadata.Name))
 	for k, _ := range annotations {
 		if strings.Contains(k, relationship) {
 			vals := strings.Split(k, ".")
@@ -48,12 +80,14 @@ func (pp *PodProcessor) AreAllRelatedPodsPresent(pod Pod, relationship string) b
 			}
 			podName := vals[1]
 			_, isPodPresent := podList[podName]
-			if !isPodPresent {
+			podAlreadyScheduled := pp.IsPodInList(allPods, podName)
+			if !isPodPresent && !podAlreadyScheduled {
 				logger("Pod " + podName + " not found")
 				return false
 			}
 		}
 	}
+	logger(fmt.Sprintf("POd %s has all %s", getPodName(pod.Metadata.Name), relationship))
 	return true
 }
 
@@ -83,11 +117,11 @@ func (pp *PodProcessor) GetPodDependencyGraph(podList []Pod) map[string]map[stri
 			if relationship != "dependson" {
 				continue
 			}
-			_, exists := podGraph[pod.Metadata.Name]
+			_, exists := podGraph[getPodName(pod.Metadata.Name)]
 			if !exists {
-				podGraph[pod.Metadata.Name] = make(map[string]bool, 0)
+				podGraph[getPodName(pod.Metadata.Name)] = make(map[string]bool, 0)
 			}
-			podGraph[pod.Metadata.Name][podName] = true
+			podGraph[getPodName(pod.Metadata.Name)][podName] = true
 		}
 
 	}
@@ -112,9 +146,9 @@ func (pp *PodProcessor) GetPodGraph() (map[string]map[string]bool, []string) {
 
 		annotations := pod.Metadata.Annotations
 		if len(annotations) == 0 {
-			_, exists := podGraph[pod.Metadata.Name]
+			_, exists := podGraph[getPodName(pod.Metadata.Name)]
 			if !exists {
-				podGraph[pod.Metadata.Name] = make(map[string]bool, 0)
+				podGraph[getPodName(pod.Metadata.Name)] = make(map[string]bool, 0)
 			}
 			continue
 		}
@@ -128,17 +162,18 @@ func (pp *PodProcessor) GetPodGraph() (map[string]map[string]bool, []string) {
 				continue
 			}
 			logger(fmt.Sprintf("pod = %s rel = %s other pod = %s", pod.Metadata.Name, rel, podName))
-			_, exists := podGraph[pod.Metadata.Name]
+			_, exists := podGraph[getPodName(pod.Metadata.Name)]
 			if !exists {
-				podGraph[pod.Metadata.Name] = make(map[string]bool, 0)
+				podGraph[getPodName(pod.Metadata.Name)] = make(map[string]bool, 0)
 			}
 
 			_, exists = podGraph[podName]
 			if !exists {
 				podGraph[podName] = make(map[string]bool, 0)
+				logger("add dep " + podName)
 			}
-			podGraph[pod.Metadata.Name][podName] = true
-			podGraph[podName][pod.Metadata.Name] = true
+			podGraph[getPodName(pod.Metadata.Name)][podName] = true
+			podGraph[podName][getPodName(pod.Metadata.Name)] = true
 		}
 
 	}
@@ -183,7 +218,7 @@ func (pp *PodProcessor) GetPodGroup(podName string, podGraph map[string]map[stri
 		} else {
 			queue = nil
 		}
-
+		logger("src pod = " + podName + "cur pod = " + pod)
 		_, exists := podGraph[pod]
 		if !exists {
 			panic("Unknown pod " + pod)
@@ -224,33 +259,31 @@ func (pp *PodProcessor) GetPodGroup(podName string, podGraph map[string]map[stri
 func (pp *PodProcessor) GetPodGroups(podGraph map[string]map[string]bool, skippedPods []string) []map[string]map[string]bool {
 	visited := make(map[string]bool, 0)
 	podGroups := make([]map[string]map[string]bool, 0)
-	for {
+	for pod, _ := range podGraph {
 		if len(visited) == len(podGraph) {
 			break
 		}
-		for pod, _ := range podGraph {
-			_, exists := visited[pod]
-			if exists {
-				continue
-			}
-			podSubgraph := pp.GetPodGroup(pod, podGraph)
+		_, exists := visited[pod]
+		if exists {
+			continue
+		}
+		podSubgraph := pp.GetPodGroup(pod, podGraph)
 
-			logger(fmt.Sprintf("Got %d pods from %s ", len(podSubgraph), pod))
-			skip := false
-			for p, _ := range podSubgraph {
-				if isInList(p, skippedPods) {
-					logger(fmt.Sprintf("Pod %s was skipped, will exclude this pod group", p))
-					skip = true
-					break
-				}
+		logger(fmt.Sprintf("Got %d pods from %s ", len(podSubgraph), pod))
+		skip := false
+		for p, _ := range podSubgraph {
+			if isInList(p, skippedPods) {
+				logger(fmt.Sprintf("Pod %s was skipped, will exclude this pod group", p))
+				skip = true
+				break
 			}
+		}
 
-			for p, _ := range podSubgraph {
-				visited[p] = true
-			}
-			if !skip {
-				podGroups = append(podGroups, podSubgraph)
-			}
+		for p, _ := range podSubgraph {
+			visited[p] = true
+		}
+		if !skip {
+			podGroups = append(podGroups, podSubgraph)
 		}
 	}
 	return podGroups
@@ -273,22 +306,32 @@ func (pp *PodProcessor) GetUnscheduledPods() (map[string]Pod, map[string]map[str
 	pp.podLock.Lock()
 	podList := pp.unscheduledPods
 	pp.podLock.Unlock()
-
+	logger(fmt.Sprintf("Pod list has %d pods", len(podList)))
 	unscheduled := make(map[string]Pod, 0)
 	podGroup := make(map[string]map[string]bool, 0)
 	podGraph, skippedPods := pp.GetPodGraph()
+	logger(fmt.Sprintf("Pod graph has %d pods", len(podGraph)))
 	if len(podGraph) == 0 {
 		return unscheduled, podGroup
 	}
 	podGroups := pp.GetPodGroups(podGraph, skippedPods)
+	if len(podGroups) == 0 {
+		return unscheduled, podGroup
 
+	}
+	unknownPods := make([]string, 0)
 	for podName, _ := range podGroups[0] {
 		pod, exists := podList[podName]
-		if exists {
-			unscheduled[podName] = pod
-		} else {
-			panic("Unknown pod " + podName)
+		//if exists {
+		unscheduled[podName] = pod
+
+		if !exists {
+			logger("Pod " + podName + " not in list of unscheduled pods")
+			//unknownPods = append(unknownPods, podName)
 		}
+	}
+	for _, pod := range unknownPods {
+		delete(podGroups[0], pod)
 	}
 	return unscheduled, podGroups[0]
 }

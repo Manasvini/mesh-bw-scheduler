@@ -29,6 +29,9 @@ var (
 var (
 	config = flag.String("config", "config.txt", "config file with list of hosts")
 )
+var (
+	helper = flag.String("helper", "0.0.0.0:6000", "net helper ip/port")
+)
 
 func readConfig(configfile string) []string {
 	body, err := ioutil.ReadFile(configfile)
@@ -57,7 +60,7 @@ type server struct {
 }
 
 func (s *server) QueryBwStats(hostname string) []byte {
-	reqURL := "http://0.0.0.0:6000"
+	reqURL := "http://" + *helper
 	fmt.Printf("host = %s\n", hostname)
 	res, err := s.netClient.Get(reqURL + "/bw?host=" + hostname)
 	if err != nil {
@@ -78,7 +81,7 @@ func (s *server) QueryBwStats(hostname string) []byte {
 }
 
 func (s *server) QueryTrStats() []byte {
-	reqURL := "http://0.0.0.0:6000"
+	reqURL := "http://" + *helper
 	res, err := s.netClient.Get(reqURL + "/traceroute")
 	if err != nil {
 		fmt.Printf("client: could not create request: %s\n", err)

@@ -14,6 +14,11 @@
 package main
 
 import (
+	"encoding/json"
+	"flag"
+	"fmt"
+	"io/ioutil"
+	"log"
 	"os"
 	"os/signal"
 	"sync"
@@ -31,27 +36,45 @@ var (
 	watchPodsEndpoint = "/api/v1/watch/namespaces/%s/pods"
 	configEndpoint    = "/apis/apps/v1/namespaces/epl/deployments/epl-scheduler"
 	metricsEndpoint   = "/apis/metrics.k8s.io/v1beta1/nodes"
-	addrs             = []string{"192.168.160.42:50051"}
+	addrs             = []string{"localhost:50051"}
 )
 
 const schedulerName = "epl-scheduler"
 
+func parseConfig(filename string) Config {
+	content, err := ioutil.ReadFile(filename)
+	if err != nil {
+		log.Fatal("Error when opening file: ", err)
+	}
+
+	// Now let's unmarshall the data into `payload`
+	var payload Config
+	err = json.Unmarshal(content, &payload)
+	if err != nil {
+		log.Fatal("Error during Unmarshal(): ", err)
+	}
+	return payload
+}
+
 func main() {
 	logger("Starting epl scheduler...")
-	ns := []string{"epl"}
-	client := KubeClient{apiHost: apiHost,
-		bindingsEndpoint:  bindingsEndpoint,
-		eventsEndpoint:    eventsEndpoint,
-		nodesEndpoint:     nodesEndpoint,
-		podsEndpoint:      podsEndpoint,
-		watchPodsEndpoint: watchPodsEndpoint,
-		metricsEndpoint:   metricsEndpoint,
-		configEndpoint:    configEndpoint,
-		namespaces:        ns}
+	var configFile string
+	flag.StringVar(&configFile, "config", "./config.json", "Config file path")
+	flag.Parse()
+	config := parseConfig(configFile)
+	client := KubeClient{apiHost: config.ApiHost,
+		bindingsEndpoint:  config.BindingsEndpoint,
+		eventsEndpoint:    config.EventsEndpoint,
+		nodesEndpoint:     config.NodesEndpoint,
+		podsEndpoint:      config.PodsEndpoint,
+		watchPodsEndpoint: config.WatchPodsEndpoint,
+		metricsEndpoint:   config.MetricsEndpoint,
+		configEndpoint:    config.ConfigEndpoint,
+		namespaces:        config.Namespaces}
 
 	done := client.WaitForProxy()
-
-	dagSched := &DagScheduler{client: &client, processorLock: &sync.Mutex{}, podProcessor: NewPodProcessor(), netmonClient: netmon_client.NewNetmonClient(addrs)}
+	logger(fmt.Sprintf("Got %d namespaces", len(config.Namespaces)))
+	dagSched := &DagScheduler{client: &client, processorLock: &sync.Mutex{}, podProcessor: NewPodProcessor(&client), netmonClient: netmon_client.NewNetmonClient(config.NetmonAddrs)}
 	if done == 0 {
 		logger("Failed to connect to proxy.")
 		os.Exit(0)

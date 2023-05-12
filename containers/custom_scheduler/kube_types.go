@@ -58,9 +58,10 @@ type PodWatchEvent struct {
 }
 
 type Pod struct {
-	Kind     string   `json:"kind,omitempty"`
-	Metadata Metadata `json:"metadata"`
-	Spec     PodSpec  `json:"spec"`
+	Kind     string    `json:"kind,omitempty"`
+	Metadata Metadata  `json:"metadata"`
+	Spec     PodSpec   `json:"spec"`
+	Status   PodStatus `json:"status"`
 }
 
 type PodSpec struct {
@@ -69,6 +70,10 @@ type PodSpec struct {
 	SchedulerName string      `json:"schedulerName"`
 }
 
+type PodStatus struct {
+	Phase string `json:"phase"`
+	podIp string `json:"podIP"`
+}
 type Container struct {
 	Name      string               `json:"name"`
 	Resources ResourceRequirements `json:"resources"`

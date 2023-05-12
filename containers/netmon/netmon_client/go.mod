@@ -2,7 +2,7 @@ module github.gatech.edu/cs-epl/mesh-bw-scheduler/netmon_client
 
 go 1.19
 
-replace github.gatech.edu/cs-epl/mesh-bw-scheduler/netmon => /home/cvuser/mesh-bw-scheduler/containers/netmon/proto
+replace github.gatech.edu/cs-epl/mesh-bw-scheduler/netmon => "/users/msethu0/mesh-bw-scheduler//containers/netmon/proto"
 
 require (
 	github.com/golang/protobuf v1.5.2 // indirect

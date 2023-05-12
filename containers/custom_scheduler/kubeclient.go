@@ -156,7 +156,7 @@ func (client *KubeClient) WatchUnscheduledPods() (<-chan Pod, <-chan error) {
 	errc := make(chan error, 1)
 
 	v := url.Values{}
-	v.Set("fieldSelector", "spec.nodeName=")
+	v.Set("fieldSelector", "status.phase==Pending")
 
 	//request := &http.Request{
 	//	Header: make(http.Header),
@@ -169,10 +169,10 @@ func (client *KubeClient) WatchUnscheduledPods() (<-chan Pod, <-chan error) {
 	//	},
 	//}
 	//request.Header.Set("Accept", "application/json, */*")
-
-	go func() {
-		for {
-			for _, ns := range client.namespaces {
+	for _, ns := range client.namespaces {
+		go func(ns string) {
+			for {
+				logger("ns = " + ns)
 				request := &http.Request{
 					Header: make(http.Header),
 					Method: http.MethodGet,
@@ -211,8 +211,8 @@ func (client *KubeClient) WatchUnscheduledPods() (<-chan Pod, <-chan error) {
 				}
 			}
 			time.Sleep(5 * time.Second)
-		}
-	}()
+		}(ns)
+	}
 
 	return pods, errc
 }
@@ -220,6 +220,7 @@ func (client *KubeClient) WatchUnscheduledPods() (<-chan Pod, <-chan error) {
 func (client KubeClient) GetUnscheduledPods() ([]*Pod, error) {
 	pods := make([]*Pod, 0)
 	for _, ns := range client.namespaces {
+		logger("monitoring namespace " + ns)
 		curpods, err := client.getUnscheduledPodsOne(ns)
 		if err == nil {
 			pods = append(pods, curpods...)
