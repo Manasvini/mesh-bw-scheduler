@@ -1,4 +1,0 @@
-src,dst,bw_mbps
-nginx-web-server,text-service,1
-compose-review-service,compose-review-memcached,1
-text-service,compose-review-service,1
