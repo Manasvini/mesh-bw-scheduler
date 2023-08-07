@@ -58,17 +58,22 @@ type PodWatchEvent struct {
 }
 
 type Pod struct {
-	Kind     string   `json:"kind,omitempty"`
-	Metadata Metadata `json:"metadata"`
-	Spec     PodSpec  `json:"spec"`
+	Kind     string    `json:"kind,omitempty"`
+	Metadata Metadata  `json:"metadata"`
+	Spec     PodSpec   `json:"spec"`
+	Status   PodStatus `json:"status"`
 }
 
 type PodSpec struct {
-	NodeName   string      `json:"nodeName"`
-	Containers []Container `json:"containers"`
-	SchedulerName string   `json:"schedulerName"`
+	NodeName      string      `json:"nodeName"`
+	Containers    []Container `json:"containers"`
+	SchedulerName string      `json:"schedulerName"`
 }
 
+type PodStatus struct {
+	Phase string `json:"phase"`
+	podIp string `json:"podIP"`
+}
 type Container struct {
 	Name      string               `json:"name"`
 	Resources ResourceRequirements `json:"resources"`
@@ -116,15 +121,33 @@ type ListMetadata struct {
 
 type Metadata struct {
 	Name            string            `json:"name"`
+	Namespace       string            `json:"namespace"`
 	ResourceVersion string            `json:"resourceVersion"`
 	Labels          map[string]string `json:"labels"`
 	Annotations     map[string]string `json:"annotations"`
 	Uid             string            `json:"uid"`
 }
 
+type NodeMetricsList struct {
+	Items []NodeMetric
+}
+type NodeMetric struct {
+	Metadata NodeMetadata `json:"metadata"`
+	Usage    UsageData    `json:"usage"`
+}
+
+type NodeMetadata struct {
+	Name string `json:"name"`
+}
+
+type UsageData struct {
+	Cpu    string `json:"cpu"`
+	Memory string `json:"memory"`
+}
 type Deployment struct {
 	Kind            string            `json:"kind"`
-	Metadata    	Metadata          `json:"metadata"`
+	ApiVersion      string            `json:"apiVersion"`
+	Metadata        Metadata          `json:"metadata"`
 	ResourceVersion string            `json:"resourceVersion"`
 	Labels          map[string]string `json:"labels"`
 	Annotations     map[string]string `json:"annotations"`

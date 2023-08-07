@@ -1,0 +1,28 @@
+{
+    "components":[
+        {
+            "comp_id":"c1",
+            "cpu": 4,
+            "memory_mb": 1000
+        },
+        {
+            "comp_id":"c2",
+            "cpu": 2,
+            "memory_mb": 1000
+        },
+        {
+            "comp_id":"c3",
+            "cpu": 4,
+            "memory_mb": 400
+        }
+
+    ], 
+    "dependencies":[
+        {
+            "src":"c2",
+            "dst":"c3",
+            "latency_ms":50,
+            "bw":50
+        }
+    ]
+}

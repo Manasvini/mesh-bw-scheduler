@@ -91,6 +91,7 @@ func (opt *TabuSearchScheduler) computeCostUtility(app Application, assignment A
     overconsumptionCpu := 0.0 
     overconsumptionMem := 0.0
     overconsumptionBw := 0.0
+    nodesUsed := make(map[string]bool, 0)
     for compid, nodeid := range assignment[app.AppId]{
         _, err1 := opt.CheckFit(app.Components[compid], nodeid, nodes, links)
         if err1 != nil{
@@ -104,6 +105,7 @@ func (opt *TabuSearchScheduler) computeCostUtility(app Application, assignment A
         if overconsumptionMem < 0 {
             overconsumptionMem = 0.0
         }
+        nodesUsed[nodeid] = true
         err2, newnodes, newlinks, newroutes := opt.MakeAssignment(nodeid, compid, app, nodes, routes, links, assignment)
         if err2 != nil{
             bwOversum := 0.0
@@ -135,7 +137,7 @@ func (opt *TabuSearchScheduler) computeCostUtility(app Application, assignment A
 
     }
     glog.Infof("cpu = %f mem=%f bw=%f\n", overconsumptionCpu, overconsumptionMem, overconsumptionBw)
-    return (overconsumptionBw + overconsumptionMem + overconsumptionCpu)/(3.0 ), nodes, links, routes
+    return (overconsumptionBw + overconsumptionMem + overconsumptionCpu)/(3.0 *float64(len(nodesUsed))), nodes, links, routes
 }
 
 
@@ -346,7 +348,7 @@ func (opt *TabuSearchScheduler) Schedule(app Application) {
     currentAssignment := make(AppCompAssignment, 0)
     currentAssignment[app.AppId] = make(map[string]string, 0)
     oldState, oldRoutes, oldLinks := opt.CopyState()
-    possible, currentAssignment, nodes, links, routes := opt.SchedulerHelper(app,  oldState, oldRoutes, oldLinks, 100)
+    possible, currentAssignment, nodes, links, routes := opt.SchedulerHelper(app,  oldState, oldRoutes, oldLinks, 20)
     if possible {
         opt.Nodes, opt.Links, opt.Routes = nodes, links, routes
         opt.UpdatePaths(opt.Links, opt.Routes)

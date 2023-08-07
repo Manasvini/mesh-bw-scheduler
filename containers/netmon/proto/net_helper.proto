@@ -1,0 +1,32 @@
+
+syntax = "proto3";
+
+option go_package = "github.gatech.edu/cs-epl/mesh-bw-scheduler/netmon";
+
+package netmon;
+
+// The greeting service definition.
+service NetMonitor {
+  // Sends a greeting
+  rpc GetNetInfo (NetInfoRequest) returns (NetInfoReply) {}
+}
+
+message NetInfoRequest {
+}
+
+message NetInfoReply {
+  	repeated BandwidthInfo bwInfo = 1;
+	repeated TracerouteInfo trInfo = 2;
+}
+
+message BandwidthInfo {
+	string host = 1;
+	float sendBw = 2;
+	float receiveBw = 3;
+	float recvBwUsed = 4;
+}
+
+message TracerouteInfo {
+	string host = 1;
+	repeated string hops = 2;
+}

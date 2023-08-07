@@ -1,0 +1,22 @@
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: netmon-cv20
+spec:
+  clusterIP: None
+  ports:
+  - port: 50051
+---
+kind: Endpoints
+apiVersion: v1
+metadata:
+  name: netmon-cv20
+subsets:
+  - addresses:
+        - ip: 192.168.160.42
+    ports:
+      - port: 50051
+        name: netmon-cv20-port
+
+

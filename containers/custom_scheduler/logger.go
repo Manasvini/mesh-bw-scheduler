@@ -2,8 +2,8 @@ package main
 
 import (
 	"log"
-	"runtime"
 	"path/filepath"
+	"runtime"
 	"strings"
 )
 

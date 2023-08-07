@@ -1,0 +1,14 @@
+## config 1  
+No tc  
+
+## config 2  
+All nodes 30 Mbps  
+
+## Config 3  
+All nodes 50 Mbps  
+
+## Config 4  
+All nodes 10 Mbps   
+
+## Config 5   
+cv21: 10 Mbps, cv22: 50 Mbps, cv23: 10 Mbps  

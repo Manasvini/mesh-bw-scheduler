@@ -93,12 +93,13 @@ func (opt *SimulatedAnnealingScheduler) computeCostUtility(app Application, assi
     overconsumptionCpu := 0.0 
     overconsumptionMem := 0.0
     overconsumptionBw := 0.0
+    nodesUsed := make(map[string]bool, 0)
     for compid, nodeid := range assignment[app.AppId]{
         _, err1 := opt.CheckFit(app.Components[compid], nodeid, nodes, links)
         if err1 != nil{
             overconsumptionCpu += 100 *float64(nodes[nodeid].CpuInUse + app.Components[compid].Cpu - nodes[nodeid].CpuCapacity)/float64(nodes[nodeid].CpuCapacity)
             overconsumptionMem += 100*float64(nodes[nodeid].MemoryInUse + app.Components[compid].Memory - nodes[nodeid].MemoryCapacity)/float64(nodes[nodeid].MemoryCapacity)
-        glog.Infof("overcons cpu = %f mem=%f\n", overconsumptionCpu, overconsumptionMem)
+            glog.Infof("overcons cpu = %f mem=%f\n", overconsumptionCpu, overconsumptionMem)
         }
         if overconsumptionCpu < 0{
             overconsumptionCpu = 0.0
@@ -106,6 +107,7 @@ func (opt *SimulatedAnnealingScheduler) computeCostUtility(app Application, assi
         if overconsumptionMem < 0 {
             overconsumptionMem = 0.0
         }
+        nodesUsed[nodeid] = true
         err2, newnodes, newlinks, newroutes := opt.MakeAssignment(nodeid, compid, app, nodes, routes, links, assignment)
         if err2 != nil{
             bwOversum := 0.0
@@ -137,7 +139,7 @@ func (opt *SimulatedAnnealingScheduler) computeCostUtility(app Application, assi
         
     }
     glog.Infof("cpu = %f mem=%f bw=%f\n", overconsumptionCpu, overconsumptionMem, overconsumptionBw)
-    return (overconsumptionBw + overconsumptionMem + overconsumptionCpu)/(3.0 ), nodes, links, routes
+    return (overconsumptionBw + overconsumptionMem + overconsumptionCpu)/(3.0 * float64(len(nodesUsed)) ), nodes, links, routes
 }
 
 func (opt *SimulatedAnnealingScheduler) computeCost(app Application, assignment AppCompAssignment, nodes NodeMap, links LinkMap, routes RouteMap) (float64, NodeMap, LinkMap, RouteMap){
@@ -368,7 +370,7 @@ func (opt *SimulatedAnnealingScheduler) Schedule(app Application) {
     currentAssignment := make(AppCompAssignment, 0)
     currentAssignment[app.AppId] = make(map[string]string, 0)
     oldState, oldRoutes, oldLinks := opt.CopyState()
-    possible, currentAssignment, nodes, links, routes := opt.SchedulerHelper(app,  oldState, oldRoutes, oldLinks, 100)
+    possible, currentAssignment, nodes, links, routes := opt.SchedulerHelper(app,  oldState, oldRoutes, oldLinks, 20)
     if possible {
         opt.Nodes, opt.Links, opt.Routes = nodes, links, routes
         opt.UpdatePaths(opt.Links, opt.Routes)

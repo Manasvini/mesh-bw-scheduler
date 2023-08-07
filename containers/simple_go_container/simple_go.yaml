@@ -13,9 +13,10 @@ spec:
       labels:
         app: simple-go
     spec:
+      schedulerName: epl-scheduler
       containers:
       - name: simple-go
-        image: simple_go_app
+        image: simple_go:latest
         imagePullPolicy: Never
         ports:
         - containerPort: 6000
