@@ -7,7 +7,7 @@ prometheus-client/main
 qmp_*.json
 .DS_Store
 containers/custom_scheduler/custom_scheduler
-schedulertest/input/
+schedulertest/input/deathstar_*
 containers/temp
 *.pyc
 *log*
