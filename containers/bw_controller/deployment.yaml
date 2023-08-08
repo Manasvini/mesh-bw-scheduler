@@ -19,12 +19,12 @@ spec:
       serviceAccount: default
       containers:
         - name: epl-bw-controller
-          image: bw-controller:latest
-          imagePullPolicy: Never
+          image: manasvini1/bw_controller:latest
+          imagePullPolicy: Always
           resources:
             requests:
               cpu: '0.1'
         - name: sidecar-proxy
-          image: sidecar:latest
-          imagePullPolicy: Never
+          image: manasvini1/sidecar_proxy:latest
+          imagePullPolicy: Always
 

@@ -1,0 +1,22 @@
+{
+	"PromMetrics": [
+		"istio_request_duration_milliseconds", 
+		"istio_tcp_sent_bytes_total",
+ 		"istio_tcp_received_bytes_total"
+	],
+	"PromAddr": "prometheus.svc.istio-system.cluster.local",
+	"NetmonAddrs":[
+		"netmon-node0-msethur1-163195-westside-emulab-net",
+		"netmon-node1-msethur1-163195-westside-emulab-net"
+	],
+	"KubeProxyAddr": "127.0.0.1:8001",
+	"KubeNodesEndpoint": "/api/v1/nodes",
+	"KubePodsEndpoint" : "/api/v1/namespaces/%s/pods/",
+	"KubeDeleteEndpoint": "/api/v1/namespaces/%s/pods/%s",
+	"KubeNamespaces" :[
+		"epl",
+		"socialnetwork",
+		"camera"
+	],
+	"MonDurationSeconds":15
+}

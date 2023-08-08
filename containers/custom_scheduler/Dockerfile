@@ -2,13 +2,11 @@
 FROM golang
 
 # Copy the required files
-COPY ./ /app/
-
+COPY ./custom_scheduler ./
+COPY ./cloudlab_config.json ./
 # switch working directory
-WORKDIR /app
 
 # install the dependencies and packages in the requirements file
-RUN go build -o ./build/main .
 
 EXPOSE 9001
-CMD ["/app/build/main"]
+ENTRYPOINT ["./custom_scheduler", "-config", "./cloudlab_config.json"]
