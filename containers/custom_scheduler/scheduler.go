@@ -247,6 +247,7 @@ func (sched *DagScheduler) AreDepsSatisfied(currentPod Pod, currentNode Node, no
 
 func (sched *DagScheduler) getNextPod(currentPod string, assignedPods map[string]string, topoOrder []string, podGraph map[string]map[string]bool) ([]string, bool) {
 	neighbors := getNeighbors(currentPod, podGraph)
+	logger("current pod = " + currentPod)
 	allK8sPods, _ := sched.client.GetPods()
 	if len(neighbors) > 0 {
 		unscheduled := make([]string, 0)
@@ -282,9 +283,9 @@ func getNodeWithName(nodeName string, nodes *NodeList) Node {
 }
 
 func (sched *DagScheduler) SchedulePods() (map[string]string, map[string]Pod, *NodeList) {
+	// returns the dag of unscheduled pods
 	sched.processorLock.Lock()
 	defer sched.processorLock.Unlock()
-	// returns the dag of unscheduled pods
 	pods, podGraph := sched.podProcessor.GetUnscheduledPods()
 	logger(fmt.Sprintf("got %d pods and %d podgraph", len(pods), len(podGraph)))
 
@@ -343,6 +344,7 @@ func (sched *DagScheduler) SchedulePods() (map[string]string, map[string]Pod, *N
 			candidateNodeIdx = 0
 			// TODO do something smarter here, like processing neighbor pods instead of topo sorted pods
 			//podIdx += 1
+			logger(fmt.Sprintf("Have %d unsccheduled neighbors", len(unscheduledNeighbors)))
 			if len(unscheduledNeighbors) == 0 {
 				nextPods, exists := sched.getNextPod(podToSchedule, podAssignment, topoOrder, podGraph)
 				if !exists {
@@ -352,6 +354,8 @@ func (sched *DagScheduler) SchedulePods() (map[string]string, map[string]Pod, *N
 				if len(nextPods) > 1 {
 					unscheduledNeighbors = nextPods[1:]
 				}
+				podToSchedule = nextPods[0]
+				logger("next pid is " + podToSchedule)
 			} else {
 				podToSchedule = unscheduledNeighbors[0]
 				numPods := len(unscheduledNeighbors)
@@ -380,7 +384,6 @@ func (sched *DagScheduler) SchedulePods() (map[string]string, map[string]Pod, *N
 			candidateNodeIdx += 1
 			madeAssignment = false
 		}
-
 	}
 	return podAssignment, pods, nodes
 }
@@ -388,11 +391,11 @@ func (sched *DagScheduler) SchedulePods() (map[string]string, map[string]Pod, *N
 func (sched *DagScheduler) AssignPods(podAssignment map[string]string, pods map[string]Pod, nodes *NodeList) error {
 	for pod, nodeName := range podAssignment {
 		node := getNodeWithName(nodeName, nodes)
+		logger("Assign pod " + pods[pod].Metadata.Name + " to node " + node.Metadata.Name)
 		err := sched.SchedulePod(pods[pod], node)
 		if err != nil {
 			logger(fmt.Sprintf("Got error %v", err))
 		}
-		return err
 	}
 	return nil
 }

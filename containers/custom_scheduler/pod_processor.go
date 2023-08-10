@@ -158,10 +158,10 @@ func (pp *PodProcessor) GetPodGraph() (map[string]map[string]bool, []string) {
 				logger(fmt.Sprintf("ERROR: Incorrect annotation format for pod dependency %s", k))
 			}
 			rel, podName := vals[0], vals[1]
+			logger(fmt.Sprintf("pod = %s rel = %s other pod = %s", pod.Metadata.Name, rel, podName))
 			if "dependson" != rel && "dependedby" != rel {
 				continue
 			}
-			logger(fmt.Sprintf("pod = %s rel = %s other pod = %s", pod.Metadata.Name, rel, podName))
 			_, exists := podGraph[getPodName(pod.Metadata.Name)]
 			if !exists {
 				podGraph[getPodName(pod.Metadata.Name)] = make(map[string]bool, 0)
@@ -177,7 +177,7 @@ func (pp *PodProcessor) GetPodGraph() (map[string]map[string]bool, []string) {
 		}
 
 	}
-	/*for srcName, deps := range podGraph {
+	for srcName, deps := range podGraph {
 		logger("Pod: " + srcName)
 		logger("Dependers: ")
 		fmtStr := ""
@@ -187,7 +187,7 @@ func (pp *PodProcessor) GetPodGraph() (map[string]map[string]bool, []string) {
 		}
 		logger("Dependers: " + fmtStr)
 
-	}*/
+	}
 	return podGraph, skippedPods
 }
 

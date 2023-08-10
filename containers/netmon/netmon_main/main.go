@@ -65,7 +65,7 @@ func (s *server) QueryBwStats(hostname string) []byte {
 	res, err := s.netClient.Get(reqURL + "/bw?host=" + hostname)
 	if err != nil {
 		fmt.Printf("client: could not create request: %s\n", err)
-		os.Exit(1)
+		return  []byte("")
 	}
 
 	fmt.Printf("client: status code: %d\n", res.StatusCode)
@@ -73,7 +73,7 @@ func (s *server) QueryBwStats(hostname string) []byte {
 	resBody, err := ioutil.ReadAll(res.Body)
 	if err != nil {
 		fmt.Printf("client: could not read response body: %s\n", err)
-		os.Exit(1)
+		return []byte("")
 	}
 	fmt.Printf(string(resBody))
 	return resBody

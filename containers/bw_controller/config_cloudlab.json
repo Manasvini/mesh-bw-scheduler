@@ -4,10 +4,10 @@
 		"istio_tcp_sent_bytes_total",
  		"istio_tcp_received_bytes_total"
 	],
-	"PromAddr": "prometheus.svc.istio-system.cluster.local:9090",
+	"PromAddr": "http://0.0.0.0:9090",
 	"NetmonAddrs":[
-		"netmon-node0-msethur1-163195-westside-emulab-net:50051",
-		"netmon-node1-msethur1-163195-westside-emulab-net:50051"
+		"155.98.38.137:50051",
+		"155.98.38.136:50051"
 	],
 	"KubeProxyAddr": "127.0.0.1:8001",
 	"KubeNodesEndpoint": "/api/v1/nodes",
