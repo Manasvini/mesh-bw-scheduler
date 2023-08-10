@@ -292,7 +292,7 @@ func (pp *PodProcessor) GetPodGroups(podGraph map[string]map[string]bool, skippe
 func (pp *PodProcessor) MarkScheduled(pods []Pod) {
 	pp.podLock.Lock()
 	for _, pod := range pods {
-		podName := pod.Metadata.Name
+		podName := getPodName(pod.Metadata.Name)
 		_, exists := pp.unscheduledPods[podName]
 		if exists {
 			delete(pp.unscheduledPods, podName)
