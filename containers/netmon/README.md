@@ -42,5 +42,14 @@ $ go mod edit -replace github.gatech.edu/cs-epl/mesh-bw-scheduler/netmon=/path/t
 For convenience, `install/` directory has a `setup.sh` script which will set up both `net_helper` and `netmon_main`. It is run like so:  
 ```shell  
 $ bash ./setup_node.sh username@hostname  
-$  
- 
+```  
+   
+## Accessing netmon from k3s  
+We setup  service routing from the pods running in the k3s cluster to the netmon server running outside using the deployment template in `deployment.yaml`. Basically we set up an endpoint that routes to the service running on the machine's localhost (vis a vis a pod's localhost).   Once you know the names of the nodes in the k3s cluster, create a json file specifying the host names, IPs and ports for netmon. Then run gen_deployment like so:  
+```shell  
+$ python3 gen_deployment.py -t template.yaml -n hosts.json  
+```
+After checking that the deployment file for each node is accurate, deploy them into k3s as usual:  
+```shell  
+$ k3s kubectl apply -f <deployment file name>   
+```
