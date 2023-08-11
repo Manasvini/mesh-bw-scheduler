@@ -108,11 +108,21 @@ type NodeList struct {
 type Node struct {
 	Metadata Metadata   `json:"metadata"`
 	Status   NodeStatus `json:"status"`
+	Spec	 NodeSpec   `json:"spec"`
 }
 
 type NodeStatus struct {
 	Capacity    ResourceList `json:"capacity"`
 	Allocatable ResourceList `json:"allocatable"`
+}
+
+type NodeSpec struct {
+	Taints     []Taint
+}
+
+type Taint struct {
+	Key		string	`json:"key"`
+	Effect		string  `json:"effect`
 }
 
 type ListMetadata struct {

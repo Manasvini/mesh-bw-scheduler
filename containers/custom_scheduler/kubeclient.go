@@ -147,7 +147,24 @@ func (client *KubeClient) GetNodes() (*NodeList, error) {
 	if err != nil {
 		return nil, err
 	}
-
+	finalNodeList := make([]Node, 0)
+	for _, node := range nodeList.Items {
+		if len(node.Spec.Taints) == 0 {
+			finalNodeList = append(finalNodeList, node)
+		} else{
+			add := true
+			for _, taint := range node.Spec.Taints {
+				if taint.Effect == "NoSchedule" {
+					add = false
+					break
+				}
+			}
+			if add == true {
+				finalNodeList = append(finalNodeList, node)
+			}
+		}
+	}
+	nodeList.Items = finalNodeList
 	return &nodeList, nil
 }
 
@@ -285,9 +302,8 @@ func (client *KubeClient) getPodsOne(ns string) (*PodList, error) {
 	var podList PodList
 
 	v := url.Values{}
-	v.Add("fieldSelector", "status.phase=Running")
 	v.Add("fieldSelector", "status.phase=Pending")
-
+	v.Add("fieldSelector", "status.phase=Running")
 	request := &http.Request{
 		Header: make(http.Header),
 		Method: http.MethodGet,

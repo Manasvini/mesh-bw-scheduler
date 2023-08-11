@@ -35,7 +35,7 @@ func getPodName(podId string) string {
 }
 func (pp *PodProcessor) AddPod(pod Pod) {
 	pp.podLock.Lock()
-	pName := getPodName(pod.Metadata.Name)
+	pName := pod.Metadata.Name //getPodName(pod.Metadata.Name)
 
 	pp.unscheduledPods[pName] = pod
 
@@ -79,7 +79,11 @@ func (pp *PodProcessor) AreAllRelatedPodsPresent(pod Pod, relationship string) b
 				continue
 			}
 			podName := vals[1]
-			_, isPodPresent := podList[podName]
+			pod := getPodWithName(podName, podList)
+			isPodPresent := true
+			if getPodName(pod.Metadata.Name) != podName {
+				isPodPresent = false
+			}
 			podAlreadyScheduled := pp.IsPodInList(allPods, podName)
 			if !isPodPresent && !podAlreadyScheduled {
 				logger("Pod " + podName + " not found")
@@ -87,7 +91,7 @@ func (pp *PodProcessor) AreAllRelatedPodsPresent(pod Pod, relationship string) b
 			}
 		}
 	}
-	logger(fmt.Sprintf("POd %s has all %s", getPodName(pod.Metadata.Name), relationship))
+	logger(fmt.Sprintf("POd %s has all %s ", getPodName(pod.Metadata.Name), relationship))
 	return true
 }
 
@@ -122,6 +126,7 @@ func (pp *PodProcessor) GetPodDependencyGraph(podList []Pod) map[string]map[stri
 				podGraph[getPodName(pod.Metadata.Name)] = make(map[string]bool, 0)
 			}
 			podGraph[getPodName(pod.Metadata.Name)][podName] = true
+			logger("add dep " + getPodName(pod.Metadata.Name) + " <-> " + podName)
 		}
 
 	}
@@ -170,7 +175,7 @@ func (pp *PodProcessor) GetPodGraph() (map[string]map[string]bool, []string) {
 			_, exists = podGraph[podName]
 			if !exists {
 				podGraph[podName] = make(map[string]bool, 0)
-				logger("add dep " + podName)
+				logger("add dep " + podName + " for " + getPodName(pod.Metadata.Name))
 			}
 			podGraph[getPodName(pod.Metadata.Name)][podName] = true
 			podGraph[podName][getPodName(pod.Metadata.Name)] = true
@@ -179,7 +184,6 @@ func (pp *PodProcessor) GetPodGraph() (map[string]map[string]bool, []string) {
 	}
 	for srcName, deps := range podGraph {
 		logger("Pod: " + srcName)
-		logger("Dependers: ")
 		fmtStr := ""
 		for dstName, _ := range deps {
 			fmtStr += dstName + ", "
@@ -238,7 +242,11 @@ func (pp *PodProcessor) GetPodGroup(podName string, podGraph map[string]map[stri
 			//podList = append(podList, pod)
 			podSubgraph[pod] = make(map[string]bool, 0)
 			for neighbor, _ := range podGraph[pod] {
-				podInfo, _ := pp.unscheduledPods[pod]
+				podInfo := getPodWithName(pod, pp.unscheduledPods)
+				//podInfo, _ := pp.unscheduledPods[pod]
+				if getPodName(podInfo.Metadata.Name) != pod {
+					continue
+				}
 				for ann, _ := range podInfo.Metadata.Annotations {
 					vals := strings.Split(ann, ".")
 					if vals[0] == "dependson" && neighbor == vals[1] {
@@ -291,15 +299,34 @@ func (pp *PodProcessor) GetPodGroups(podGraph map[string]map[string]bool, skippe
 
 func (pp *PodProcessor) MarkScheduled(pods []Pod) {
 	pp.podLock.Lock()
+	for podName, _ := range pp.unscheduledPods {
+		logger("unscheduled = " + podName)
+	}
 	for _, pod := range pods {
-		podName := getPodName(pod.Metadata.Name)
+		logger("pod = " + pod.Metadata.Name)
+		podName := pod.Metadata.Name // getPodName(pod.Metadata.Name)
 		_, exists := pp.unscheduledPods[podName]
+
 		if exists {
 			delete(pp.unscheduledPods, podName)
 		}
 	}
 	pp.podLock.Unlock()
 }
+
+func getPodWithName(podName string, pods map[string]Pod) Pod {
+	logger("find pod for name " + podName)
+	var pod Pod
+	for p, podInfo := range pods {
+		logger("Pod is " + p)
+		if getPodName(p) == podName {
+			return podInfo
+		}
+	}
+	return pod
+
+}
+
 
 // return first pod group that is unscheduled
 func (pp *PodProcessor) GetUnscheduledPods() (map[string]Pod, map[string]map[string]bool) {
@@ -321,9 +348,14 @@ func (pp *PodProcessor) GetUnscheduledPods() (map[string]Pod, map[string]map[str
 	}
 	unknownPods := make([]string, 0)
 	for podName, _ := range podGroups[0] {
-		pod, exists := podList[podName]
+		logger("pg pod name " + podName)
+		pod := getPodWithName(podName, podList)
+		exists := true
+		if getPodName(pod.Metadata.Name)  != podName {
+			exists = false
+		}
 		//if exists {
-		unscheduled[podName] = pod
+		unscheduled[pod.Metadata.Name] = pod
 
 		if !exists {
 			logger("Pod " + podName + " not in list of unscheduled pods")
@@ -333,5 +365,5 @@ func (pp *PodProcessor) GetUnscheduledPods() (map[string]Pod, map[string]map[str
 	for _, pod := range unknownPods {
 		delete(podGroups[0], pod)
 	}
-	return unscheduled, podGroups[0]
+	return pp.unscheduledPods, podGroups[0]
 }
