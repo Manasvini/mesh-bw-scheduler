@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"net"
 	"os"
-
+	"time"
 	bpf "github.com/iovisor/gobpf/bcc"
 )
 
@@ -69,6 +69,8 @@ type BPFRunner struct {
 	PktSize  *bpf.Table
 	device   string
 	module   *bpf.Module
+	lastObservedTraffic map[string]float64
+	lastTs 	int64
 }
 
 func (runner *BPFRunner) Close() {
@@ -99,7 +101,7 @@ func NewBPFRunner(device string) *BPFRunner {
 
 	pktcnt := bpf.NewTable(module.TableId("packets"), module)
 	pktsize := bpf.NewTable(module.TableId("packetsize"), module)
-	bpfRunner := &BPFRunner{PktStats: pktcnt, device: device, module: module, PktSize: pktsize}
+	bpfRunner := &BPFRunner{PktStats: pktcnt, device: device, module: module, PktSize: pktsize, lastObservedTraffic:make(map[string]float64, 0)}
 
 	return bpfRunner
 }
@@ -114,7 +116,21 @@ func (runner *BPFRunner) GetStats() map[string]float64 {
 			fmt.Printf("%s: %v bytes\n", int2ip(key), value)
 		}
 	}
-	return trafficMap
+	if len(runner.lastObservedTraffic) == 0 {
+		runner.lastObservedTraffic = trafficMap
+		runner.lastTs = time.Now().Unix()
+		return trafficMap
+	}
+	bws := make(map[string]float64, 0)
+	for host, bytes := range trafficMap {
+		prevBytes, val := runner.lastObservedTraffic[host]
+		if val {
+			bws[host] = (bytes - prevBytes)/ float64(time.Now().Unix() - runner.lastTs)
+		}
+	}
+	runner.lastTs = time.Now().Unix()
+	runner.lastObservedTraffic = trafficMap
+	return bws
 }
 func (runner *BPFRunner) PrintStats() {
 	fmt.Printf("\n{IP address}: {total pkts}\n")

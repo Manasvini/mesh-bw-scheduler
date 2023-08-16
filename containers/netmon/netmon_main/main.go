@@ -149,8 +149,8 @@ func (s *server) GetUpdatedNetStats() (BandwidthResults, TracerouteResults) {
 	trResponse := s.QueryTrStats()
 
 	trInfo := GetTrResults(trResponse)
-	fmt.Printf("Got %d hosts\n", len(trInfo.TracerouteResults))
-	fmt.Printf("Got %d hosts\n", len(allBwInfo.BandwidthResults))
+	fmt.Printf("tr: Got %d hosts\n", len(trInfo.TracerouteResults))
+	fmt.Printf("bw: Got %d hosts\n", len(allBwInfo.BandwidthResults))
 	return allBwInfo, trInfo
 }
 
