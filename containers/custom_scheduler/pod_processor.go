@@ -47,7 +47,7 @@ func (pp *PodProcessor) IsPodInList(podList []*PodList, podName string) bool {
 	for _, pList := range podList {
 		for _, pod := range pList.Items {
 			pName := getPodName(pod.Metadata.Name)
-			if pName == podName && pod.Status.Phase == "Running" {
+			if pName == podName && (pod.Status.Phase == "Running" || pod.Status.Phase == "ContainerCreating") {
 				return true
 			}
 		}
@@ -315,10 +315,10 @@ func (pp *PodProcessor) MarkScheduled(pods []Pod) {
 }
 
 func getPodWithName(podName string, pods map[string]Pod) Pod {
-	logger("find pod for name " + podName)
+	//logger("find pod for name " + podName)
 	var pod Pod
 	for p, podInfo := range pods {
-		logger("Pod is " + p)
+		//logger("Pod is " + p)
 		if getPodName(p) == podName {
 			return podInfo
 		}
@@ -326,7 +326,6 @@ func getPodWithName(podName string, pods map[string]Pod) Pod {
 	return pod
 
 }
-
 
 // return first pod group that is unscheduled
 func (pp *PodProcessor) GetUnscheduledPods() (map[string]Pod, map[string]map[string]bool) {
@@ -348,10 +347,10 @@ func (pp *PodProcessor) GetUnscheduledPods() (map[string]Pod, map[string]map[str
 	}
 	unknownPods := make([]string, 0)
 	for podName, _ := range podGroups[0] {
-		logger("pg pod name " + podName)
+		//logger("pg pod name " + podName)
 		pod := getPodWithName(podName, podList)
 		exists := true
-		if getPodName(pod.Metadata.Name)  != podName {
+		if getPodName(pod.Metadata.Name) != podName {
 			exists = false
 		}
 		//if exists {
