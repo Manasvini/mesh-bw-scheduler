@@ -4,13 +4,13 @@ import "fmt"
 
 func computeIndegrees(podDeps map[string]map[string]bool) map[string]int {
 	indegrees := make(map[string]int, 0)
-
+	logger(fmt.Sprintf("got %d nodes", len(podDeps)))
 	for src, deps := range podDeps {
 		logger(fmt.Sprintf(" src = %s deps = %d", src, len(deps)))
 		indegrees[src] = len(deps)
-        for d, _ := range deps {
-            logger("dep = " + d)
-        }
+		for d, _ := range deps {
+			logger("dep = " + d)
+		}
 	}
 	return indegrees
 }
@@ -52,10 +52,12 @@ func topoSort(podDeps map[string]map[string]bool) []string {
 	topoSortOrder := make([]string, 0)
 
 	for {
+		logger(fmt.Sprintf("Have %d nodes with zero indegree", len(zeroIndegreeNodes)))
 		if zeroIndegreeNodes == nil || len(zeroIndegreeNodes) <= 0 {
 			break
 		}
 		curNode := zeroIndegreeNodes[0]
+		logger("cur node is " + curNode)
 		topoSortOrder = append(topoSortOrder, curNode)
 		if len(zeroIndegreeNodes) > 1 {
 			zeroIndegreeNodes = zeroIndegreeNodes[1:len(zeroIndegreeNodes)]
@@ -67,13 +69,14 @@ func topoSort(podDeps map[string]map[string]bool) []string {
 				if dst == curNode {
 					val, _ := indegrees[src]
 					indegrees[src] = val - 1
-				}
-			}
+					logger(fmt.Sprintf("src = %s dst = %s indeg=%d val=%d", src, dst, indegrees[src], val))
 
-			val, _ := indegrees[src]
-			if val == 0 {
-				if !find(src, topoSortOrder) && !find(src, zeroIndegreeNodes) {
-					zeroIndegreeNodes = append(zeroIndegreeNodes, src)
+					val, _ = indegrees[src]
+					if val == 0 {
+						if !find(src, topoSortOrder) && !find(src, zeroIndegreeNodes) {
+							zeroIndegreeNodes = append(zeroIndegreeNodes, src)
+						}
+					}
 				}
 			}
 		}

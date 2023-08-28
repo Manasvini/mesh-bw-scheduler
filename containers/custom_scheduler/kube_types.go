@@ -108,7 +108,7 @@ type NodeList struct {
 type Node struct {
 	Metadata Metadata   `json:"metadata"`
 	Status   NodeStatus `json:"status"`
-	Spec	 NodeSpec   `json:"spec"`
+	Spec     NodeSpec   `json:"spec"`
 }
 
 type NodeStatus struct {
@@ -117,12 +117,12 @@ type NodeStatus struct {
 }
 
 type NodeSpec struct {
-	Taints     []Taint
+	Taints []Taint
 }
 
 type Taint struct {
-	Key		string	`json:"key"`
-	Effect		string  `json:"effect`
+	Key    string `json:"key"`
+	Effect string `json:"effect`
 }
 
 type ListMetadata struct {

@@ -35,10 +35,17 @@ func (sched *DagScheduler) ReconcileUnscheduledPods(interval int, done chan stru
 	for {
 		select {
 		case <-time.After(time.Duration(interval) * time.Second):
-			assignment, pods, nodes := sched.SchedulePods()
-			err := sched.AssignPods(assignment, pods, nodes)
-			if err != nil {
-				logger(err)
+			for {
+				pods, podGraph := sched.podProcessor.GetUnscheduledPods()
+				if len(pods) == 0 {
+					break
+				}
+				assignment, pods, nodes := sched.SchedulePods(pods, podGraph)
+				err := sched.AssignPods(assignment, pods, nodes)
+				if err != nil {
+					logger(err)
+				}
+
 			}
 		case <-done:
 			wg.Done()
@@ -58,7 +65,6 @@ func (sched *DagScheduler) MonitorUnscheduledPods(done chan struct{}, wg *sync.W
 		case pod := <-pods:
 			sched.processorLock.Lock()
 			logger(fmt.Sprintf("Got pod %s", pod.Metadata.Name))
-			time.Sleep(2 * time.Second)
 			//err := schedulePod(&pod)
 			// add the pod to pod processor
 			// pod processor collects pod and builds the pod DAG
@@ -302,11 +308,11 @@ func getNodeWithName(nodeName string, nodes *NodeList) Node {
 
 }*/
 
-func (sched *DagScheduler) SchedulePods() (map[string]string, map[string]Pod, *NodeList) {
+func (sched *DagScheduler) SchedulePods(pods map[string]Pod, podGraph map[string]map[string]bool) (map[string]string, map[string]Pod, *NodeList) {
 	// returns the dag of unscheduled pods
 	sched.processorLock.Lock()
 	defer sched.processorLock.Unlock()
-	pods, podGraph := sched.podProcessor.GetUnscheduledPods()
+	//pods, podGraph := sched.podProcessor.GetUnscheduledPods()
 	logger(fmt.Sprintf("got %d pods and %d podgraph", len(pods), len(podGraph)))
 
 	_, paths, traffics := sched.netmonClient.GetStats()
@@ -336,7 +342,7 @@ func (sched *DagScheduler) SchedulePods() (map[string]string, map[string]Pod, *N
 	}
 	allPods, _ := sched.client.GetPods()
 	candidateNodeIdx := 0
-	unscheduledNeighbors := make([]string, 0)
+	//#unscheduledNeighbors := make([]string, 0)
 	podsToSchedule := make([]string, 0)
 	for _, p := range topoOrder {
 		if !sched.podProcessor.IsPodInList(allPods, p) {
@@ -350,7 +356,7 @@ func (sched *DagScheduler) SchedulePods() (map[string]string, map[string]Pod, *N
 
 		return podAssignment, pods, nodes
 	}
-	time.Sleep(10 * time.Second)
+	//time.Sleep(10 * time.Second)
 	podToSchedule := topoOrder[podIdx]
 	for {
 		logger(fmt.Sprintf("Have %d pods to schedule candidate idx = %d", len(topoOrder)-len(podAssignment), candidateNodeIdx))
@@ -364,25 +370,28 @@ func (sched *DagScheduler) SchedulePods() (map[string]string, map[string]Pod, *N
 			sortNodes(nodeResList)
 			candidateNodeIdx = 0
 			// TODO do something smarter here, like processing neighbor pods instead of topo sorted pods
-			//podIdx += 1
-			logger(fmt.Sprintf("Have %d unsccheduled neighbors", len(unscheduledNeighbors)))
-			if len(unscheduledNeighbors) == 0 {
-				nextPods, exists := sched.getNextPod(podToSchedule, podAssignment, topoOrder, podGraph)
-				if !exists {
-					break
-				}
-
-				if len(nextPods) > 1 {
-					unscheduledNeighbors = nextPods[1:]
-				}
-				podToSchedule = nextPods[0]
-				logger("next pid is " + podToSchedule)
-			} else {
-				podToSchedule = unscheduledNeighbors[0]
-				numPods := len(unscheduledNeighbors)
-
-				unscheduledNeighbors = unscheduledNeighbors[1:numPods]
+			podIdx += 1
+			if podIdx == len(topoOrder){
+				break
 			}
+			//logger(fmt.Sprintf("Have %d unsccheduled neighbors", len(unscheduledNeighbors)))
+			//if len(unscheduledNeighbors) == 0 {
+			//	nextPods, exists := sched.getNextPod(podToSchedule, podAssignment, topoOrder, podGraph)
+			//	if !exists {
+			//		break
+			//	}
+
+			//	if len(nextPods) > 1 {
+			//		unscheduledNeighbors = nextPods[1:]
+			//	}
+			podToSchedule = topoOrder[podIdx]
+			//	logger("next pid is " + podToSchedule)
+			//} else {
+			//	podToSchedule = unscheduledNeighbors[0]
+			//	numPods := len(unscheduledNeighbors)
+
+			//	unscheduledNeighbors = unscheduledNeighbors[1:numPods]
+			//}
 			madeAssignment = false
 		}
 		logger(fmt.Sprintf("Assign pod %s", podToSchedule))

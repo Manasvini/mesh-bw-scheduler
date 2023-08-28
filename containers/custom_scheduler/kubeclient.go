@@ -151,7 +151,7 @@ func (client *KubeClient) GetNodes() (*NodeList, error) {
 	for _, node := range nodeList.Items {
 		if len(node.Spec.Taints) == 0 {
 			finalNodeList = append(finalNodeList, node)
-		} else{
+		} else {
 			add := true
 			for _, taint := range node.Spec.Taints {
 				if taint.Effect == "NoSchedule" {
@@ -304,6 +304,7 @@ func (client *KubeClient) getPodsOne(ns string) (*PodList, error) {
 	v := url.Values{}
 	v.Add("fieldSelector", "status.phase=Pending")
 	v.Add("fieldSelector", "status.phase=Running")
+	v.Add("fieldSelector", "status.phase=ContainerCreating")
 	request := &http.Request{
 		Header: make(http.Header),
 		Method: http.MethodGet,
