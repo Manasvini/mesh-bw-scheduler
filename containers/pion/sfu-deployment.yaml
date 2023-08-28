@@ -24,7 +24,7 @@ spec:
         io.kompose.service: sfu
     spec:
       containers:
-        - image: pionwebrtc/ion-sfu:latest-gsonrpc
+        - image: pionwebrtc/ion-sfu:v1.11.0-grpc
           name: sfu
           ports:
             - containerPort: 5000
