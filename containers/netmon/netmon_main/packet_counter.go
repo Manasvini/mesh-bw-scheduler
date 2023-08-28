@@ -91,7 +91,7 @@ func NewBPFRunner(device string) *BPFRunner {
 		os.Exit(1)
 	}
 
-	err = module.AttachXDP(device, fn)
+	err = module.AttachXDPWithFlags(device, fn, bpf.XDP_FLAGS_SKB_MODE)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Failed to attach xdp prog: %v\n", err)
 		os.Exit(1)
