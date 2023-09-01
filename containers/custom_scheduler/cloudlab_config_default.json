@@ -9,12 +9,9 @@
 	"MetricsEndpoint"   : "/apis/metrics.k8s.io/v1beta1/nodes",
 	"NetmonAddrs"             : [
         
-        "192.168.10.10:50051",
-	"192.168.10.11:50051"],
+        "155.98.38.236:50051",
+	"155.98.38.221:50051"],
     "Namespaces": [
-	"ion",
-        "epl",
-        "camera",
-	"socialnetwork"
+        "epl"
     ]
 }

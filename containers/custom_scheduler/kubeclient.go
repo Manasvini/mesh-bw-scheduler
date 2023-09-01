@@ -149,18 +149,22 @@ func (client *KubeClient) GetNodes() (*NodeList, error) {
 	}
 	finalNodeList := make([]Node, 0)
 	for _, node := range nodeList.Items {
+		logger("node = " + node.Metadata.Name)
 		if len(node.Spec.Taints) == 0 {
 			finalNodeList = append(finalNodeList, node)
+			logger("added node ")
 		} else {
 			add := true
 			for _, taint := range node.Spec.Taints {
 				if taint.Effect == "NoSchedule" {
+					logger("node " + node.Metadata.Name + " cant be used")
 					add = false
 					break
 				}
 			}
 			if add == true {
 				finalNodeList = append(finalNodeList, node)
+				logger("added node")
 			}
 		}
 	}
@@ -302,9 +306,9 @@ func (client *KubeClient) getPodsOne(ns string) (*PodList, error) {
 	var podList PodList
 
 	v := url.Values{}
-	v.Add("fieldSelector", "status.phase=Pending")
-	v.Add("fieldSelector", "status.phase=Running")
-	v.Add("fieldSelector", "status.phase=ContainerCreating")
+	//v.Add("fieldSelector", "status.phase=Pending")
+	//v.Add("fieldSelector", "status.phase=Running")
+	//v.Add("fieldSelector", "status.phase=ContainerCreating")
 	request := &http.Request{
 		Header: make(http.Header),
 		Method: http.MethodGet,

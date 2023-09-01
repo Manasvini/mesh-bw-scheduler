@@ -41,6 +41,10 @@ func (sched *DagScheduler) ReconcileUnscheduledPods(interval int, done chan stru
 					break
 				}
 				assignment, pods, nodes := sched.SchedulePods(pods, podGraph)
+				if len(pods) == 0 {
+					logger("Could not schedule any pod")
+					break
+				}
 				err := sched.AssignPods(assignment, pods, nodes)
 				if err != nil {
 					logger(err)
@@ -172,6 +176,40 @@ func (sched *DagScheduler) GetPodResource(pod Pod) Resource {
 	return podResource
 
 }
+func (sched *DagScheduler) EvalPredicate(pod Pod, node Node, availableBw netmon_client.PathSet) bool {
+   	nodeIp, _ := node.Metadata.Annotations["flannel.alpha.coreos.com/public-ip"]
+	nodeBws, exists := availableBw[nodeIp]
+	if !exists {
+		logger("Error: No bw info for node " + node.Metadata.Name)
+		return false
+	}
+    annotations := pod.Metadata.Annotations
+    for k, v := range annotations {
+        vals := strings.Split(k, ".")
+        if "neighbor" == vals[0] && "bw" == vals[2] {
+            if "all" == vals[1] {
+                for _, bw := range nodeBws {
+                    req, _ := strconv.Atoi(v)
+                    if bw.Bandwidth < float64(req) {
+                        return false
+                    }
+                }
+            } else if "any" == vals[1] {
+                found := false
+                for _, bw := range nodeBws {
+                    req, _ := strconv.Atoi(v)
+                    if bw.Bandwidth >= float64(req) {
+                        found = true
+                    }
+                }
+                if found == false {
+                    return false
+                }
+            }
+        }
+    }
+    return true
+}
 
 func (sched *DagScheduler) Fit(pod Pod, node Node,
 	nodeResource Resource,
@@ -199,7 +237,12 @@ func (sched *DagScheduler) Fit(pod Pod, node Node,
 		logger(fmt.Sprintf("add dst %s bw %f", dst, bw.Bandwidth))
 	}
 
-	logger(fmt.Sprintf("Pod %s cpu = %d memory = %d bw = %f  Node %s cpu = %d memory = %d bw = %f", pod.Metadata.Name, podResource.cpu, podResource.memory, podBw, node.Metadata.Name, nodeResource.cpu, nodeResource.memory, nodeBw))
+	if !sched.EvalPredicate(pod, node, availableBw) {
+        logger("node " + node.Metadata.Name + " does not have sufficient bw for predicate")
+        return false
+    }
+
+    logger(fmt.Sprintf("Pod %s cpu = %d memory = %d bw = %f  Node %s cpu = %d memory = %d bw = %f", pod.Metadata.Name, podResource.cpu, podResource.memory, podBw, node.Metadata.Name, nodeResource.cpu, nodeResource.memory, nodeBw))
 	if podResource.cpu > nodeResource.cpu {
 		logger(fmt.Sprintf("pod %s node %s insufficient CPU", pod.Metadata.Name, node.Metadata.Name))
 		return false
@@ -287,8 +330,12 @@ func (sched *DagScheduler) getNextPod(currentPod string, assignedPods map[string
 
 func getNodeWithName(nodeName string, nodes *NodeList) Node {
 	var node Node
+	logger(fmt.Sprintf("Got %d nodes", len(nodes.Items)))
 	for _, n := range nodes.Items {
+		
+		logger("node name = " + nodeName + " from meta = " + n.Metadata.Name)
 		if n.Metadata.Name == nodeName {
+		
 			return n
 		}
 	}
@@ -319,7 +366,13 @@ func (sched *DagScheduler) SchedulePods(pods map[string]Pod, podGraph map[string
 
 	nodes, _ := sched.client.GetNodes()
 	nodeMetrics, _ := sched.client.GetNodeMetrics()
-
+	logger(fmt.Sprintf("Got %d nodes", len(nodes.Items)))
+	time.Sleep(10)
+	podAssignment := make(map[string]string, 0)
+	if len(nodes.Items) == 0 {
+		logger("ERROR: Cannot find any node for scheduling, skipping")
+		return podAssignment, pods, nodes 
+	}
 	nodeResources := sched.getNodeResourcesRemaining(nodes, nodeMetrics)
 	netResources := sched.getNetResourcesRemaining(paths, traffics)
 
@@ -332,7 +385,6 @@ func (sched *DagScheduler) SchedulePods(pods map[string]Pod, podGraph map[string
 	}
 	sortNodes(nodeResList)
 	podIdx := 0
-	podAssignment := make(map[string]string, 0)
 	madeAssignment := false
 
 	if len(topoOrder) == 0 {
@@ -398,6 +450,10 @@ func (sched *DagScheduler) SchedulePods(pods map[string]Pod, podGraph map[string
 		candidateNodeRes := nodeResList[candidateNodeIdx]
 		candidateNode := getNodeWithName(candidateNodeRes.name, nodes)
 		podMeta := getPodWithName(podToSchedule, pods)
+		if podMeta.Metadata.Name == "" {
+			logger("pod for " + podToSchedule + " does not exist")
+			break
+		}
 		if sched.Fit(podMeta, candidateNode, candidateNodeRes, netResources) && sched.AreDepsSatisfied(pods[podToSchedule], candidateNode, nodes,
 			podAssignment, netResources) {
 			logger(fmt.Sprintf("Found node %s for pod %s meta =", candidateNode.Metadata.Name, podToSchedule, podMeta.Metadata.Name))
@@ -415,12 +471,14 @@ func (sched *DagScheduler) SchedulePods(pods map[string]Pod, podGraph map[string
 			madeAssignment = false
 		}
 	}
+	time.Sleep(30)
 	return podAssignment, pods, nodes
 }
 
 func (sched *DagScheduler) AssignPods(podAssignment map[string]string, pods map[string]Pod, nodes *NodeList) error {
 	for pod, nodeName := range podAssignment {
 		node := getNodeWithName(nodeName, nodes)
+		logger("pod = " + pod + " pod name= " + pods[pod].Metadata.Name)
 		logger("Assign pod " + pods[pod].Metadata.Name + " to node " + node.Metadata.Name)
 		err := sched.SchedulePod(pods[pod], node)
 		if err != nil {

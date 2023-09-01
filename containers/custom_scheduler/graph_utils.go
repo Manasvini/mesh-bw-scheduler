@@ -6,11 +6,8 @@ func computeIndegrees(podDeps map[string]map[string]bool) map[string]int {
 	indegrees := make(map[string]int, 0)
 	logger(fmt.Sprintf("got %d nodes", len(podDeps)))
 	for src, deps := range podDeps {
-		logger(fmt.Sprintf(" src = %s deps = %d", src, len(deps)))
+		//logger(fmt.Sprintf(" src = %s deps = %d", src, len(deps)))
 		indegrees[src] = len(deps)
-		for d, _ := range deps {
-			logger("dep = " + d)
-		}
 	}
 	return indegrees
 }
