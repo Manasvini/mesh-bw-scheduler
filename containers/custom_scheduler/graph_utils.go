@@ -42,6 +42,83 @@ func getNeighbors(node string, graph map[string]map[string]bool) []string {
 	return neighbors
 }
 
+func getUnvisitedVertexIdx(visited map[string]bool, topoOrder) int {
+    for idx, _ := range topoOrder {
+        if visited[topoOrder[idx]] == false {
+            return idx
+        }
+    }
+    return -1
+}
+
+func topoSortWithChain(podDeps map[string]map[string]bool) []string {
+    topoOrder := topSort(podDeps)
+
+    visited := make(map[string]bool, 0)
+    visitedGraph := make(map[string]map[string]bool, 0)
+
+    for src, deps := range podDeps {
+        visited[src] = false
+        visitedGraph[src] = make(map[string]bool, 0)
+        for dst, v := range podDeps {
+            if v == true {
+                visitedGraph[src][dst] = false
+            }
+        }
+    }
+    order := []string
+    
+    for {
+        idx := getUnvisitedVertexIndex(visited, topoOrder)
+        if len(order) == len(podDeps) {
+            break
+        }
+        curNode := topoOrder[idx]
+        lengthTo := make(map[string]int, 0)
+        path := make(map[string]string, 0)
+        for _, dst := range podDeps {
+            lengthTo[dst] = 0
+        }
+        for _, v := range topoOrder {
+            if visited[v] == true {
+                continue
+            }
+            for k, _ := range podDeps[v]{
+                if visitedGraph[k][v] == true {
+                    continue
+                }
+                if lengthTo[k] <= lengthTo[v] + 1 {
+                    lengthTo[k] = lengthTo[v] + 1
+                    path[k] = v
+                }
+            }
+        }
+        pathLen := 0
+        lastVertex := curNode
+        for k, v := range lengthTo {
+            if lengthTo[k] > pathLen {
+                pathLen = lengthTo[k]
+                lastVertex = k 
+            }
+        }
+        visited[curNode] = true
+        for {
+            curVertex := lastVertex
+            // path traversed in reverse
+            lastVertex, exists = path[lastVertex]
+            if exists {
+                visitedGraph[lastVertex][curVertex] = true
+                visited[lastVertex] = true
+            }
+            order = append([]string{lastVertex}, order...)
+            if lastVertex == curNode {
+                break
+            }
+          
+        }
+    }
+    return order
+}
 func topoSort(podDeps map[string]map[string]bool) []string {
 	indegrees := computeIndegrees(podDeps)
 	zeroIndegreeNodes := findZeroIndegrees(indegrees)

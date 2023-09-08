@@ -56,3 +56,23 @@ func TestPodDeps2(t *testing.T) {
 		}
 	}
 }
+
+func TestPodDeps3(t *testing.T) {
+	topo := getSimpleTopo(3)
+	topo["pod_3"] = make(map[string]bool, 0)
+	topo["pod_3"]["pod_2"] = true
+    topo["pod_4"] = make(map[string]bool, 0)
+    topo["pod_4"]["pod_3"] = true
+	topoOrder := topoSort(topo)
+    chainOrder := topoSortWithChain(topo)
+    if len(chainOrder) != len(topo) {
+		t.Fatalf("Got %d chain topo sorted, want %d instead", len(topoOrder), len(topo))
+	}
+	expectedOrder := []string{"pod_2", "pod_1", "pod_0", "pod_3", "pod_4"}
+	for i := 0; i < len(expectedOrder); i++ {
+		if expectedOrder[i] != topoOrder[i] {
+			t.Fatalf("got %s want %s at position %d", topoOrder[i], expectedOrder[i], i)
+		}
+	}
+
+}
