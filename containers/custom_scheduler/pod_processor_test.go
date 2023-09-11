@@ -5,6 +5,38 @@ import (
 	"testing"
 )
 
+type DummyClient struct {
+}
+
+func (cl DummyClient) GetNodes() (*NodeList, error) {
+	return nil, nil
+}
+
+func (cl DummyClient) WatchUnscheduledPods() (<-chan Pod, <-chan error) {
+	return make(chan Pod), make(chan error, 1)
+}
+func (cl DummyClient) WaitForProxy() int {
+	return 0
+}
+
+func (cl DummyClient) GetNodeMetrics() (*NodeMetricsList, error) {
+	return nil, nil
+}
+
+func (cl DummyClient) GetUnscheduledPods() ([]*Pod, error) {
+	return nil, nil
+}
+
+func (cl DummyClient) GetPods() ([]*PodList, error) {
+	return nil, nil
+}
+
+func (cl DummyClient) Bind(pod Pod, node Node) error {
+	return nil
+}
+
+var CLIENT DummyClient
+
 func getPodSimpleTopo() map[string]Pod {
 	pods := make(map[string]Pod, 0)
 
@@ -90,7 +122,7 @@ func getPodDisconnectedTopoIncomplete() map[string]Pod {
 
 func TestIncompletePodGraph1(t *testing.T) {
 	pods := getPodSimpleTopoIncomplete()
-	pp := NewPodProcessor()
+	pp := NewPodProcessor(CLIENT)
 	pp.unscheduledPods = pods
 	_, skippedPods := pp.GetPodGraph()
 
@@ -101,7 +133,7 @@ func TestIncompletePodGraph1(t *testing.T) {
 
 func TestIncompletePodGraph2(t *testing.T) {
 	pods := getPodDisconnectedTopoIncomplete()
-	pp := NewPodProcessor()
+	pp := NewPodProcessor(CLIENT)
 	pp.unscheduledPods = pods
 	_, skippedPods := pp.GetPodGraph()
 	//wantPodGraph := map[string]map[string]bool{"pod_4": {"pod_5": true}, "pod_5": {"pod_4": true}}
@@ -113,7 +145,7 @@ func TestIncompletePodGraph2(t *testing.T) {
 
 func TestGetPodGraph(t *testing.T) {
 	pods := getPodSimpleTopo()
-	pp := NewPodProcessor()
+	pp := NewPodProcessor(CLIENT)
 	pp.unscheduledPods = pods
 	podGraph, _ := pp.GetPodGraph()
 
@@ -126,7 +158,7 @@ func TestGetPodGraph(t *testing.T) {
 
 func TestGetPodGraphComponents(t *testing.T) {
 	pods := getPodSimpleTopo()
-	pp := NewPodProcessor()
+	pp := NewPodProcessor(CLIENT)
 	pp.unscheduledPods = pods
 	podGraph, skippedPods := pp.GetPodGraph()
 
@@ -138,7 +170,7 @@ func TestGetPodGraphComponents(t *testing.T) {
 
 func TestGetPodGraphComponents1(t *testing.T) {
 	pods := getPodDisconnectedTopo()
-	pp := NewPodProcessor()
+	pp := NewPodProcessor(CLIENT)
 	pp.unscheduledPods = pods
 	podGraph, skippedPods := pp.GetPodGraph()
 
@@ -150,7 +182,7 @@ func TestGetPodGraphComponents1(t *testing.T) {
 
 func TestDepGraphComponents(t *testing.T) {
 	pods := getPodSimpleTopo()
-	pp := NewPodProcessor()
+	pp := NewPodProcessor(CLIENT)
 	pp.unscheduledPods = pods
 	podGraph, skippedPods := pp.GetPodGraph()
 
@@ -173,7 +205,7 @@ func TestDepGraphComponents(t *testing.T) {
 
 func TestDepGraphIncompleteComponents(t *testing.T) {
 	pods := getPodDisconnectedTopoIncomplete()
-	pp := NewPodProcessor()
+	pp := NewPodProcessor(CLIENT)
 	pp.unscheduledPods = pods
 	podGraph, skippedPods := pp.GetPodGraph()
 

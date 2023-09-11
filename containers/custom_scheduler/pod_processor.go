@@ -47,7 +47,7 @@ func (pp *PodProcessor) IsPodInList(podList []*PodList, podName string) bool {
 	for _, pList := range podList {
 		for _, pod := range pList.Items {
 			pName := getPodName(pod.Metadata.Name)
-			if pName == podName && (pod.Status.Phase == "Running" || pod.Status.Phase == "ContainerCreating" || strings.Contains(pod.Status.Phase, "Init"))  {
+			if pName == podName && (pod.Status.Phase == "Running" || pod.Status.Phase == "ContainerCreating" || strings.Contains(pod.Status.Phase, "Init")) {
 				return true
 			} else if pName == podName && (pod.Status.Phase == "ContainerStatusUnknown" || pod.Status.Phase == "Completed") {
 				continue
@@ -83,7 +83,7 @@ func (pp *PodProcessor) AreAllRelatedPodsPresent(pod Pod, relationship string) b
 			podName := vals[1]
 			pod := getPodWithName(podName, podList)
 			isPodPresent := true
-			//logger("pd meta name is " + getPodName(pod.Metadata.Name) + " pd name is" + podName) 
+			//logger("pd meta name is " + getPodName(pod.Metadata.Name) + " pd name is" + podName)
 			if getPodName(pod.Metadata.Name) != podName {
 				isPodPresent = false
 			}
@@ -159,7 +159,7 @@ func (pp *PodProcessor) GetPodGraph() (map[string]map[string]bool, []string) {
 				annCt += 1
 			}
 		}
-		if len(annotations) == 0 || annCt == 0{
+		if len(annotations) == 0 || annCt == 0 {
 			_, exists := podGraph[getPodName(pod.Metadata.Name)]
 			if !exists {
 				podGraph[getPodName(pod.Metadata.Name)] = make(map[string]bool, 0)
