@@ -89,7 +89,7 @@ func main() {
 	go dagSched.MonitorUnscheduledPods(doneChan, &wg)
 
 	wg.Add(1)
-	go dagSched.ReconcileUnscheduledPods(60, doneChan, &wg)
+	go dagSched.ReconcileUnscheduledPods(20, doneChan, &wg)
 
 	signalChan := make(chan os.Signal, 1)
 	signal.Notify(signalChan, syscall.SIGINT, syscall.SIGTERM)

@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"time"
 )
 
 func computeIndegrees(podDeps map[string]map[string]bool) map[string]int {
@@ -54,6 +53,51 @@ func getUnvisitedVertexIdx(visited map[string]bool, topoOrder []string) int {
 	return -1
 }
 
+func bfs(podDeps map[string]map[string]bool, startNode string, visitedGraph map[string]map[string]bool, visited map[string]bool) (map[string]string, map[string]int) {
+	lengthTo := make(map[string]int, 0)
+	path := make(map[string]string, 0)
+	for dst, _ := range podDeps {
+		lengthTo[dst] = 0
+	}
+	q := make([]string, 0)
+	curNode := startNode
+	qVisited := make(map[string]bool, 0)
+	q = append(q, curNode)
+	for {
+		if q == nil || len(q) == 0 {
+			break
+		}
+		curNode = q[0]
+		qVisited[curNode] = true
+		if len(q) > 1 {
+			q = q[1:]
+		} else {
+			q = q[:0]
+		}
+		//logger(fmt.Sprintf("qlen= %d cur node = %s , has %d deps", len(q), curNode, len(podDeps[curNode])))
+		for k, _ := range podDeps {
+			if qVisited[k] == true || visited[k] == true{
+				continue
+			}
+			if visitedGraph[k][curNode] == true {
+				continue
+			}
+			_, exists := podDeps[k][curNode]
+			if !exists {
+				continue
+			}
+			q = append(q, k)
+			logger(fmt.Sprintf("edge %s -> %s\n", k, curNode))
+			if lengthTo[k] <= lengthTo[curNode]+1 {
+				lengthTo[k] = lengthTo[curNode] + 1
+				path[k] = curNode
+				logger(fmt.Sprintf("path to %s is %s\n", k, curNode ))
+			}
+		}
+	}
+	return path, lengthTo
+}
+
 func topoSortWithChain(podDeps map[string]map[string]bool) []string {
 	topoOrder := topoSort(podDeps)
 
@@ -78,48 +122,7 @@ func topoSortWithChain(podDeps map[string]map[string]bool) []string {
 		}
 		startNode := topoOrder[idx]
 		logger("cur node is " + startNode)
-		lengthTo := make(map[string]int, 0)
-		path := make(map[string]string, 0)
-		for dst, _ := range podDeps {
-			lengthTo[dst] = 0
-		}
-		q := make([]string, 0)
-		curNode := startNode
-		qVisited := make(map[string]bool, 0)
-		q = append(q, curNode)
-		for {
-			if q == nil || len(q) == 0 {
-				break
-			}
-			curNode = q[0]
-			qVisited[curNode] = true
-			if len(q) > 1 {
-				q = q[1:]
-			} else {
-				q = q[:0]
-			}
-			
-			logger(fmt.Sprintf("qlen= %d cur node = %s , has %d deps", len(q), curNode, len(podDeps[curNode])))
-			for k, _ := range podDeps {
-				if qVisited[k] == true || visited[k] == true{
-					continue
-				}
-				if visitedGraph[k][curNode] == true {
-					continue
-				}
-				_, exists := podDeps[k][curNode]
-				if !exists {
-					continue
-				}
-				q = append(q, k)
-				logger(fmt.Sprintf("edge %s -> %s\n", k, curNode))
-				if lengthTo[k] <= lengthTo[curNode]+1 {
-					lengthTo[k] = lengthTo[curNode] + 1
-					path[k] = curNode
-					logger(fmt.Sprintf("path to %s is %s\n", k, curNode ))
-				}
-			}
-		}
+		path, lengthTo := bfs(podDeps, startNode, visitedGraph, visited)
 		pathLen := 0
 		lastVertex := startNode
 		for k, v := range lengthTo {
@@ -148,7 +151,6 @@ func topoSortWithChain(podDeps map[string]map[string]bool) []string {
 			if curVertex == startNode {
 				break
 			}
-			time.Sleep(10)
 			//logger(fmt.Sprintf("have %d in order\n", len(order)))
 			lastVertex = nextVertex
 		}
@@ -159,6 +161,8 @@ func topoSortWithChain(podDeps map[string]map[string]bool) []string {
 	}
 	return order
 }
+
+
 func topoSort(podDeps map[string]map[string]bool) []string {
 	indegrees := computeIndegrees(podDeps)
 	zeroIndegreeNodes := findZeroIndegrees(indegrees)

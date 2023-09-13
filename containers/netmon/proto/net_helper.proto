@@ -26,6 +26,11 @@ message BandwidthInfo {
 	float recvBwUsed = 4;
 }
 
+message LatencyInfo {
+	string host = 1;
+	float latency = 2;
+}
+
 message TracerouteInfo {
 	string host = 1;
 	repeated string hops = 2;

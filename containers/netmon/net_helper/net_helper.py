@@ -99,6 +99,28 @@ def get_bw():
 
 
 
+def run_ping(host):
+    result = subprocess.check_output(['ping', '-c',  '10', host])
+    print(result)
+    vals = str(result).split('\n')
+    stats = vals[-1].split()[-2].split('/')
+    avg_latency = stats[1]
+    latency = float(avg_latency)
+    unit = vals[-1].split()[-1]
+    if unit == 's':
+        return latency * 1e3
+    if unit == 'us':
+        return latency / 1e3
+    return latency
+
+@app.route('/latency')
+def get_ping():
+    hostname = request.args.get('host')
+    print(hostname)
+    latency = run_ping(hostname)
+    results = [{'host': hostname, 'latency':latency}]
+    return json.dumps({'latencyResults':results})
+
 def parse_args():
     ap = argparse.ArgumentParser()
     ap.add_argument('-c', '--config', required=False,

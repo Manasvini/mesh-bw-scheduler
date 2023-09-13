@@ -367,7 +367,6 @@ func (sched *DagScheduler) SchedulePods(pods map[string]Pod, podGraph map[string
 	nodes, _ := sched.client.GetNodes()
 	nodeMetrics, _ := sched.client.GetNodeMetrics()
 	logger(fmt.Sprintf("Got %d nodes", len(nodes.Items)))
-	time.Sleep(10)
 	podAssignment := make(map[string]string, 0)
 	if len(nodes.Items) == 0 {
 		logger("ERROR: Cannot find any node for scheduling, skipping")
@@ -408,7 +407,6 @@ func (sched *DagScheduler) SchedulePods(pods map[string]Pod, podGraph map[string
 
 		return podAssignment, pods, nodes
 	}
-	time.Sleep(10 * time.Second)
 	podToSchedule := topoOrder[podIdx]
 	for {
 		logger(fmt.Sprintf("Have %d pods to schedule candidate idx = %d", len(topoOrder)-len(podAssignment), candidateNodeIdx))
@@ -454,7 +452,6 @@ func (sched *DagScheduler) SchedulePods(pods map[string]Pod, podGraph map[string
 			madeAssignment = false
 		}
 	}
-	time.Sleep(30)
 	return podAssignment, pods, nodes
 }
 

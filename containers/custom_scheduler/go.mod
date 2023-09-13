@@ -2,7 +2,10 @@ module custom_scheduler
 
 go 1.19
 
-require github.gatech.edu/cs-epl/mesh-bw-scheduler/netmon_client v0.0.0-00010101000000-000000000000
+require (
+	github.gatech.edu/cs-epl/mesh-bw-scheduler/netmon_client v0.0.0-00010101000000-000000000000
+	k8s.io/apimachinery v0.27.1
+)
 
 require (
 	github.com/gogo/protobuf v1.3.2 // indirect
@@ -15,7 +18,6 @@ require (
 	google.golang.org/grpc v1.54.0 // indirect
 	google.golang.org/protobuf v1.30.0 // indirect
 	gopkg.in/inf.v0 v0.9.1 // indirect
-	k8s.io/apimachinery v0.27.1 // indirect
 )
 
 replace github.gatech.edu/cs-epl/mesh-bw-scheduler/netmon_client => "/users/msethur1/mesh-bw-scheduler//containers/netmon/netmon_client"

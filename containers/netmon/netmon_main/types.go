@@ -8,6 +8,14 @@ type Bandwidth struct {
 	RcvBw int64
 }
 
+type Latency struct {
+	Host string
+	Latency float64
+}
+type LatencyResults struct {
+	LatencyResults []Latency
+}
+
 type BandwidthResults struct {
 	BandwidthResults []Bandwidth
 }

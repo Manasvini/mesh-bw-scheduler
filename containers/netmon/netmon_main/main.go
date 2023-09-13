@@ -53,16 +53,17 @@ type server struct {
 	pb.UnimplementedNetMonitorServer
 	BwCache   BandwidthResults  // dest node -> bw map
 	TrCache   TracerouteResults // dest node -> traceroute map
+	LatencyCache LatencyResults // dest node -> latency map
 	mu        sync.Mutex
 	netClient http.Client
 	hosts     []string
 	bpfRunner *BPFRunner
 }
 
-func (s *server) QueryBwStats(hostname string) []byte {
+func (s *server) QueryNetStats(hostname string, qty string) []byte {
 	reqURL := "http://" + *helper
 	fmt.Printf("host = %s\n", hostname)
-	res, err := s.netClient.Get(reqURL + "/bw?host=" + hostname)
+	res, err := s.netClient.Get(reqURL + "/" + qty + "?host=" + hostname)
 	if err != nil {
 		fmt.Printf("client: could not create request: %s\n", err)
 		return  []byte("")
@@ -111,6 +112,12 @@ func GetTrResults(trResponse []byte) TracerouteResults {
 	return trInfo
 }
 
+func GetLatencyResults(latencyResponse []byte) LatencyResults {
+	var latencyInfo LatencyResults
+	json.Unmarshal(latencyResponse, &latencyInfo)
+	return latencyInfo
+}
+
 func (s *server) GetNetInfo(ctx context.Context, in *pb.NetInfoRequest) (*pb.NetInfoReply, error) {
 	log.Printf("Received: req")
 	s.mu.Lock()
@@ -135,30 +142,35 @@ func (s *server) GetNetInfo(ctx context.Context, in *pb.NetInfoRequest) (*pb.Net
 	return reply, nil
 }
 
-func (s *server) GetUpdatedNetStats() (BandwidthResults, TracerouteResults) {
+func (s *server) GetUpdatedNetStats() (BandwidthResults, TracerouteResults, LatencyResults) {
 	var allBwInfo BandwidthResults
+	var allLatencyInfo LatencyResults
 	for _, host := range s.hosts {
 		fmt.Printf("host = %s\n", host)
-		bwResponse := s.QueryBwStats(host)
+		bwResponse := s.QueryNetStats(host, "bw")
 		bwInfo := GetBwResults(bwResponse)
-		if len(bwInfo.BandwidthResults) == 0 {
+		latencyResponse := s.QueryNetStats(host, "latency")
+		latencyInfo := GetLatencyResults(latencyResponse)
+		if len(bwInfo.BandwidthResults) == 0 || len(latencyInfo.LatencyResults) == 0{
 			continue
 		}
 		allBwInfo.BandwidthResults = append(allBwInfo.BandwidthResults, bwInfo.BandwidthResults[0])
+		allLatencyInfo.LatencyResults = append(allLatencyInfo.LatencyResults, latencyInfo.LatencyResults[0])
 	}
 	trResponse := s.QueryTrStats()
 
 	trInfo := GetTrResults(trResponse)
 	fmt.Printf("tr: Got %d hosts\n", len(trInfo.TracerouteResults))
 	fmt.Printf("bw: Got %d hosts\n", len(allBwInfo.BandwidthResults))
-	return allBwInfo, trInfo
+	return allBwInfo, trInfo, allLatencyInfo
 }
 
 func (s *server) UpdateCache() {
-	bwInfo, trInfo := s.GetUpdatedNetStats()
+	bwInfo, trInfo, latencyInfo := s.GetUpdatedNetStats()
 	s.mu.Lock()
 	s.BwCache = bwInfo
 	s.TrCache = trInfo
+	s.LatencyCache = latencyInfo
 	s.mu.Unlock()
 }
 
