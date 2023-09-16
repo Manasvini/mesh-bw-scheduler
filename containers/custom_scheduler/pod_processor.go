@@ -191,16 +191,6 @@ func (pp *PodProcessor) GetPodGraph() (map[string]map[string]bool, []string) {
 		}
 
 	}
-	//for srcName, deps := range podGraph {
-	//	logger("Pod: " + srcName)
-	//	fmtStr := ""
-	//	for dstName, _ := range deps {
-	//		fmtStr += dstName + ", "
-
-	//	}
-	//	logger("Dependers: " + fmtStr)
-
-	//}
 	return podGraph, skippedPods
 }
 

@@ -2,6 +2,8 @@ package main
 
 import (
 	"fmt"
+	"strconv"
+	"strings"
 )
 
 func computeIndegrees(podDeps map[string]map[string]bool) map[string]int {
@@ -53,7 +55,10 @@ func getUnvisitedVertexIdx(visited map[string]bool, topoOrder []string) int {
 	return -1
 }
 
-func bfs(podDeps map[string]map[string]bool, startNode string, visitedGraph map[string]map[string]bool, visited map[string]bool) (map[string]string, map[string]int) {
+func bfs(podDeps map[string]map[string]bool,
+	startNode string,
+	visitedGraph map[string]map[string]bool,
+	visited map[string]bool, pods map[string]Pod) (map[string]string, map[string]int) {
 	lengthTo := make(map[string]int, 0)
 	path := make(map[string]string, 0)
 	for dst, _ := range podDeps {
@@ -88,17 +93,27 @@ func bfs(podDeps map[string]map[string]bool, startNode string, visitedGraph map[
 			}
 			q = append(q, k)
 			logger(fmt.Sprintf("edge %s -> %s\n", k, curNode))
-			if lengthTo[k] <= lengthTo[curNode]+1 {
-				lengthTo[k] = lengthTo[curNode] + 1
+			pod := getPodWithName(k, pods)
+			edgeLen := 1
+			for ann, val := range pod.Metadata.Annotations {
+				vals := strings.Split(ann, ".")
+				if ("dependson" == vals[0] || "dependedby" == vals[0]) && curNode == vals[1] {
+					if vals[2] == "bw" {
+						edgeLen, _ = strconv.Atoi(val)
+					}
+				}
+			}
+			if lengthTo[k] <= lengthTo[curNode]+edgeLen {
+				lengthTo[k] = lengthTo[curNode] + edgeLen
 				path[k] = curNode
-				//logger(fmt.Sprintf("path to %s is %s\n", k, curNode ))
+				logger(fmt.Sprintf("path to %s is %s length = %d\n", k, curNode, lengthTo[k]))
 			}
 		}
 	}
 	return path, lengthTo
 }
 
-func topoSortWithChain(podDeps map[string]map[string]bool) []string {
+func topoSortWithChain(podDeps map[string]map[string]bool, pods map[string]Pod) []string {
 	topoOrder := topoSort(podDeps)
 
 	visited := make(map[string]bool, 0)
@@ -122,7 +137,7 @@ func topoSortWithChain(podDeps map[string]map[string]bool) []string {
 		}
 		startNode := topoOrder[idx]
 		logger("cur node is " + startNode)
-		path, lengthTo := bfs(podDeps, startNode, visitedGraph, visited)
+		path, lengthTo := bfs(podDeps, startNode, visitedGraph, visited, pods)
 		pathLen := 0
 		lastVertex := startNode
 		for k, v := range lengthTo {
@@ -169,7 +184,7 @@ func topoSort(podDeps map[string]map[string]bool) []string {
 	topoSortOrder := make([]string, 0)
 
 	for {
-		logger(fmt.Sprintf("Have %d nodes with zero indegree", len(zeroIndegreeNodes)))
+		//logger(fmt.Sprintf("Have %d nodes with zero indegree", len(zeroIndegreeNodes)))
 		if zeroIndegreeNodes == nil || len(zeroIndegreeNodes) <= 0 {
 			break
 		}
@@ -186,7 +201,7 @@ func topoSort(podDeps map[string]map[string]bool) []string {
 				if dst == curNode {
 					val, _ := indegrees[src]
 					indegrees[src] = val - 1
-					logger(fmt.Sprintf("src = %s dst = %s indeg=%d val=%d", src, dst, indegrees[src], val))
+					//logger(fmt.Sprintf("src = %s dst = %s indeg=%d val=%d", src, dst, indegrees[src], val))
 
 					val, _ = indegrees[src]
 					if val == 0 {

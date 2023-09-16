@@ -375,19 +375,6 @@ func getNodeWithName(nodeName string, nodes *NodeList) Node {
 	return node
 }
 
-/*func getPodWithName(podName string, pods map[string]Pod) Pod {
-	logger("find pod for name " + podName)
-	var pod Pod
-	for p, podInfo := range pods {
-		logger("Pod is " + p)
-		if getPodName(p) == podName {
-			return podInfo
-		}
-	}
-	return pod
-
-}*/
-
 func (sched *DagScheduler) SchedulePods(pods map[string]Pod, podGraph map[string]map[string]bool) (map[string]string, map[string]Pod, *NodeList) {
 	// returns the dag of unscheduled pods
 	sched.processorLock.Lock()
@@ -409,7 +396,7 @@ func (sched *DagScheduler) SchedulePods(pods map[string]Pod, podGraph map[string
 	netResources := sched.getNetResourcesRemaining(paths, traffics)
 
 	logger(fmt.Sprintf("got %d paths and %d traffics", len(paths), len(traffics)))
-	topoOrder := topoSortWithChain(podGraph)
+	topoOrder := topoSortWithChain(podGraph, pods)
 	logger(fmt.Sprintf("topo order has %d pods", len(topoOrder)))
 	nodeResList := make([]Resource, 0)
 	nodePreference := make([]string, 0)
