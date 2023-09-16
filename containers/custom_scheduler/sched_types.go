@@ -30,6 +30,17 @@ func sortNodes(resources []Resource) {
 
 }
 
+func getResourceByNodeName(resources []Resource, nodeName string) (Resource, int) {
+	res := Resource{name: ""}
+	for idx, r := range resources {
+		if r.name == nodeName {
+			return r, idx
+		}
+	}
+	return res, -1
+
+}
+
 type KubeClientIntf interface {
 	GetNodes() (*NodeList, error)
 	WatchUnscheduledPods() (<-chan Pod, <-chan error)

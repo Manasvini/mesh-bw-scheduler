@@ -15,13 +15,13 @@ package main
 
 import (
 	"fmt"
+	netmon_client "github.gatech.edu/cs-epl/mesh-bw-scheduler/netmon_client"
+	"k8s.io/apimachinery/pkg/api/resource"
+	"sort"
 	"strconv"
 	"strings"
 	"sync"
 	"time"
-
-	netmon_client "github.gatech.edu/cs-epl/mesh-bw-scheduler/netmon_client"
-	"k8s.io/apimachinery/pkg/api/resource"
 )
 
 type DagScheduler struct {
@@ -218,7 +218,7 @@ func (sched *DagScheduler) Fit(pod Pod, node Node,
 	podBw := 0.0
 	for k, v := range pod.Metadata.Annotations {
 		vals := strings.Split(k, ".")
-		if "bw" == vals[0] {
+		if ("dependedby" == vals[0] || "dependson" == vals[0]) && "bw" == vals[2] {
 			bw, _ := strconv.Atoi(v)
 			podBw += float64(bw)
 		}
@@ -259,12 +259,46 @@ func (sched *DagScheduler) Fit(pod Pod, node Node,
 
 }
 
+func (sched *DagScheduler) GetNodesForDeps(currentPod Pod, assignments map[string]string) []string {
+	nodeDepCount := make(map[string]int, 0)
+	for k, v := range currentPod.Metadata.Annotations {
+		vals := strings.Split(k, ".")
+		logger("k = " + k + "v = " + v)
+		if "dependson" != vals[0] && "dependedby" != vals[0] {
+			continue
+		}
+		logger(fmt.Sprintf("other pod = %s\n", vals[1]))
+		node, exists := assignments[vals[1]]
+		if exists {
+			_, nodeExists := nodeDepCount[node]
+			if !nodeExists {
+				nodeDepCount[node] = 0
+			}
+			nodeDepCount[node] += 1
+		}
+
+	}
+	keys := make([]string, 0, len(nodeDepCount))
+	for key := range nodeDepCount {
+		keys = append(keys, key)
+	}
+	sort.Slice(keys, func(i, j int) bool { return nodeDepCount[keys[i]] > nodeDepCount[keys[j]] })
+
+	return keys
+}
+
 func (sched *DagScheduler) AreDepsSatisfied(currentPod Pod, currentNode Node, nodes *NodeList,
 	assignments map[string]string,
 	availableBws netmon_client.PathSet) bool {
+	logger("pod name is " + currentPod.Metadata.Name)
 	for k, v := range currentPod.Metadata.Annotations {
 		vals := strings.Split(k, ".")
-		qtyName, podName := vals[0], vals[1]
+		logger("k = " + k + "v = " + v)
+		if "dependson" != vals[0] && "dependedby" != vals[0] {
+			continue
+		}
+		logger(fmt.Sprintf("ann = %s val = %s\n", k, v))
+		qtyName, podName := vals[2], vals[1]
 		bw := 0.0
 		if qtyName == "bw" {
 			bwVal, _ := strconv.Atoi(v)
@@ -333,7 +367,6 @@ func getNodeWithName(nodeName string, nodes *NodeList) Node {
 	logger(fmt.Sprintf("Got %d nodes", len(nodes.Items)))
 	for _, n := range nodes.Items {
 
-		logger("node name = " + nodeName + " from meta = " + n.Metadata.Name)
 		if n.Metadata.Name == nodeName {
 
 			return n
@@ -379,8 +412,11 @@ func (sched *DagScheduler) SchedulePods(pods map[string]Pod, podGraph map[string
 	topoOrder := topoSortWithChain(podGraph)
 	logger(fmt.Sprintf("topo order has %d pods", len(topoOrder)))
 	nodeResList := make([]Resource, 0)
+	nodePreference := make([]string, 0)
+
 	for _, nr := range nodeResources {
 		nodeResList = append(nodeResList, nr)
+		nodePreference = append(nodePreference, nr.name)
 	}
 	sortNodes(nodeResList)
 	podIdx := 0
@@ -395,6 +431,7 @@ func (sched *DagScheduler) SchedulePods(pods map[string]Pod, podGraph map[string
 	candidateNodeIdx := 0
 	//#unscheduledNeighbors := make([]string, 0)
 	podsToSchedule := make([]string, 0)
+
 	for _, p := range topoOrder {
 		if !sched.podProcessor.IsPodInList(allPods, p) {
 			podsToSchedule = append(podsToSchedule, p)
@@ -408,6 +445,7 @@ func (sched *DagScheduler) SchedulePods(pods map[string]Pod, podGraph map[string
 		return podAssignment, pods, nodes
 	}
 	podToSchedule := topoOrder[podIdx]
+	logger("schedule pod " + podToSchedule)
 	for {
 		logger(fmt.Sprintf("Have %d pods to schedule candidate idx = %d", len(topoOrder)-len(podAssignment), candidateNodeIdx))
 		if len(podAssignment) == len(topoOrder) {
@@ -417,25 +455,39 @@ func (sched *DagScheduler) SchedulePods(pods map[string]Pod, podGraph map[string
 			break
 		}
 		if madeAssignment {
-			sortNodes(nodeResList)
-			candidateNodeIdx = 0
-			// TODO do something smarter here, like processing neighbor pods instead of topo sorted pods
 			podIdx += 1
 			if podIdx == len(topoOrder) {
 				break
 			}
 			podToSchedule = topoOrder[podIdx]
 			madeAssignment = false
+			nodePreference = sched.GetNodesForDeps(getPodWithName(podToSchedule, pods), podAssignment)
+			sortNodes(nodeResList)
+			for _, res := range nodeResList {
+				exists := false
+				for _, node := range nodePreference {
+					if node == res.name {
+						exists = true
+						break
+					}
+				}
+				if !exists {
+					nodePreference = append(nodePreference, res.name)
+				}
+			}
+			logger(fmt.Sprintf("Got %d nodes", len(nodePreference)))
+			candidateNodeIdx = 0
 		}
 		logger(fmt.Sprintf("Assign pod %s", podToSchedule))
-		candidateNodeRes := nodeResList[candidateNodeIdx]
-		candidateNode := getNodeWithName(candidateNodeRes.name, nodes)
+		candidateNodeName := nodePreference[candidateNodeIdx]
+		candidateNode := getNodeWithName(candidateNodeName, nodes)
+		candidateNodeRes, nodeIdx := getResourceByNodeName(nodeResList, candidateNodeName)
 		podMeta := getPodWithName(podToSchedule, pods)
 		if podMeta.Metadata.Name == "" {
 			logger("pod for " + podToSchedule + " does not exist")
 			break
 		}
-		if sched.Fit(podMeta, candidateNode, candidateNodeRes, netResources) && sched.AreDepsSatisfied(pods[podToSchedule], candidateNode, nodes,
+		if sched.Fit(podMeta, candidateNode, candidateNodeRes, netResources) && sched.AreDepsSatisfied(podMeta, candidateNode, nodes,
 			podAssignment, netResources) {
 			logger(fmt.Sprintf("Found node %s for pod %s meta =%s", candidateNode.Metadata.Name, podToSchedule, podMeta.Metadata.Name))
 			podAssignment[podMeta.Metadata.Name] = candidateNode.Metadata.Name
@@ -443,7 +495,7 @@ func (sched *DagScheduler) SchedulePods(pods map[string]Pod, podGraph map[string
 			candidateNodeRes.cpu -= podResource.cpu
 			candidateNodeRes.memory -= podResource.memory
 			nodeResources[candidateNodeRes.name] = candidateNodeRes
-			nodeResList[candidateNodeIdx] = candidateNodeRes
+			nodeResList[nodeIdx] = candidateNodeRes
 			madeAssignment = true
 
 		} else {

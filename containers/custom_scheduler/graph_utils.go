@@ -76,7 +76,7 @@ func bfs(podDeps map[string]map[string]bool, startNode string, visitedGraph map[
 		}
 		//logger(fmt.Sprintf("qlen= %d cur node = %s , has %d deps", len(q), curNode, len(podDeps[curNode])))
 		for k, _ := range podDeps {
-			if qVisited[k] == true || visited[k] == true{
+			if qVisited[k] == true || visited[k] == true {
 				continue
 			}
 			if visitedGraph[k][curNode] == true {
@@ -91,7 +91,7 @@ func bfs(podDeps map[string]map[string]bool, startNode string, visitedGraph map[
 			if lengthTo[k] <= lengthTo[curNode]+1 {
 				lengthTo[k] = lengthTo[curNode] + 1
 				path[k] = curNode
-				logger(fmt.Sprintf("path to %s is %s\n", k, curNode ))
+				//logger(fmt.Sprintf("path to %s is %s\n", k, curNode ))
 			}
 		}
 	}
@@ -126,14 +126,14 @@ func topoSortWithChain(podDeps map[string]map[string]bool) []string {
 		pathLen := 0
 		lastVertex := startNode
 		for k, v := range lengthTo {
-			logger(fmt.Sprintf("plen from %s to %s = %d\n", startNode, k, v))
+			//logger(fmt.Sprintf("plen from %s to %s = %d\n", startNode, k, v))
 
 			if v > pathLen {
 				pathLen = lengthTo[k]
 				lastVertex = k
 			}
 		}
-		logger(fmt.Sprintf("last vertex is %s, path== %s ", lastVertex, path[lastVertex]))
+		//logger(fmt.Sprintf("last vertex is %s, path== %s ", lastVertex, path[lastVertex]))
 		curOrder := make([]string, 0)
 		curLen := 0
 		visited[startNode] = true
@@ -141,7 +141,7 @@ func topoSortWithChain(podDeps map[string]map[string]bool) []string {
 			curVertex := lastVertex
 			// path traversed in reverse
 			nextVertex, exists := path[lastVertex]
-			logger(fmt.Sprintf("v = %s next = %s, exits=%v\n", curVertex, nextVertex, exists))
+			//logger(fmt.Sprintf("v = %s next = %s, exits=%v\n", curVertex, nextVertex, exists))
 			if exists {
 				visitedGraph[lastVertex][curVertex] = true
 				visited[lastVertex] = true
@@ -161,7 +161,6 @@ func topoSortWithChain(podDeps map[string]map[string]bool) []string {
 	}
 	return order
 }
-
 
 func topoSort(podDeps map[string]map[string]bool) []string {
 	indegrees := computeIndegrees(podDeps)

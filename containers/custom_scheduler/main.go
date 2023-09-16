@@ -57,6 +57,16 @@ func parseConfig(filename string) Config {
 }
 
 func main() {
+	f, err := os.OpenFile("sched_log", os.O_WRONLY|os.O_CREATE|os.O_APPEND, 0644)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	//defer to close when you're done with it, not because you think it's idiomatic!
+	defer f.Close()
+
+	//set output of logs to f
+	log.SetOutput(f)
 	logger("Starting epl scheduler...")
 	var configFile string
 	flag.StringVar(&configFile, "config", "./config.json", "Config file path")
