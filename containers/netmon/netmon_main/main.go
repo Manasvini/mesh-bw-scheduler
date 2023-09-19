@@ -51,13 +51,13 @@ func readConfig(configfile string) []string {
 
 type server struct {
 	pb.UnimplementedNetMonitorServer
-	BwCache   BandwidthResults  // dest node -> bw map
-	TrCache   TracerouteResults // dest node -> traceroute map
-	LatencyCache LatencyResults // dest node -> latency map
-	mu        sync.Mutex
-	netClient http.Client
-	hosts     []string
-	bpfRunner *BPFRunner
+	BwCache      BandwidthResults  // dest node -> bw map
+	TrCache      TracerouteResults // dest node -> traceroute map
+	LatencyCache LatencyResults    // dest node -> latency map
+	mu           sync.Mutex
+	netClient    http.Client
+	hosts        []string
+	bpfRunner    *BPFRunner
 }
 
 func (s *server) QueryNetStats(hostname string, qty string) []byte {
@@ -66,7 +66,7 @@ func (s *server) QueryNetStats(hostname string, qty string) []byte {
 	res, err := s.netClient.Get(reqURL + "/" + qty + "?host=" + hostname)
 	if err != nil {
 		fmt.Printf("client: could not create request: %s\n", err)
-		return  []byte("")
+		return []byte("")
 	}
 
 	fmt.Printf("client: status code: %d\n", res.StatusCode)
@@ -151,7 +151,7 @@ func (s *server) GetUpdatedNetStats() (BandwidthResults, TracerouteResults, Late
 		bwInfo := GetBwResults(bwResponse)
 		latencyResponse := s.QueryNetStats(host, "latency")
 		latencyInfo := GetLatencyResults(latencyResponse)
-		if len(bwInfo.BandwidthResults) == 0 || len(latencyInfo.LatencyResults) == 0{
+		if len(bwInfo.BandwidthResults) == 0 || len(latencyInfo.LatencyResults) == 0 {
 			continue
 		}
 		allBwInfo.BandwidthResults = append(allBwInfo.BandwidthResults, bwInfo.BandwidthResults[0])

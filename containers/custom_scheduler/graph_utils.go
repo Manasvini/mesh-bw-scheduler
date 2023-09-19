@@ -106,7 +106,7 @@ func bfs(podDeps map[string]map[string]bool,
 			if lengthTo[k] <= lengthTo[curNode]+edgeLen {
 				lengthTo[k] = lengthTo[curNode] + edgeLen
 				path[k] = curNode
-				logger(fmt.Sprintf("path to %s is %s length = %d\n", k, curNode, lengthTo[k]))
+			 	//logger(fmt.Sprintf("path to %s is %s\n", k, curNode ))
 			}
 		}
 	}

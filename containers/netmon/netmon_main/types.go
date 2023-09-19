@@ -1,15 +1,15 @@
 package main
 
 type Bandwidth struct {
-	Host string
-	Snd  float64
-	Rcv  float64
+	Host  string
+	Snd   float64
+	Rcv   float64
 	SndBw int64
 	RcvBw int64
 }
 
 type Latency struct {
-	Host string
+	Host    string
 	Latency float64
 }
 type LatencyResults struct {

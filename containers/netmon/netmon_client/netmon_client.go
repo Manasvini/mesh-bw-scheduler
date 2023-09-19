@@ -49,7 +49,7 @@ func (netmonClient *NetmonClient) ComputePathBw(links LinkSet, paths *PathSet) {
 		}
 	}
 	pLen := 2
-	fmt.Printf("Max p len = %d\n", maxPLen)
+	logger(fmt.Sprintf("Max p len = %d\n", maxPLen))
 	for {
 		if pLen > maxPLen {
 			break
