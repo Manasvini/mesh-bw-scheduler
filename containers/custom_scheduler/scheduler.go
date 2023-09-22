@@ -509,13 +509,13 @@ func (sched *DagScheduler) SchedulePods(pods map[string]Pod, podGraph map[string
 		}
 		if sched.Fit(podMeta, candidateNode, candidateNodeRes, netResources) && sched.AreDepsSatisfied(podMeta, candidateNode, nodes,
 			podAssignment, netResources) {
-			logger(fmt.Sprintf("Found node %s for pod %s meta =%s", candidateNode.Metadata.Name, podToSchedule, podMeta.Metadata.Name))
 			podAssignment[podMeta.Metadata.Name] = candidateNode.Metadata.Name
-			podResource := sched.GetPodResource(pods[podToSchedule])
+			podResource := sched.GetPodResource(podMeta)
 			candidateNodeRes.cpu -= podResource.cpu
 			candidateNodeRes.memory -= podResource.memory
 			nodeResources[candidateNodeRes.name] = candidateNodeRes
 			nodeResList[nodeIdx] = candidateNodeRes
+			logger(fmt.Sprintf("Found node %s for pod %s meta =%s pod needs %d cpu and %d memory", candidateNode.Metadata.Name, podToSchedule, podMeta.Metadata.Name, podResource.cpu, podResource.memory))
 			logger(fmt.Sprintf("node %s now has cpu %d mem %d", candidateNodeRes.name, candidateNodeRes.cpu, candidateNodeRes.memory)) 
 			madeAssignment = true
 
