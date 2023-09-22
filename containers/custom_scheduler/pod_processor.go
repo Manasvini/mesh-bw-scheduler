@@ -49,7 +49,7 @@ func (pp *PodProcessor) IsPodInList(podList []*PodList, podName string) bool {
 			pName := getPodName(pod.Metadata.Name)
 			if pName == podName && (pod.Status.Phase == "Running" || pod.Status.Phase == "ContainerCreating" || strings.Contains(pod.Status.Phase, "Init")) {
 				return true
-			} else if pName == podName && (pod.Status.Phase == "ContainerStatusUnknown" || pod.Status.Phase == "Completed") {
+			} else if pName == podName && (pod.Status.Phase == "ContainerStatusUnknown" || pod.Status.Phase == "Completed" || pod.Status.Phase == "Terminating") {
 				continue
 			}
 		}

@@ -32,6 +32,7 @@ func parseConfig(filename string) Config {
 func main() {
 	var configFile string
 	flag.StringVar(&configFile, "config", "./config.json", "Config file path")
+	flag.Parse()
 	config := parseConfig(configFile)
 	promClient := bw_controller.NewPrometheusClient(config.PromAddr, config.PromMetrics)
 	kubeClient := bw_controller.NewKubeClient(config.KubeProxyAddr, config.KubeNodesEndpoint, config.KubePodsEndpoint, config.KubeDeleteEndpoint, config.KubeNamespaces)

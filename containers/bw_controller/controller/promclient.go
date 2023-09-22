@@ -60,10 +60,9 @@ func (client *PromClient) GetPodMetrics() (PodSet, PodDeps) {
 }
 
 func (client *PromClient) updateMetric(metric string) (PodSet, PodDeps) {
-	fmt.Println(metric)
+	logger(metric)
 	pods := make(PodSet, 0)
 	podDeps := make(PodDeps, 0)
-	fmt.Printf("controller knows about %d pods\n", len(pods))
 	v1api := v1.NewAPI(client.promClient)
 	ctx, cancel := context.WithTimeout(context.Background(), TIMEOUT)
 	defer cancel()
@@ -78,17 +77,17 @@ func (client *PromClient) updateMetric(metric string) (PodSet, PodDeps) {
 	}
 	switch result.Type() {
 	case model.ValNone:
-		fmt.Println("<ValNone>")
+		logger("<ValNone>")
 	case model.ValScalar:
-		fmt.Println("scalar")
+		logger("scalar")
 	case model.ValMatrix:
-		fmt.Println("matrix")
+		logger("matrix")
 	case model.ValString:
-		fmt.Println("string")
+		logger("string")
 	case model.ValVector:
 		var v model.Vector
 		v = result.(model.Vector)
-		fmt.Println("vector")
+		logger("vector")
 		for _, value := range v {
 			src, srcExist := value.Metric["source_canonical_service"]
 			dst, dstExist := value.Metric["destination_canonical_service"]
@@ -133,7 +132,7 @@ func (client *PromClient) updateMetric(metric string) (PodSet, PodDeps) {
 				}
 			} else {
 				for tag, val := range value.Metric {
-					fmt.Printf("metric = %s key = %s val = %s metric val = %s\n", metric, tag, val, value.Value)
+					logger(fmt.Sprintf("metric = %s key = %s val = %s metric val = %s\n", metric, tag, val, value.Value))
 				}
 
 			}

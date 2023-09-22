@@ -17,14 +17,14 @@ import (
 	"fmt"
 	netmon_client "github.gatech.edu/cs-epl/mesh-bw-scheduler/netmon_client"
 	"k8s.io/apimachinery/pkg/api/resource"
-	"sort"
+	//"sort"
 	"strconv"
 	"strings"
 	"sync"
 	"time"
-	"sort"
-	netmon_client "github.gatech.edu/cs-epl/mesh-bw-scheduler/netmon_client"
-	"k8s.io/apimachinery/pkg/api/resource"
+	//"sort"
+	//netmon_client "github.gatech.edu/cs-epl/mesh-bw-scheduler/netmon_client"
+	//"k8s.io/apimachinery/pkg/api/resource"
 )
 
 type DagScheduler struct {
@@ -123,8 +123,10 @@ func (sched *DagScheduler) getNodeResourcesRemaining(nodeList *NodeList, nodeMet
 			resMem := resource.MustParse(memory)
 			nodeResource.cpu -= resCpu.Value()
 			nodeResource.memory -= resMem.Value()
+		
+			nodeResources[node.Metadata.Name] = nodeResource
+			logger(fmt.Sprintf("Got node %s cpu = %d mem=%d", nodeResource.name, nodeResource.cpu, nodeResource.memory))
 		}
-		nodeResources[node.Metadata.Name] = nodeResource
 	}
 
 	return nodeResources
@@ -180,7 +182,10 @@ func (sched *DagScheduler) GetPodResource(pod Pod) Resource {
 
 }
 func (sched *DagScheduler) EvalPredicate(pod Pod, node Node, availableBw netmon_client.PathSet) bool {
-	nodeIp, _ := node.Metadata.Annotations["flannel.alpha.coreos.com/public-ip"]
+	nodeIp, ipExists := node.Metadata.Annotations["alpha.kubernetes.io/provided-node-ip"]
+	if !ipExists {
+		nodeIp = node.Metadata.Annotations["flannel.alpha.coreos.com/public-ip"]
+	}
 	nodeBws, exists := availableBw[nodeIp]
 	if !exists {
 		logger("Error: No bw info for node " + node.Metadata.Name)
@@ -228,7 +233,10 @@ func (sched *DagScheduler) Fit(pod Pod, node Node,
 	}
 
 	nodeBw := 0.0
-	nodeIp, _ := node.Metadata.Annotations["flannel.alpha.coreos.com/public-ip"]
+	nodeIp, ipExists := node.Metadata.Annotations["alpha.kubernetes.io/provided-node-ip"]
+	if !ipExists {
+		nodeIp = node.Metadata.Annotations["flannel.alpha.coreos.com/public-ip"]
+	}
 	logger(fmt.Sprintf("node name %s ip %s", node.Metadata.Name, nodeIp))
 	nodeBws, exists := availableBw[nodeIp]
 	if !exists {
@@ -262,15 +270,15 @@ func (sched *DagScheduler) Fit(pod Pod, node Node,
 
 }
 
-func (sched *DagScheduler) GetNodesForDeps(currentPod Pod, assignments map[string]string) []string {
+func (sched *DagScheduler) GetNodesForDeps(currentPod Pod, assignments map[string]string, nodeResources []Resource) []string {
 	nodeDepCount := make(map[string]int, 0)
-	for k, v := range currentPod.Metadata.Annotations {
+	for k, _ := range currentPod.Metadata.Annotations {
 		vals := strings.Split(k, ".")
-		logger("k = " + k + "v = " + v)
+		//logger("k = " + k + "v = " + v)
 		if "dependson" != vals[0] && "dependedby" != vals[0] {
 			continue
 		}
-		logger(fmt.Sprintf("other pod = %s\n", vals[1]))
+		//logger(fmt.Sprintf("other pod = %s\n", vals[1]))
 		node, exists := assignments[vals[1]]
 		if exists {
 			_, nodeExists := nodeDepCount[node]
@@ -281,13 +289,30 @@ func (sched *DagScheduler) GetNodesForDeps(currentPod Pod, assignments map[strin
 		}
 
 	}
-	keys := make([]string, 0, len(nodeDepCount))
-	for key := range nodeDepCount {
-		keys = append(keys, key)
+	nodeNames := make([]string, 0, len(nodeResources))
+	nodeResDepsList := make([]NodeResourceWithDeps, 0)
+	for _, res := range nodeResources {
+		logger("add node " + res.name)
+		numDeps := 0
+		depCt, exists := nodeDepCount[res.name]
+		if exists {
+			numDeps = depCt
+		}
+		nodeResWithDeps := NodeResourceWithDeps{resource:res, numDeps:numDeps}
+		nodeResDepsList = append(nodeResDepsList, nodeResWithDeps)
 	}
-	sort.Slice(keys, func(i, j int) bool { return nodeDepCount[keys[i]] > nodeDepCount[keys[j]] })
+	sortNodesWithDeps(nodeResDepsList)
+	for _, nodeResDep := range nodeResDepsList{
+		nodeNames = append(nodeNames, nodeResDep.resource.name)
+		logger(fmt.Sprintf("node = %s cpu = %d memp=%d deps=%d", nodeResDep.resource.name, nodeResDep.resource.cpu, nodeResDep.resource.memory, nodeResDep.numDeps))
+	}
 
-	return keys
+	//for key := range nodeDepCount {
+	//	keys = append(keys, key)
+	//}
+	//sort.Slice(keys, func(i, j int) bool { return nodeDepCount[keys[i]] > nodeDepCount[keys[j]] })
+
+	return nodeNames
 }
 
 func (sched *DagScheduler) AreDepsSatisfied(currentPod Pod, currentNode Node, nodes *NodeList,
@@ -296,7 +321,7 @@ func (sched *DagScheduler) AreDepsSatisfied(currentPod Pod, currentNode Node, no
 	logger("pod name is " + currentPod.Metadata.Name)
 	for k, v := range currentPod.Metadata.Annotations {
 		vals := strings.Split(k, ".")
-		logger("k = " + k + "v = " + v)
+		//logger("k = " + k + "v = " + v)
 		if "dependson" != vals[0] && "dependedby" != vals[0] {
 			continue
 		}
@@ -310,15 +335,21 @@ func (sched *DagScheduler) AreDepsSatisfied(currentPod Pod, currentNode Node, no
 			continue
 		}
 		logger(fmt.Sprintf("pod %s -> %s needs %f", currentPod.Metadata.Name, podName, bw))
-		nodeIp, _ := currentNode.Metadata.Annotations["flannel.alpha.coreos.com/public-ip"]
+
+		nodeIp, ipExists := currentPod.Metadata.Annotations["alpha.kubernetes.io/provided-node-ip"]
+		if !ipExists {
+			nodeIp = currentPod.Metadata.Annotations["flannel.alpha.coreos.com/public-ip"]
+		}
 		nodeBws, exists := availableBws[nodeIp]
 		dstNode, exists := assignments[podName]
 		if !exists {
 			continue
 		}
 		dstNodeInfo := getNodeWithName(dstNode, nodes)
-		dstNodeIp := dstNodeInfo.Metadata.Annotations["flannel.alpha.coreos.com/public-ip"]
-
+		dstNodeIp, ipExists := dstNodeInfo.Metadata.Annotations["alpha.kubernetes.io/provided-node-ip"]
+		if !exists {
+			dstNodeIp = dstNodeInfo.Metadata.Annotations["flannel.alpha.coreos.com/public-ip"]
+		}
 		path, dExists := nodeBws[dstNodeIp]
 		if !dExists {
 			return false
@@ -425,7 +456,6 @@ func (sched *DagScheduler) SchedulePods(pods map[string]Pod, podGraph map[string
 	for _, p := range topoOrder {
 		if !sched.podProcessor.IsPodInList(allPods, p) {
 			podsToSchedule = append(podsToSchedule, p)
-			logger("topo order now has " + p)
 		}
 	}
 	topoOrder = podsToSchedule
@@ -451,20 +481,20 @@ func (sched *DagScheduler) SchedulePods(pods map[string]Pod, podGraph map[string
 			}
 			podToSchedule = topoOrder[podIdx]
 			madeAssignment = false
-			nodePreference = sched.GetNodesForDeps(getPodWithName(podToSchedule, pods), podAssignment)
-			sortNodes(nodeResList)
-			for _, res := range nodeResList {
-				exists := false
-				for _, node := range nodePreference {
-					if node == res.name {
-						exists = true
-						break
-					}
-				}
-				if !exists {
-					nodePreference = append(nodePreference, res.name)
-				}
-			}
+			nodePreference = sched.GetNodesForDeps(getPodWithName(podToSchedule, pods), podAssignment, nodeResList)
+			//sortNodes(nodeResList)
+			//for _, res := range nodeResList {
+			//	exists := false
+			//	for _, node := range nodePreference {
+			//		if node == res.name {
+			//			exists = true
+			//			break
+			//		}
+			//	}
+			//	if !exists {
+			//		nodePreference = append(nodePreference, res.name)
+			//	}
+			//}
 			logger(fmt.Sprintf("Got %d nodes", len(nodePreference)))
 			candidateNodeIdx = 0
 		}
@@ -486,6 +516,7 @@ func (sched *DagScheduler) SchedulePods(pods map[string]Pod, podGraph map[string
 			candidateNodeRes.memory -= podResource.memory
 			nodeResources[candidateNodeRes.name] = candidateNodeRes
 			nodeResList[nodeIdx] = candidateNodeRes
+			logger(fmt.Sprintf("node %s now has cpu %d mem %d", candidateNodeRes.name, candidateNodeRes.cpu, candidateNodeRes.memory)) 
 			madeAssignment = true
 
 		} else {

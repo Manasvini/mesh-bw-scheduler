@@ -44,20 +44,23 @@ func (controller *Controller) UpdateNodes() {
 	}
 	for _, node := range nodeList.Items {
 		nodeName := node.Metadata.Name
-		nodeIp := node.Metadata.Annotations["flannel.alpha.coreos.com/public-ip"]
+		nodeIp, exists := node.Metadata.Annotations["alpha.kubernetes.io/provided-node-ip"]
+		if !exists {
+			nodeIp = node.Metadata.Annotations["flannel.alpha.coreos.com/public-ip"]
+		}
 		controller.nodes[nodeIp] = nodeName
-		fmt.Printf("node name = %s node Ip =%s\n", nodeName, nodeIp)
+		logger(fmt.Sprintf("node name = %s node Ip =%s\n", nodeName, nodeIp))
 	}
 }
 func (controller *Controller) UpdatePodMetrics() {
 	_, podDeps := controller.promClient.GetPodMetrics()
 	for src, deps := range podDeps {
-		fmt.Printf("src = %s\n", src)
+		logger(fmt.Sprintf("src = %s\n", src))
 		_, exists := controller.pods[src]
 		if !exists {
 			continue
 		}
-		fmt.Printf("controller knows pod %s\n", src)
+		logger(fmt.Sprintf("controller knows pod %s\n", src))
 		podReqs, reqExists := controller.podDepReq[src]
 		if !reqExists {
 			continue
@@ -66,7 +69,7 @@ func (controller *Controller) UpdatePodMetrics() {
 		if !actualExists {
 			podActuals = make(map[string]PodDependency, 0)
 		}
-		fmt.Println("Process deps for pod %s\n", src)
+		logger(fmt.Sprintf("Process deps for pod %s\n", src))
 		for dst, podDep := range deps {
 			_, exists := podReqs[dst]
 			if !exists {
@@ -76,7 +79,7 @@ func (controller *Controller) UpdatePodMetrics() {
 			if !exists {
 				podActual = podDep
 			}
-			fmt.Printf("Got actual %s -> %s bw = %f\n", src, dst, podDep.bandwidth)
+			logger(fmt.Sprintf("Got actual %s -> %s bw = %f\n", src, dst, podDep.bandwidth))
 			podActual.bandwidth = podDep.bandwidth
 			podActuals[dst] = podActual
 		}
@@ -89,13 +92,13 @@ func (controller *Controller) UpdateNetMetrics() {
 	links, paths, traffics := controller.netmonClient.GetStats()
 	for src, dstLinks := range links {
 		for dst, link := range dstLinks {
-
+			logger(fmt.Sprintf("src = %s dst = %s", src, dst))
 			srcNode, exists := controller.nodes[src]
 			dstNode, dexists := controller.nodes[dst]
 			if !exists || !dexists {
-				fmt.Println("either source or destination dopn't exist!")
+				logger("either source or destination dopn't exist!")
 			}
-			fmt.Printf("src = %s dst = %s cap = %f\n", srcNode, dstNode, link.Bandwidth)
+			logger(fmt.Sprintf("src = %s dst = %s cap = %f\n", srcNode, dstNode, link.Bandwidth))
 			_, lExists := controller.linksFree[srcNode]
 			if !lExists {
 				controller.linksFree[srcNode] = make(map[string]netmon_client.Link, 0)
@@ -108,13 +111,12 @@ func (controller *Controller) UpdateNetMetrics() {
 	}
 	for src, dstPaths := range paths {
 		for dst, path := range dstPaths {
-
 			srcNode, exists := controller.nodes[src]
 			dstNode, dexists := controller.nodes[dst]
 			if !exists || !dexists {
-				fmt.Println("either source or destination dopn't exist!")
+				continue
 			}
-			fmt.Printf("src = %s dst = %s cap = %f\n", srcNode, dstNode, path.Bandwidth)
+			logger(fmt.Sprintf("src = %s dst = %s cap = %f\n", srcNode, dstNode, path.Bandwidth))
 			_, pExists := controller.pathsFree[srcNode]
 			if !pExists {
 				controller.pathsFree[srcNode] = make(map[string]netmon_client.Path, 0)
@@ -132,9 +134,9 @@ func (controller *Controller) UpdateNetMetrics() {
 			srcNode, exists := controller.nodes[src]
 			dstNode, dexists := controller.nodes[dst]
 			if !exists || !dexists {
-				fmt.Println("either source or destination dopn't exist!")
+				continue
 			}
-			fmt.Printf("src = %s dst = %s cap = %f\n", srcNode, dstNode, traffic.Bytes)
+			logger(fmt.Sprintf("src = %s dst = %s cap = %f\n", srcNode, dstNode, traffic.Bytes))
 			srcTraf, tExists := controller.pathsUsed[srcNode]
 			if !tExists {
 				controller.pathsUsed[srcNode] = make(map[string]netmon_client.Traffic, 0)
@@ -164,7 +166,7 @@ func (controller *Controller) UpdatePods() {
 	podLists := controller.kubeClient.GetPods()
 	podSet := make(PodSet, 0)
 	podDeps := make(PodDeps, 0)
-	fmt.Printf("Got pods from %d namespaces\n", len(podLists))
+	logger(fmt.Sprintf("Got pods from %d namespaces\n", len(podLists)))
 
 	for _, podList := range podLists {
 		for _, kubePod := range podList.Items {
@@ -180,21 +182,21 @@ func (controller *Controller) UpdatePods() {
 			podName := getPodName(kubePod.Metadata.Name)
 			for k, v := range kubePod.Metadata.Annotations {
 
-				if strings.Contains(k, "bw") || strings.Contains(k, "latency") {
+				if (strings.Contains(k, "bw") || strings.Contains(k, "latency")) && strings.Contains(k, "dependedby") {
 					vals := strings.Split(k, ".")
 					if len(vals) < 3 {
 						logger(fmt.Sprintf("ERROR: Incorrect annotation format for pod dependency %s", k))
 					}
 
 					dependeeName := vals[1]
-					qtyName := vals[0]
+					qtyName := vals[2]
 					qty, err := strconv.ParseFloat(v, 64)
 					if err != nil {
 						logger("error parsing float value " + v)
 					}
 					_, isPodPresent := podSet[dependeeName]
 					if !isPodPresent {
-						logger(fmt.Sprintf("ERROR: Dependee pod %s not found", dependeeName))
+						logger(fmt.Sprintf("ERROR: Dependency destination pod %s not found", dependeeName))
 					} else {
 						dep := PodDependency{source: podName, destination: dependeeName, bandwidth: 0, latency: 0}
 						podDep, exists := podDeps[podName][dependeeName]
@@ -207,7 +209,7 @@ func (controller *Controller) UpdatePods() {
 							podDep.latency = qty
 						}
 						podDeps[podName][dependeeName] = podDep
-						fmt.Printf("Got dependency %s -> %s qty %s = %f\n", podName, dependeeName, qtyName, qty)
+						logger(fmt.Sprintf("Got dependency %s -> %s qty %s = %f\n", podName, dependeeName, qtyName, qty))
 					}
 				}
 			}
@@ -231,7 +233,7 @@ func (controller *Controller) UpdatePods() {
 			}
 		}
 	}
-	fmt.Printf("Added %d pod deps\n", podDepCt)
+	logger(fmt.Sprintf("Added %d pod deps\n", podDepCt))
 
 }
 
@@ -305,7 +307,7 @@ func (controller *Controller) findPodsToReschedule(bwNeeded map[string]map[strin
 // For all the pods that the controller knows of, find the bw used by the pod and the bw available to the pod
 // Check if the node has sufficient bw to all dependees of the pod
 func (controller *Controller) EvaluateDeployment() {
-	fmt.Printf("REQ\n")
+	logger("REQ\n")
 	bwNeeded := make(map[string]map[string]float64, 0)
 	bwAvailable := make(map[string]map[string]float64, 0)
 	for src, srcPaths := range controller.pathsFree {
@@ -379,7 +381,7 @@ func (controller *Controller) EvaluateDeployment() {
 	for _, node := range nodes {
 		needToReschedule, pod := controller.findPodsToReschedule(bwNeeded, bwAvailable, node)
 		if needToReschedule {
-			fmt.Printf("Pod %s ns %s needs to be rescheduled\n", pod.podName, pod.namespace)
+			logger(fmt.Sprintf("Pod %s ns %s needs to be rescheduled\n", pod.podName, pod.namespace))
 			controller.kubeClient.DeletePod(pod.podId, pod.namespace)
 		}
 	}

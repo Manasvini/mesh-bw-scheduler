@@ -136,7 +136,7 @@ func topoSortWithChain(podDeps map[string]map[string]bool, pods map[string]Pod) 
 			break
 		}
 		startNode := topoOrder[idx]
-		logger("cur node is " + startNode)
+//		logger("cur node is " + startNode)
 		path, lengthTo := bfs(podDeps, startNode, visitedGraph, visited, pods)
 		pathLen := 0
 		lastVertex := startNode
@@ -171,9 +171,9 @@ func topoSortWithChain(podDeps map[string]map[string]bool, pods map[string]Pod) 
 		}
 		order = append(order, curOrder...)
 	}
-	for _, n := range order {
-		logger("chain order " + n)
-	}
+//	for _, n := range order {
+//		logger("chain order " + n)
+//	}
 	return order
 }
 
