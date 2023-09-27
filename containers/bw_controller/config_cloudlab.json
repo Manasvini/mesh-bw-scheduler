@@ -19,5 +19,7 @@
 		"socialnetwork",
 		"camera"
 	],
-	"MonDurationSeconds":15
+	"MonDurationSeconds":60,
+	"ValuationInterval":180,
+	"UtilChangeThreshold": 0.25
 }

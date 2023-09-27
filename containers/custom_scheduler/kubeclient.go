@@ -306,9 +306,6 @@ func (client *KubeClient) getPodsOne(ns string) (*PodList, error) {
 	var podList PodList
 
 	v := url.Values{}
-	//v.Add("fieldSelector", "status.phase=Pending")
-	//v.Add("fieldSelector", "status.phase=Running")
-	//v.Add("fieldSelector", "status.phase=ContainerCreating")
 	request := &http.Request{
 		Header: make(http.Header),
 		Method: http.MethodGet,

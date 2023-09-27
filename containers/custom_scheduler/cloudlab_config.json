@@ -17,5 +17,13 @@
         "epl",
         "camera",
 	"socialnetwork"
+    ],
+    "PromAddr": "http://0.0.0.0:9090",
+    "ValuationInterval": 100,
+    "PromMetrics": [
+    	"istio_request_duration_milliseconds",
+	"istio_tcp_sent_bytes_total",
+	"istio_tcp_received_bytes_total"
     ]
+	
 }

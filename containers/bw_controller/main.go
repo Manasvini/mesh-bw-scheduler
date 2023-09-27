@@ -30,6 +30,12 @@ func parseConfig(filename string) Config {
 }
 
 func main() {
+	f, err := os.OpenFile("controller_log", os.O_WRONLY|os.O_CREATE, 0644)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer f.Close()
+	log.SetOutput(f)
 	var configFile string
 	flag.StringVar(&configFile, "config", "./config.json", "Config file path")
 	flag.Parse()
@@ -37,7 +43,7 @@ func main() {
 	promClient := bw_controller.NewPrometheusClient(config.PromAddr, config.PromMetrics)
 	kubeClient := bw_controller.NewKubeClient(config.KubeProxyAddr, config.KubeNodesEndpoint, config.KubePodsEndpoint, config.KubeDeleteEndpoint, config.KubeNamespaces)
 	netmonClient := netmon_client.NewNetmonClient(config.NetmonAddrs)
-	controller := bw_controller.NewController(promClient, netmonClient, kubeClient)
+	controller := bw_controller.NewController(promClient, netmonClient, kubeClient, config.ValuationInterval, config.UtilChangeThreshold)
 
 	monCh := controller.MonitorState(time.Duration(config.MonDurationSeconds) * time.Second)
 	signalChannel := make(chan os.Signal, 2)

@@ -6,7 +6,7 @@ import (
 	"strconv"
 	"strings"
 	"time"
-
+	"math"
 	netmon_client "github.gatech.edu/cs-epl/mesh-bw-scheduler/netmon_client"
 )
 
@@ -22,9 +22,13 @@ type Controller struct {
 	pathsFree    netmon_client.PathSet
 	pathsUsed    netmon_client.TrafficSet
 	metrics      []string
+	valuationInterval int64
+	namespaceValuationTime map[string]int64
+	namespaceAvgUtilization map[string]float64
+	utilChangeThreshold	float64
 }
 
-func NewController(promClient *PromClient, netmonClient *netmon_client.NetmonClient, kubeClient *KubeClient) *Controller {
+func NewController(promClient *PromClient, netmonClient *netmon_client.NetmonClient, kubeClient *KubeClient, valuationInterval int64, utilChangeThreshold float64) *Controller {
 	controller := &Controller{promClient: promClient, netmonClient: netmonClient, kubeClient: kubeClient}
 	controller.podDepReq = make(PodDeps, 0)
 	controller.podDepActual = make(PodDeps, 0)
@@ -33,6 +37,10 @@ func NewController(promClient *PromClient, netmonClient *netmon_client.NetmonCli
 	controller.linksFree = make(netmon_client.LinkSet, 0)
 	controller.pathsFree = make(netmon_client.PathSet, 0)
 	controller.pathsUsed = make(netmon_client.TrafficSet, 0)
+	controller.valuationInterval = valuationInterval
+	controller.utilChangeThreshold = utilChangeThreshold
+	controller.namespaceValuationTime = make(map[string]int64, 0)
+	controller.namespaceAvgUtilization = make(map[string]float64, 0)
 	return controller
 }
 
@@ -69,18 +77,20 @@ func (controller *Controller) UpdatePodMetrics() {
 		if !actualExists {
 			podActuals = make(map[string]PodDependency, 0)
 		}
-		logger(fmt.Sprintf("Process deps for pod %s\n", src))
+		logger(fmt.Sprintf("Process deps for pod %s has %d deps\n", src, len(deps)))
 		for dst, podDep := range deps {
+			logger("dst = " + dst)
 			_, exists := podReqs[dst]
 			if !exists {
+				logger("dst does not exist")
 				continue
+				//controller.podDepReq[src][dst] = podDep
 			}
 			podActual, exists := podActuals[dst]
-			if !exists {
-				podActual = podDep
-			}
-			logger(fmt.Sprintf("Got actual %s -> %s bw = %f\n", src, dst, podDep.bandwidth))
-			podActual.bandwidth = podDep.bandwidth
+			podActual = podDep
+			logger(fmt.Sprintf("Got actual %s -> %s bw = %f\n", src, dst, podDep.Bandwidth))
+			podActual.Bandwidth = 8 * podDep.Bandwidth
+			podActual.FractionUsed = podActual.Bandwidth / podReqs[dst].Bandwidth
 			podActuals[dst] = podActual
 		}
 		controller.podDepActual[src] = podActuals
@@ -136,7 +146,7 @@ func (controller *Controller) UpdateNetMetrics() {
 			if !exists || !dexists {
 				continue
 			}
-			logger(fmt.Sprintf("src = %s dst = %s cap = %f\n", srcNode, dstNode, traffic.Bytes))
+			logger(fmt.Sprintf("src = %s dst = %s used = %f\n", srcNode, dstNode, traffic.Bytes))
 			srcTraf, tExists := controller.pathsUsed[srcNode]
 			if !tExists {
 				controller.pathsUsed[srcNode] = make(map[string]netmon_client.Traffic, 0)
@@ -170,6 +180,12 @@ func (controller *Controller) UpdatePods() {
 
 	for _, podList := range podLists {
 		for _, kubePod := range podList.Items {
+			ns := kubePod.Metadata.Namespace
+			_, exists := controller.namespaceValuationTime[ns]
+			if !exists {
+				controller.namespaceValuationTime[ns] = time.Now().Unix()
+				controller.namespaceAvgUtilization[ns] = 0.0
+			}
 			podName := getPodName(kubePod.Metadata.Name)
 			podInfo := Pod{podName: podName, podId: kubePod.Metadata.Name, deployedNode: kubePod.Spec.NodeName, namespace: kubePod.Metadata.Namespace}
 			podSet[podName] = podInfo
@@ -182,7 +198,7 @@ func (controller *Controller) UpdatePods() {
 			podName := getPodName(kubePod.Metadata.Name)
 			for k, v := range kubePod.Metadata.Annotations {
 
-				if (strings.Contains(k, "bw") || strings.Contains(k, "latency")) && strings.Contains(k, "dependedby") {
+				if (strings.Contains(k, "bw") || strings.Contains(k, "latency")) && (strings.Contains(k, "dependedby") || strings.Contains(k, "dependson")) {
 					vals := strings.Split(k, ".")
 					if len(vals) < 3 {
 						logger(fmt.Sprintf("ERROR: Incorrect annotation format for pod dependency %s", k))
@@ -198,15 +214,15 @@ func (controller *Controller) UpdatePods() {
 					if !isPodPresent {
 						logger(fmt.Sprintf("ERROR: Dependency destination pod %s not found", dependeeName))
 					} else {
-						dep := PodDependency{source: podName, destination: dependeeName, bandwidth: 0, latency: 0}
+						dep := PodDependency{Source: podName, Destination: dependeeName, Bandwidth: 0, Latency: 0}
 						podDep, exists := podDeps[podName][dependeeName]
 						if !exists {
 							podDep = dep
 						}
 						if qtyName == "bw" {
-							podDep.bandwidth = qty
+							podDep.Bandwidth = qty
 						} else {
-							podDep.latency = qty
+							podDep.Latency = qty
 						}
 						podDeps[podName][dependeeName] = podDep
 						logger(fmt.Sprintf("Got dependency %s -> %s qty %s = %f\n", podName, dependeeName, qtyName, qty))
@@ -266,9 +282,9 @@ func (controller *Controller) CheckPodReqSatisfiedOne(bwNeeded map[string]map[st
 			dstPod, _ := controller.pods[dst]
 			actual, _ := controller.podDepActual[pod.podName][dst]
 			dstNode := dstPod.deployedNode
-			if dstNode != pod.deployedNode && actual.bandwidth+bwAvailable[pod.deployedNode][dstNode] < dep.bandwidth {
-				diff := dep.bandwidth - actual.bandwidth + bwAvailable[pod.deployedNode][dstNode]
-				logger(fmt.Sprintf("Node %s src pod %s dst pod %s dst Node %s diff %f\n", pod.deployedNode, pod.podName, dst, dstNode, diff))
+			if dstNode != pod.deployedNode && actual.Bandwidth+bwAvailable[pod.deployedNode][dstNode] < dep.Bandwidth {
+				diff := dep.Bandwidth - actual.Bandwidth + bwAvailable[pod.deployedNode][dstNode]
+				logger(fmt.Sprintf("Node %s src pod %s dst pod %s dst Node %s diff %f dep req bw = %f used=%f available = %f \n", pod.deployedNode, pod.podName, dst, dstNode, diff, dep.Bandwidth,actual.Bandwidth,  bwAvailable[pod.deployedNode][dstNode]))
 				shortfall[dstNode] = diff
 
 				totalShortfall += diff
@@ -302,6 +318,55 @@ func (controller *Controller) findPodsToReschedule(bwNeeded map[string]map[strin
 	return true, podToReschedule
 }
 
+func (controller *Controller) ShouldReschedulePods(namespace string) bool {
+	// for pods in the same namespace check if the usage is much lesser or greater than a set threshold. On average if most pods are under/overutilizing bandwidth, we reschedule
+	avgUtilization := 0.0
+	numDeps := 0
+	logger("ns is " + namespace)
+	
+	for podName, podDep := range controller.podDepActual {
+		podInfo, _ := controller.pods[podName]
+		if podInfo.namespace != namespace {
+			continue
+		}
+		ts, _ := controller.namespaceValuationTime[podInfo.namespace]
+		timediff := time.Now().Unix() - ts
+		if timediff < controller.valuationInterval {
+			logger(fmt.Sprintf("ns %s not due for evaluation, %d seconds have passed", namespace, timediff)) 
+			return false
+		}
+		for otherPod, dep := range podDep {
+			logger(fmt.Sprintf("pod %s dep %s usage frac %f", podName, otherPod, dep.FractionUsed))
+			avgUtilization += dep.FractionUsed
+			numDeps += 1
+		}
+	}
+	avgUtilization /= float64(numDeps)
+	logger(fmt.Sprintf("ns = %s avg util = %f", namespace, avgUtilization))
+	prevUtilization, _ := controller.namespaceAvgUtilization[namespace]
+	controller.namespaceAvgUtilization[namespace] = avgUtilization
+	if avgUtilization > 1  && (math.Abs(prevUtilization - avgUtilization) > controller.utilChangeThreshold ) {
+		return true
+	}
+	return false
+}
+
+
+func (controller *Controller) EvaluateUsage() {
+	for ns, _ := range controller.namespaceValuationTime {
+		reschedule := controller.ShouldReschedulePods(ns)
+		if reschedule {
+			for _, podInfo := range controller.pods {
+				if podInfo.namespace == ns {
+					controller.kubeClient.DeletePod(podInfo.podId, podInfo.namespace)
+					logger("deleting pod " + podInfo.podId)
+				}
+			}
+			controller.namespaceValuationTime[ns] = time.Now().Unix()
+		}
+	}
+}
+
 // evalauate if the current deployment satisfies the pod requirement.
 // Make a list of pods which need to be rescheduled
 // For all the pods that the controller knows of, find the bw used by the pod and the bw available to the pod
@@ -311,16 +376,27 @@ func (controller *Controller) EvaluateDeployment() {
 	bwNeeded := make(map[string]map[string]float64, 0)
 	bwAvailable := make(map[string]map[string]float64, 0)
 	for src, srcPaths := range controller.pathsFree {
-		for dst, _ := range srcPaths {
-			logger(fmt.Sprintf("src = %s dst = %s\n", src, dst))
+		for dst, bw := range srcPaths {
+			logger(fmt.Sprintf("src = %s dst = %s bw= %f\n", src, dst, bw.Bandwidth))
 		}
 	}
 	// initialize bw needed at each node
 	for src, podDeps := range controller.podDepReq {
+		podInfo, exists := controller.pods[src]
+		if !exists {
+			logger("UNKNOWN POD " + src)
+			continue
+		}
+		ns := podInfo.namespace
+		nsValTime, _ := controller.namespaceValuationTime[ns]
+		diff := time.Now().Unix() - nsValTime
+		if diff < controller.valuationInterval {
+			continue
+		}
 		for dst, podReq := range podDeps {
 			podActual, exists := controller.podDepActual[src][dst]
 			if exists {
-				logger(fmt.Sprintf("Pod dependency src = %s dst = %s bw req = %f actual = %f\n", src, dst, podReq.bandwidth, podActual.bandwidth))
+				logger(fmt.Sprintf("Pod dependency src = %s dst = %s bw req = %f actual = %f\n", src, dst, podReq.Bandwidth, podActual.Bandwidth))
 				srcPod, _ := controller.pods[src]
 				dstPod, _ := controller.pods[dst]
 				logger(fmt.Sprintf("node for %s = %s and %s = %s \n", src, srcPod.deployedNode, dst, dstPod.deployedNode))
@@ -337,7 +413,7 @@ func (controller *Controller) EvaluateDeployment() {
 				if !exists {
 					bwNeeded[srcPod.deployedNode][dstPod.deployedNode] = 0
 				}
-				bwNeeded[srcPod.deployedNode][dstPod.deployedNode] += podReq.bandwidth
+				bwNeeded[srcPod.deployedNode][dstPod.deployedNode] += podReq.Bandwidth
 
 				srcNodeBws, exists := controller.pathsFree[srcPod.deployedNode]
 				if exists {
@@ -369,13 +445,23 @@ func (controller *Controller) EvaluateDeployment() {
 				if exists {
 					bw, dExists := srcBws[dstPod.deployedNode]
 					if dExists {
-						bw -= podActual.bandwidth
+						bw -= podActual.Bandwidth
 						srcBws[dstPod.deployedNode] = bw
+						bwAvailable[srcPod.deployedNode] = srcBws
 					}
 				}
-				bwAvailable[srcPod.deployedNode] = srcBws
 			}
 		}
+	}
+	for src, srcBw := range bwAvailable {
+		for dst, bw := range srcBw {
+			logger(fmt.Sprintf("src = %s dst = %s remaining bw = %f", src, dst,bw))
+		}
+	}
+	logger(fmt.Sprintf("Got %d nodes", len(bwAvailable)))
+	if len(bwAvailable) == 0 {
+		logger("No pods to reschedule in any namespace")
+		return
 	}
 	nodes := controller.getNodes()
 	for _, node := range nodes {
@@ -383,6 +469,7 @@ func (controller *Controller) EvaluateDeployment() {
 		if needToReschedule {
 			logger(fmt.Sprintf("Pod %s ns %s needs to be rescheduled\n", pod.podName, pod.namespace))
 			controller.kubeClient.DeletePod(pod.podId, pod.namespace)
+			controller.namespaceValuationTime[pod.namespace] = time.Now().Unix()
 		}
 	}
 
@@ -399,6 +486,7 @@ func (controller *Controller) MonitorState(delay time.Duration) chan bool {
 			controller.UpdatePodMetrics()
 			controller.UpdateNetMetrics()
 			controller.EvaluateDeployment()
+			controller.EvaluateUsage()
 			select {
 			case <-time.After(delay):
 			case <-stop:

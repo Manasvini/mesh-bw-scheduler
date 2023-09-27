@@ -11,4 +11,6 @@ type Config struct {
 	MetricsEndpoint   string
 	NetmonAddrs       []string
 	Namespaces        []string
+	PromAddr	  string
+	PromMetrics       []string
 }

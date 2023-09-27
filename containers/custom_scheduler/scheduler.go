@@ -22,16 +22,16 @@ import (
 	"strings"
 	"sync"
 	"time"
-	//"sort"
-	//netmon_client "github.gatech.edu/cs-epl/mesh-bw-scheduler/netmon_client"
-	//"k8s.io/apimachinery/pkg/api/resource"
+	bwcontroller "github.gatech.edu/cs-epl/mesh-bw-scheduler/bwcontroller"
 )
 
 type DagScheduler struct {
-	client        KubeClientIntf
-	netmonClient  netmon_client.NetmonClientIntf
-	podProcessor  *PodProcessor
-	processorLock *sync.Mutex
+	client        		KubeClientIntf
+	netmonClient  		netmon_client.NetmonClientIntf
+	podProcessor  		*PodProcessor
+	processorLock 		*sync.Mutex
+	promClient    	  	*bwcontroller.PromClient
+
 }
 
 func (sched *DagScheduler) ReconcileUnscheduledPods(interval int, done chan struct{}, wg *sync.WaitGroup) {
@@ -39,20 +39,20 @@ func (sched *DagScheduler) ReconcileUnscheduledPods(interval int, done chan stru
 		select {
 		case <-time.After(time.Duration(interval) * time.Second):
 			for {
+				// schedule the pending pods
 				pods, podGraph := sched.podProcessor.GetUnscheduledPods()
 				if len(pods) == 0 {
+					logger("no pods to schedule")
 					break
 				}
 				assignment, pods, nodes := sched.SchedulePods(pods, podGraph)
 				if len(pods) == 0 {
-					logger("Could not schedule any pod")
-					break
+					logger("Could not schedule any NEW pod")
 				}
 				err := sched.AssignPods(assignment, pods, nodes)
 				if err != nil {
 					logger(err)
 				}
-
 			}
 		case <-done:
 			wg.Done()
@@ -413,7 +413,6 @@ func (sched *DagScheduler) SchedulePods(pods map[string]Pod, podGraph map[string
 	// returns the dag of unscheduled pods
 	sched.processorLock.Lock()
 	defer sched.processorLock.Unlock()
-	//pods, podGraph := sched.podProcessor.GetUnscheduledPods()
 	logger(fmt.Sprintf("got %d pods and %d podgraph", len(pods), len(podGraph)))
 
 	_, paths, traffics := sched.netmonClient.GetStats()
@@ -428,12 +427,14 @@ func (sched *DagScheduler) SchedulePods(pods map[string]Pod, podGraph map[string
 	}
 	nodeResources := sched.getNodeResourcesRemaining(nodes, nodeMetrics)
 	netResources := sched.getNetResourcesRemaining(paths, traffics)
-
+	
+	_, podNetUsages := sched.promClient.GetPodMetrics()
 	logger(fmt.Sprintf("got %d paths and %d traffics", len(paths), len(traffics)))
-	topoOrder := topoSortWithChain(podGraph, pods)
+	topoOrder := topoSortWithChain(podGraph, pods, podNetUsages)
 	logger(fmt.Sprintf("topo order has %d pods", len(topoOrder)))
 	nodeResList := make([]Resource, 0)
 	nodePreference := make([]string, 0)
+
 
 	for _, nr := range nodeResources {
 		nodeResList = append(nodeResList, nr)
@@ -482,19 +483,6 @@ func (sched *DagScheduler) SchedulePods(pods map[string]Pod, podGraph map[string
 			podToSchedule = topoOrder[podIdx]
 			madeAssignment = false
 			nodePreference = sched.GetNodesForDeps(getPodWithName(podToSchedule, pods), podAssignment, nodeResList)
-			//sortNodes(nodeResList)
-			//for _, res := range nodeResList {
-			//	exists := false
-			//	for _, node := range nodePreference {
-			//		if node == res.name {
-			//			exists = true
-			//			break
-			//		}
-			//	}
-			//	if !exists {
-			//		nodePreference = append(nodePreference, res.name)
-			//	}
-			//}
 			logger(fmt.Sprintf("Got %d nodes", len(nodePreference)))
 			candidateNodeIdx = 0
 		}

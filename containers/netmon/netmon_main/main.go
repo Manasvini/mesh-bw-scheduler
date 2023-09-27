@@ -125,7 +125,7 @@ func (s *server) GetNetInfo(ctx context.Context, in *pb.NetInfoRequest) (*pb.Net
 	bwInfos := make([]*pb.BandwidthInfo, 0)
 	for _, bw := range s.BwCache.BandwidthResults {
 		trafficSent, exists := bwUsed[bw.Host]
-
+        log.Printf("Host = %s", bw.Host)
 		bwInfo := pb.BandwidthInfo{Host: bw.Host, SendBw: float32(bw.Snd), ReceiveBw: float32(bw.Rcv)}
 		if exists {
 			bwInfo.RecvBwUsed = float32(trafficSent)
@@ -154,6 +154,7 @@ func (s *server) GetUpdatedNetStats() (BandwidthResults, TracerouteResults, Late
 		if len(bwInfo.BandwidthResults) == 0 || len(latencyInfo.LatencyResults) == 0 {
 			continue
 		}
+        log.Printf("Update stat for %s bw = %f", host, bwInfo.BandwidthResults[0])
 		allBwInfo.BandwidthResults = append(allBwInfo.BandwidthResults, bwInfo.BandwidthResults[0])
 		allLatencyInfo.LatencyResults = append(allLatencyInfo.LatencyResults, latencyInfo.LatencyResults[0])
 	}

@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"strconv"
 	"strings"
+	bwcontroller "github.gatech.edu/cs-epl/mesh-bw-scheduler/bwcontroller"
 )
 
 func computeIndegrees(podDeps map[string]map[string]bool) map[string]int {
@@ -58,11 +59,12 @@ func getUnvisitedVertexIdx(visited map[string]bool, topoOrder []string) int {
 func bfs(podDeps map[string]map[string]bool,
 	startNode string,
 	visitedGraph map[string]map[string]bool,
-	visited map[string]bool, pods map[string]Pod) (map[string]string, map[string]int) {
-	lengthTo := make(map[string]int, 0)
+	visited map[string]bool, pods map[string]Pod, podNetUsage bwcontroller.PodDeps) (map[string]string, map[string]float64) {
+	logger(fmt.Sprintf("Got %d pod net usages from prom", len(podNetUsage)))
+	lengthTo := make(map[string]float64, 0)
 	path := make(map[string]string, 0)
 	for dst, _ := range podDeps {
-		lengthTo[dst] = 0
+		lengthTo[dst] = 0.0
 	}
 	q := make([]string, 0)
 	curNode := startNode
@@ -94,12 +96,29 @@ func bfs(podDeps map[string]map[string]bool,
 			q = append(q, k)
 			logger(fmt.Sprintf("edge %s -> %s\n", k, curNode))
 			pod := getPodWithName(k, pods)
-			edgeLen := 1
+			edgeLen := 1.0
 			for ann, val := range pod.Metadata.Annotations {
 				vals := strings.Split(ann, ".")
 				if ("dependson" == vals[0] || "dependedby" == vals[0]) && curNode == vals[1] {
 					if vals[2] == "bw" {
-						edgeLen, _ = strconv.Atoi(val)
+						edgeLenInt, _ := strconv.Atoi(val)
+						edgeLen = float64(edgeLenInt)
+					}
+					fracUsage := -1.0
+					if podNet, exists := podNetUsage[k]; exists {
+						if dep, depExist := podNet[curNode]; depExist {
+							fracUsage = float64(dep.Bandwidth) / edgeLen
+						}
+					} 
+					if podNet, exists := podNetUsage[curNode]; exists {
+						if dep, depExist := podNet[k]; depExist {
+							if  float64(dep.Bandwidth) / edgeLen > fracUsage {
+								fracUsage = float64(dep.Bandwidth) / edgeLen
+							}
+						}
+					}
+					if fracUsage > -1 {
+						edgeLen *= fracUsage
 					}
 				}
 			}
@@ -113,7 +132,7 @@ func bfs(podDeps map[string]map[string]bool,
 	return path, lengthTo
 }
 
-func topoSortWithChain(podDeps map[string]map[string]bool, pods map[string]Pod) []string {
+func topoSortWithChain(podDeps map[string]map[string]bool, pods map[string]Pod, podNetUsage bwcontroller.PodDeps) []string {
 	topoOrder := topoSort(podDeps)
 
 	visited := make(map[string]bool, 0)
@@ -137,8 +156,8 @@ func topoSortWithChain(podDeps map[string]map[string]bool, pods map[string]Pod) 
 		}
 		startNode := topoOrder[idx]
 //		logger("cur node is " + startNode)
-		path, lengthTo := bfs(podDeps, startNode, visitedGraph, visited, pods)
-		pathLen := 0
+		path, lengthTo := bfs(podDeps, startNode, visitedGraph, visited, pods, podNetUsage)
+		pathLen := 0.0
 		lastVertex := startNode
 		for k, v := range lengthTo {
 			//logger(fmt.Sprintf("plen from %s to %s = %d\n", startNode, k, v))
@@ -171,9 +190,6 @@ func topoSortWithChain(podDeps map[string]map[string]bool, pods map[string]Pod) 
 		}
 		order = append(order, curOrder...)
 	}
-//	for _, n := range order {
-//		logger("chain order " + n)
-//	}
 	return order
 }
 

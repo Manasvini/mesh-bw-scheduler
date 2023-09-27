@@ -23,7 +23,7 @@ import (
 	"os/signal"
 	"sync"
 	"syscall"
-
+	bwcontroller "github.gatech.edu/cs-epl/mesh-bw-scheduler/bwcontroller"
 	netmon_client "github.gatech.edu/cs-epl/mesh-bw-scheduler/netmon_client"
 )
 
@@ -83,8 +83,9 @@ func main() {
 		namespaces:        config.Namespaces}
 
 	done := client.WaitForProxy()
+	promClient := bwcontroller.NewPrometheusClient(config.PromAddr, config.PromMetrics)
 	logger(fmt.Sprintf("Got %d namespaces", len(config.Namespaces)))
-	dagSched := &DagScheduler{client: &client, processorLock: &sync.Mutex{}, podProcessor: NewPodProcessor(&client), netmonClient: netmon_client.NewNetmonClient(config.NetmonAddrs)}
+	dagSched := &DagScheduler{client: &client, processorLock: &sync.Mutex{}, podProcessor: NewPodProcessor(&client), netmonClient: netmon_client.NewNetmonClient(config.NetmonAddrs), promClient:promClient}
 	if done == 0 {
 		logger("Failed to connect to proxy.")
 		os.Exit(0)

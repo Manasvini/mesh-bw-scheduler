@@ -8,6 +8,8 @@ import ifcfg
 import subprocess
 from concurrent.futures import ThreadPoolExecutor, as_completed, wait, ALL_COMPLETED
 from flask import request
+import time
+import random
 
 app = Flask(__name__)
 
@@ -30,6 +32,7 @@ def run_iperf(host):
     client.duration = 5
     client.server_hostname = host
     client.port = 5201
+    time.sleep(random.randint(0, 10))
     res = client.run()
     print(res.json)
     if 'error' in res.json:

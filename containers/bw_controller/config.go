@@ -10,4 +10,6 @@ type Config struct {
 	KubeDeleteEndpoint string
 	KubeNamespaces     []string
 	MonDurationSeconds int
+	ValuationInterval  int64
+	UtilChangeThreshold float64
 }
