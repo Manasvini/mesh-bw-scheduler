@@ -181,7 +181,7 @@ func (sched *DagScheduler) GetPodResource(pod Pod) Resource {
 	return podResource
 
 }
-func (sched *DagScheduler) EvalPredicate(pod Pod, node Node, availableBw netmon_client.PathSet) bool {
+func (sched *DagScheduler) EvalPredicate(pod Pod, node Node, availableBw netmon_client.PathSet) (bool , float64, float64){
 	nodeIp, ipExists := node.Metadata.Annotations["alpha.kubernetes.io/provided-node-ip"]
 	if !ipExists {
 		nodeIp = node.Metadata.Annotations["flannel.alpha.coreos.com/public-ip"]
@@ -189,50 +189,98 @@ func (sched *DagScheduler) EvalPredicate(pod Pod, node Node, availableBw netmon_
 	nodeBws, exists := availableBw[nodeIp]
 	if !exists {
 		logger("Error: No bw info for node " + node.Metadata.Name)
-		return false
+		return false, 0.0, 0.0
 	}
+	sndreq := 0.0
+	rcvreq := 0.0
 	annotations := pod.Metadata.Annotations
 	for k, v := range annotations {
+		logger("ann = " + k)
 		vals := strings.Split(k, ".")
 		if "neighbor" == vals[0] && "bw" == vals[2] {
-			if "all" == vals[1] {
-				for _, bw := range nodeBws {
+			if "all" == vals[1]  {
+				nodeCt := 0
+				if vals[3] == "send"{
 					req, _ := strconv.Atoi(v)
-					if bw.Bandwidth < float64(req) {
-						return false
+					// send bw check for this node to all neighbors
+					for _, bw := range nodeBws {
+						if bw.Bandwidth < float64(sndreq)  {
+							return false, 0.0, 0.0
+						}
+						nodeCt += 1
 					}
+					logger(fmt.Sprintf("Node %s passed send bw check", nodeIp))
+					sndreq = float64(req) * float64(nodeCt)
+				} else if vals[3] == "rcv" {
+					req, _ := strconv.Atoi(v)
+					// recv bw check for all neighbors to this node
+					for _, bws := range availableBw {
+						nodeBw, exists := bws[nodeIp]
+						if exists {
+							if nodeBw.Bandwidth < float64(rcvreq) {
+								return false, 0.0, 0.0
+							}
+							nodeCt += 1
+						}
+					}
+					logger(fmt.Sprintf("Node %s passed recv bw check", nodeIp))
+					rcvreq = float64(req) * float64(nodeCt)
 				}
+				//return true, float64(sndreq) * float64(nodeCt), float64(rcvreq)* float64(nodeCt)
 			} else if "any" == vals[1] {
-				found := false
-				for _, bw := range nodeBws {
-					req, _ := strconv.Atoi(v)
-					if bw.Bandwidth >= float64(req) {
-						found = true
+				if vals[3] == "send" {
+					found := false
+					sndreq, _ := strconv.Atoi(v)
+					for _, bw := range nodeBws {
+						if bw.Bandwidth >= float64(sndreq) {
+							found = true
+							break
+						}
+					}
+					if found == false {
+						return false, 0.0, 0.0
+					}
+				} else if vals[3] == "rcv" {
+					found :=  false
+					rcvreq, _ := strconv.Atoi(v)
+					for _, bws := range availableBw {
+						bw, exists := bws[nodeIp]
+						if exists && bw.Bandwidth > float64(rcvreq){
+							found = true
+							break
+						}
+					} 
+					if found == false {
+						return false, 0.0, 0.0
 					}
 				}
-				if found == false {
-					return false
-				}
+				//return true, float64(sndreq), float64(rcvreq)
 			}
 		}
 	}
-	return true
+	return true,  float64(sndreq), float64(rcvreq)
 }
 
 func (sched *DagScheduler) Fit(pod Pod, node Node,
 	nodeResource Resource,
 	availableBw netmon_client.PathSet) bool {
 	podResource := sched.GetPodResource(pod)
-	podBw := 0.0
+	podBwSnd := 0.0
+	podBwRcv := 0.0
 	for k, v := range pod.Metadata.Annotations {
 		vals := strings.Split(k, ".")
 		if ("dependedby" == vals[0] || "dependson" == vals[0]) && "bw" == vals[2] {
 			bw, _ := strconv.Atoi(v)
-			podBw += float64(bw)
+			if vals[0] == "dependedby" {
+				podBwRcv += float64(bw)
+			} else {
+				podBwSnd += float64(bw)
+			}
 		}
 	}
 
-	nodeBw := 0.0
+	nodeBwSnd := 0.0
+	nodeBwRcv := 0.0
 	nodeIp, ipExists := node.Metadata.Annotations["alpha.kubernetes.io/provided-node-ip"]
 	if !ipExists {
 		nodeIp = node.Metadata.Annotations["flannel.alpha.coreos.com/public-ip"]
@@ -243,17 +291,24 @@ func (sched *DagScheduler) Fit(pod Pod, node Node,
 		logger("Error: No bw info for node " + node.Metadata.Name)
 		return false
 	}
-	for dst, bw := range nodeBws {
-		nodeBw += bw.Bandwidth
-		logger(fmt.Sprintf("add dst %s bw %f", dst, bw.Bandwidth))
+	for _, bw := range nodeBws {
+		nodeBwSnd += bw.Bandwidth
 	}
-
-	if !sched.EvalPredicate(pod, node, availableBw) {
+	for _, bws := range availableBw {
+		bw, exists := bws[nodeIp]
+		if exists {
+			nodeBwRcv += bw.Bandwidth
+		}
+	}
+	exists, podBwSndAdd, podBwRcvAdd := sched.EvalPredicate(pod, node, availableBw) 
+	if !exists {
 		logger("node " + node.Metadata.Name + " does not have sufficient bw for predicate")
 		return false
 	}
+	podBwSnd += podBwSndAdd
+	podBwRcv += podBwRcvAdd
 
-	logger(fmt.Sprintf("Pod %s cpu = %d memory = %d bw = %f  Node %s cpu = %d memory = %d bw = %f", pod.Metadata.Name, podResource.cpu, podResource.memory, podBw, node.Metadata.Name, nodeResource.cpu, nodeResource.memory, nodeBw))
+	logger(fmt.Sprintf("Pod %s cpu = %d memory = %d pod send bw = %f pod recv bw = %f  Node %s cpu = %d memory = %d send bw = %f rcv bw = %f", pod.Metadata.Name, podResource.cpu, podResource.memory, podBwSnd, podBwRcv, node.Metadata.Name, nodeResource.cpu, nodeResource.memory, nodeBwSnd, nodeBwRcv))
 	if podResource.cpu > nodeResource.cpu {
 		logger(fmt.Sprintf("pod %s node %s insufficient CPU", pod.Metadata.Name, node.Metadata.Name))
 		return false
@@ -262,7 +317,7 @@ func (sched *DagScheduler) Fit(pod Pod, node Node,
 		logger(fmt.Sprintf("pod %s node %s insufficient memory", pod.Metadata.Name, node.Metadata.Name))
 		return false
 	}
-	if podBw > nodeBw {
+	if podBwSnd > nodeBwSnd || podBwRcv > nodeBwRcv {
 		logger(fmt.Sprintf("pod %s node %s insufficient bw", pod.Metadata.Name, node.Metadata.Name))
 		return false
 	}
@@ -456,8 +511,9 @@ func (sched *DagScheduler) SchedulePods(pods map[string]Pod, podGraph map[string
 
 	for _, p := range topoOrder {
 		if !sched.podProcessor.IsPodInList(allPods, p) {
+			logger("pod " + p + " is pending, add to list")
 			podsToSchedule = append(podsToSchedule, p)
-		}
+		} 
 	}
 	topoOrder = podsToSchedule
 	if len(topoOrder) == 0 {

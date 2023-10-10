@@ -60,7 +60,6 @@ func bfs(podDeps map[string]map[string]bool,
 	startNode string,
 	visitedGraph map[string]map[string]bool,
 	visited map[string]bool, pods map[string]Pod, podNetUsage bwcontroller.PodDeps) (map[string]string, map[string]float64) {
-	logger(fmt.Sprintf("Got %d pod net usages from prom", len(podNetUsage)))
 	lengthTo := make(map[string]float64, 0)
 	path := make(map[string]string, 0)
 	for dst, _ := range podDeps {
@@ -114,11 +113,12 @@ func bfs(podDeps map[string]map[string]bool,
 						if dep, depExist := podNet[k]; depExist {
 							if  float64(dep.Bandwidth) / edgeLen > fracUsage {
 								fracUsage = float64(dep.Bandwidth) / edgeLen
+								logger(fmt.Sprintf("usage = %f\n", fracUsage))
 							}
 						}
 					}
-					if fracUsage > -1 {
-						edgeLen *= fracUsage
+					if fracUsage > edgeLen{
+						edgeLen = fracUsage
 					}
 				}
 			}
@@ -155,7 +155,7 @@ func topoSortWithChain(podDeps map[string]map[string]bool, pods map[string]Pod, 
 			break
 		}
 		startNode := topoOrder[idx]
-//		logger("cur node is " + startNode)
+		logger("cur node is " + startNode)
 		path, lengthTo := bfs(podDeps, startNode, visitedGraph, visited, pods, podNetUsage)
 		pathLen := 0.0
 		lastVertex := startNode

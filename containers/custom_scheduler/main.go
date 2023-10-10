@@ -57,7 +57,7 @@ func parseConfig(filename string) Config {
 }
 
 func main() {
-	f, err := os.OpenFile("sched_log", os.O_WRONLY|os.O_CREATE|os.O_APPEND, 0644)
+	f, err := os.OpenFile("sched_log", os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0644)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -100,7 +100,7 @@ func main() {
 	go dagSched.MonitorUnscheduledPods(doneChan, &wg)
 
 	wg.Add(1)
-	go dagSched.ReconcileUnscheduledPods(40, doneChan, &wg)
+	go dagSched.ReconcileUnscheduledPods(20, doneChan, &wg)
 
 	signalChan := make(chan os.Signal, 1)
 	signal.Notify(signalChan, syscall.SIGINT, syscall.SIGTERM)

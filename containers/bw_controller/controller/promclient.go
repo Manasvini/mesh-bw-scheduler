@@ -14,6 +14,8 @@ import (
 const TIMEOUT = time.Second * 30
 const RCV_BW = "istio_tcp_received_bytes_total"
 const SND_BW = "istio_tcp_sent_bytes_total"
+const CONTAINER_SND_BW = "container_network_transmit_bytes_total"
+const CONTAINER_RCV_BW = "container_network_receive_bytes_total"
 
 type PromClient struct {
 	address    string
@@ -35,6 +37,7 @@ func (client *PromClient) GetPodMetrics() (PodSet, PodDeps) {
 	pods := make(PodSet, 0)
 	podDeps := make(PodDeps, 0)
 	for _, metric := range client.metrics {
+		logger(metric)
 		curPods, curPodDeps := client.updateMetric(metric)
 		for podName, curPod := range curPods {
 			pods[podName] = curPod
@@ -49,11 +52,11 @@ func (client *PromClient) GetPodMetrics() (PodSet, PodDeps) {
 			}
 		}
 	}
-	for src, deps := range podDeps {
-		for dst, dep := range deps {
-			logger(fmt.Sprintf("Got dep %s -> %s bw = %f\n", src, dst, dep.Bandwidth))
-		}
-	}
+	//for src, deps := range podDeps {
+	//	for dst, dep := range deps {
+	//		logger(fmt.Sprintf("Got dep %s -> %s bw = %f\n", src, dst, dep.Bandwidth))
+	//	}
+	//}
 	logger(fmt.Sprintf("Got %d pods", len(pods)))
 	return pods, podDeps
 
@@ -116,7 +119,7 @@ func (client *PromClient) updateMetric(metric string) (PodSet, PodDeps) {
 					depPods[dstpname] = depReq
 					podDeps[srcpname] = depPods
 
-					logger(fmt.Sprintf("Got metric pod %s -> %s snd bw = %f", srcpname, dstpname, depReq.Bandwidth))
+					//logger(fmt.Sprintf("Got metric pod %s -> %s snd bw = %f", srcpname, dstpname, depReq.Bandwidth))
 				} else if metric == RCV_BW {
 					srcpname, dstpname := srcStr, dstStr
 					depPods, _ := podDeps[dstpname]
@@ -127,11 +130,38 @@ func (client *PromClient) updateMetric(metric string) (PodSet, PodDeps) {
 					depReq.Bandwidth = float64(value.Value)
 					depPods[srcpname] = depReq
 					podDeps[dstpname] = depPods
-					logger(fmt.Sprintf("Got metric pod %s -> %s recv bw = %f", srcpname, dstpname, depReq.Bandwidth))
+					//logger(fmt.Sprintf("Got metric pod %s -> %s recv bw = %f", srcpname, dstpname, depReq.Bandwidth))
 				}
 			} else {
-				for tag, val := range value.Metric {
-					logger(fmt.Sprintf("metric = %s key = %s val = %s metric val = %s\n", metric, tag, val, value.Value))
+				if metric != CONTAINER_SND_BW && metric != CONTAINER_RCV_BW {
+					continue
+				}
+				podId, exists := value.Metric["pod"]
+				podName := getPodName(string(podId))
+				if exists {
+					pod_traffic := float64(value.Value)
+					logger(fmt.Sprintf("metric = %s Pod =%s src traf = %f", metric, podId, pod_traffic))
+					
+					if metric == CONTAINER_SND_BW {
+						if _, exists := pods[podName]; !exists {
+							pods[podName] = Pod{podName: podName, namespace: string(value.Metric["namespace"])}
+						}
+						if _, exists := podDeps[podName]; !exists{
+							podDeps[podName] = make(map[string]PodDependency, 0)
+						}
+						depReq := PodDependency{Source:podName, Destination: "all_send", Bandwidth: pod_traffic}
+						podDeps[podName]["all_send"] = depReq
+					} else if metric == CONTAINER_RCV_BW {
+						if _, exists := pods[podName]; !exists {
+							pods[podName] = Pod{podName: podName, namespace: string(value.Metric["namespace"])}
+						}
+						if _, exists := podDeps[podName]; !exists{
+							podDeps[podName] = make(map[string]PodDependency, 0)
+						}
+						depReq := PodDependency{Source:podName, Destination: "all_rcv", Bandwidth: pod_traffic}
+						podDeps[podName]["all_rcv"] = depReq
+
+					}
 				}
 
 			}
