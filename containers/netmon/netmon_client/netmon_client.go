@@ -21,7 +21,7 @@ func NewNetmonClient(addresses []string) *NetmonClient {
 	conns := make(map[string]*grpc.ClientConn, 0)
 	clients := make(map[string]pb.NetMonitorClient, 0)
 	for _, address := range addresses {
-		conn, err := grpc.Dial(address, grpc.WithTransportCredentials(insecure.NewCredentials()))
+		conn, err := grpc.Dial(address, grpc.WithTimeout(300 * time.Second),  grpc.WithTransportCredentials(insecure.NewCredentials()))
 		if err != nil {
 			log.Fatalf("did not connect: %v", err)
 		}

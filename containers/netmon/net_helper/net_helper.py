@@ -92,13 +92,19 @@ def get_bw():
     results = [run_iperf(hostname)]
     print(len(results))
     final_results = []
-    for res in results:
-        print(res)
+    elapsed = 0
+    while elapsed < 300:
+        res = run_iperf(hostname)
         if 'error' in res:
-            continue
-        final_results.append({'host':res['host'], 'snd':res['snd'], 'rcv':res['rcv']})
+            time.sleep(5)
+            elapsed += 10
+        else:
+            final_results.append({'host':res['host'], 'snd':res['snd'], 'rcv':res['rcv']})
+            break
+    
     print(final_results)
     return json.dumps({'bandwidthResults':final_results})
+
 
 
 

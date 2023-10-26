@@ -2,7 +2,9 @@
 	"PromMetrics": [
 		"istio_request_duration_milliseconds", 
 		"istio_tcp_sent_bytes_total",
- 		"istio_tcp_received_bytes_total"
+ 		"istio_tcp_received_bytes_total",
+		"container_network_receive_bytes_total",
+		"container_network_transmit_bytes_total"
 	],
 	"PromAddr": "http://0.0.0.0:9090",
 	"NetmonAddrs":[
@@ -17,9 +19,10 @@
 	"KubeNamespaces" :[
 		"epl",
 		"socialnetwork",
-		"camera"
+		"camera",
+		"ion"
 	],
-	"MonDurationSeconds":60,
-	"ValuationInterval":180,
-	"UtilChangeThreshold": 0.25
+	"MonDurationSeconds":15,
+	"ValuationInterval":30,
+	"UtilChangeThreshold": 0
 }

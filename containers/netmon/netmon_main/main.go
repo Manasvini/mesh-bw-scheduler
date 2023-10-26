@@ -149,14 +149,14 @@ func (s *server) GetUpdatedNetStats() (BandwidthResults, TracerouteResults, Late
 		fmt.Printf("host = %s\n", host)
 		bwResponse := s.QueryNetStats(host, "bw")
 		bwInfo := GetBwResults(bwResponse)
-		latencyResponse := s.QueryNetStats(host, "latency")
-		latencyInfo := GetLatencyResults(latencyResponse)
-		if len(bwInfo.BandwidthResults) == 0 || len(latencyInfo.LatencyResults) == 0 {
+		//latencyResponse := s.QueryNetStats(host, "latency")
+		//latencyInfo := GetLatencyResults(latencyResponse)
+		if len(bwInfo.BandwidthResults) == 0  {
 			continue
-		}
+	}
         log.Printf("Update stat for %s bw = %f", host, bwInfo.BandwidthResults[0])
-		allBwInfo.BandwidthResults = append(allBwInfo.BandwidthResults, bwInfo.BandwidthResults[0])
-		allLatencyInfo.LatencyResults = append(allLatencyInfo.LatencyResults, latencyInfo.LatencyResults[0])
+	allBwInfo.BandwidthResults = append(allBwInfo.BandwidthResults, bwInfo.BandwidthResults[0])
+		//allLatencyInfo.LatencyResults = append(allLatencyInfo.LatencyResults, latencyInfo.LatencyResults[0])
 	}
 	trResponse := s.QueryTrStats()
 
@@ -180,7 +180,7 @@ func (s *server) DoInBackground() {
 		for {
 			s.UpdateCache()
 			s.bpfRunner.PrintStats()
-			time.Sleep(300 * time.Second)
+			time.Sleep(10 * time.Second)
 		}
 	}()
 }
