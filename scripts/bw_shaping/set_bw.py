@@ -9,12 +9,17 @@ def setup_node(nodename, username, port, bw_files, bw_controller_file, bw_config
     host = username + '@' + nodename + ':~/'
     cmd = scp + ' ' + bw_controller_file + ' ' + host
     print(cmd)
-    subprocess.run(['ssh ', username +'@' + nodename, 'mkdir measurements']
+    ssh_cmd = 'ssh -p ' + str(port) + ' ' +  username +'@' + nodename 
+    mkdir = " mkdir -p measurements"
+    ssh_cmd += mkdir 
+    print(ssh_cmd)
+    subprocess.run(ssh_cmd.split(),   check=True,)
     subprocess.run(cmd.split(), check=True, )
-    cmd = scp + ' ' + bw_config_file + host
+    cmd = scp + ' ' + bw_config_file + ' ' +  host
     subprocess.run(cmd.split(), check=True, )
     for f in bw_files:
-        cmd = scp + ' ' + f + host
+        cmd = scp + ' ' + f +' ' +  host + 'measurements/'
+        print(cmd)
         subprocess.run(cmd.split(), check=True,)
         
 
