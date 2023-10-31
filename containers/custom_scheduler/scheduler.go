@@ -31,7 +31,7 @@ type DagScheduler struct {
 	podProcessor  		*PodProcessor
 	processorLock 		*sync.Mutex
 	promClient    	  	*bwcontroller.PromClient
-
+	ipMap			map[string]string
 }
 
 func (sched *DagScheduler) ReconcileUnscheduledPods(interval int, done chan struct{}, wg *sync.WaitGroup) {
@@ -134,6 +134,7 @@ func (sched *DagScheduler) getNodeResourcesRemaining(nodeList *NodeList, nodeMet
 
 func (sched *DagScheduler) getNetResourcesRemaining(paths netmon_client.PathSet, traffics netmon_client.TrafficSet) netmon_client.PathSet {
 	availableCap := make(netmon_client.PathSet, 0)
+	fmt.Sprintf("Got %d paths", len(paths))
 	for src, pdsts := range paths {
 		p, exists := availableCap[src]
 		if !exists {
@@ -141,6 +142,7 @@ func (sched *DagScheduler) getNetResourcesRemaining(paths netmon_client.PathSet,
 			availableCap[src] = p
 		}
 		for dst, path := range pdsts {
+			fmt.Sprintf("src = %s dst = %s\n", src, dst)
 			availableCap[src][dst] = path
 		}
 	}
@@ -470,7 +472,7 @@ func (sched *DagScheduler) SchedulePods(pods map[string]Pod, podGraph map[string
 	defer sched.processorLock.Unlock()
 	logger(fmt.Sprintf("got %d pods and %d podgraph", len(pods), len(podGraph)))
 
-	_, paths, traffics := sched.netmonClient.GetStats()
+	_, paths, traffics := sched.netmonClient.GetStats(sched.ipMap)
 
 	nodes, _ := sched.client.GetNodes()
 	nodeMetrics, _ := sched.client.GetNodeMetrics()

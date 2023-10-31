@@ -9,7 +9,6 @@ import (
 	"log"
 	"net"
 	"net/http"
-	"os"
 	"strings"
 	"sync"
 	"time"
@@ -51,22 +50,23 @@ func readConfig(configfile string) []string {
 
 type server struct {
 	pb.UnimplementedNetMonitorServer
-	BwCache      BandwidthResults  // dest node -> bw map
+	BwCache      map[string]Bandwidth  // dest node -> bw map
 	TrCache      TracerouteResults // dest node -> traceroute map
 	LatencyCache LatencyResults    // dest node -> latency map
 	mu           sync.Mutex
 	netClient    http.Client
 	hosts        []string
 	bpfRunner    *BPFRunner
+	hostIdx	     int
 }
 
-func (s *server) QueryNetStats(hostname string, qty string) []byte {
+func (s *server) QueryNetStats(hostname string, qty string) ([]byte, error) {
 	reqURL := "http://" + *helper
 	fmt.Printf("host = %s\n", hostname)
 	res, err := s.netClient.Get(reqURL + "/" + qty + "?host=" + hostname)
 	if err != nil {
 		fmt.Printf("client: could not create request: %s\n", err)
-		return []byte("")
+		return []byte(""), err
 	}
 
 	fmt.Printf("client: status code: %d\n", res.StatusCode)
@@ -74,19 +74,19 @@ func (s *server) QueryNetStats(hostname string, qty string) []byte {
 	resBody, err := ioutil.ReadAll(res.Body)
 	if err != nil {
 		fmt.Printf("client: could not read response body: %s\n", err)
-		return []byte("")
+		return []byte(""), err
 	}
 	fmt.Printf(string(resBody))
-	return resBody
+	return resBody, nil
 
 }
 
-func (s *server) QueryTrStats() []byte {
+func (s *server) QueryTrStats() ([]byte, error) {
 	reqURL := "http://" + *helper
 	res, err := s.netClient.Get(reqURL + "/traceroute")
 	if err != nil {
 		fmt.Printf("client: could not create request: %s\n", err)
-		os.Exit(1)
+		return []byte(""), err
 	}
 
 	fmt.Printf("client: status code: %d\n", res.StatusCode)
@@ -94,10 +94,10 @@ func (s *server) QueryTrStats() []byte {
 	resBody, err := ioutil.ReadAll(res.Body)
 	if err != nil {
 		fmt.Printf("client: could not read response body: %s\n", err)
-		os.Exit(1)
+		return []byte(""), err
 	}
 	fmt.Printf(string(resBody))
-	return resBody
+	return resBody, nil
 }
 
 func GetBwResults(bwResponse []byte) BandwidthResults {
@@ -123,9 +123,9 @@ func (s *server) GetNetInfo(ctx context.Context, in *pb.NetInfoRequest) (*pb.Net
 	s.mu.Lock()
 	bwUsed := s.bpfRunner.GetStats()
 	bwInfos := make([]*pb.BandwidthInfo, 0)
-	for _, bw := range s.BwCache.BandwidthResults {
+	for _, bw := range s.BwCache {
 		trafficSent, exists := bwUsed[bw.Host]
-        log.Printf("Host = %s", bw.Host)
+        	log.Printf("Host = %s", bw.Host)
 		bwInfo := pb.BandwidthInfo{Host: bw.Host, SendBw: float32(bw.Snd), ReceiveBw: float32(bw.Rcv)}
 		if exists {
 			bwInfo.RecvBwUsed = float32(trafficSent)
@@ -145,44 +145,55 @@ func (s *server) GetNetInfo(ctx context.Context, in *pb.NetInfoRequest) (*pb.Net
 func (s *server) GetUpdatedNetStats() (BandwidthResults, TracerouteResults, LatencyResults) {
 	var allBwInfo BandwidthResults
 	var allLatencyInfo LatencyResults
-	for _, host := range s.hosts {
-		fmt.Printf("host = %s\n", host)
-		bwResponse := s.QueryNetStats(host, "bw")
-		bwInfo := GetBwResults(bwResponse)
-		//latencyResponse := s.QueryNetStats(host, "latency")
-		//latencyInfo := GetLatencyResults(latencyResponse)
-		if len(bwInfo.BandwidthResults) == 0  {
-			continue
-	}
-        log.Printf("Update stat for %s bw = %f", host, bwInfo.BandwidthResults[0])
-	allBwInfo.BandwidthResults = append(allBwInfo.BandwidthResults, bwInfo.BandwidthResults[0])
-		//allLatencyInfo.LatencyResults = append(allLatencyInfo.LatencyResults, latencyInfo.LatencyResults[0])
-	}
-	trResponse := s.QueryTrStats()
+    var trInfo TracerouteResults
+	//for _, host := range s.hosts {
+	host := s.hosts[s.hostIdx]
+	fmt.Printf("host = %s idx = %d\n", host, s.hostIdx)
+	bwResponse, err := s.QueryNetStats(host, "bw")
+    if err == nil{
+	    bwInfo := GetBwResults(bwResponse)
+	    if len(bwInfo.BandwidthResults) > 0  {
+	
+            log.Printf("Update stat for %s bw = %f", host, bwInfo.BandwidthResults[0])
+	        allBwInfo.BandwidthResults = append(allBwInfo.BandwidthResults, bwInfo.BandwidthResults[0])
+            s.hostIdx = (s.hostIdx + 1) % len(s.hosts)
 
-	trInfo := GetTrResults(trResponse)
-	fmt.Printf("tr: Got %d hosts\n", len(trInfo.TracerouteResults))
-	fmt.Printf("bw: Got %d hosts\n", len(allBwInfo.BandwidthResults))
+        }
+    }
+	//}
+	trResponse, err := s.QueryTrStats()
+    if err == nil {
+	    trInfo = GetTrResults(trResponse)
+	}
+    fmt.Printf("tr: Got %d hosts\n", len(trInfo.TracerouteResults))
+
+    fmt.Printf("bw: Got %d hosts\n", len(allBwInfo.BandwidthResults))
 	return allBwInfo, trInfo, allLatencyInfo
 }
 
 func (s *server) UpdateCache() {
 	bwInfo, trInfo, latencyInfo := s.GetUpdatedNetStats()
 	s.mu.Lock()
-	s.BwCache = bwInfo
-	s.TrCache = trInfo
-	s.LatencyCache = latencyInfo
+	//s.BwCache = bwInfo
+	for _, bwResult := range bwInfo.BandwidthResults {
+		log.Printf("Updated %s", bwResult.Host)
+		s.BwCache[bwResult.Host] = bwResult
+	}
+	if len(trInfo.TracerouteResults) > 0{
+        s.TrCache = trInfo
+	}
+    s.LatencyCache = latencyInfo
 	s.mu.Unlock()
 }
 
 func (s *server) DoInBackground() {
-	go func() {
+	//go func() {
 		for {
 			s.UpdateCache()
 			s.bpfRunner.PrintStats()
-			time.Sleep(10 * time.Second)
+			time.Sleep(30 * time.Second)
 		}
-	}()
+	//}()
 }
 
 func StartServer() {
@@ -194,12 +205,14 @@ func StartServer() {
 	}
 	bpfRunner := NewBPFRunner(*device)
 	s := grpc.NewServer()
-	client := http.Client{Timeout: 300 * time.Second}
-	monserver := &server{netClient: client, hosts: hosts, bpfRunner: bpfRunner}
+	client := http.Client{Timeout: 60 * time.Second}
+	monserver := &server{netClient: client, hosts: hosts, bpfRunner: bpfRunner, hostIdx:0, BwCache:make(map[string]Bandwidth, 0)}
 
 	pb.RegisterNetMonitorServer(s, monserver)
 	log.Printf("server listening at %v", lis.Addr())
-	monserver.DoInBackground()
+	go func(){
+		monserver.DoInBackground()
+	}()
 	if err := s.Serve(lis); err != nil {
 		log.Fatalf("failed to serve: %v", err)
 	}

@@ -32,7 +32,7 @@ def run_iperf(host):
     client.duration = 5
     client.server_hostname = host
     client.port = 5201
-    time.sleep(random.randint(0, 10))
+    time.sleep(random.randint(0, 5))
     res = client.run()
     print(res.json)
     if 'error' in res.json:
@@ -93,11 +93,12 @@ def get_bw():
     print(len(results))
     final_results = []
     elapsed = 0
-    while elapsed < 300:
+    while elapsed < 60:
         res = run_iperf(hostname)
         if 'error' in res:
-            time.sleep(5)
-            elapsed += 10
+            sleep_time = random.randint(0, 5)
+            time.sleep(sleep_time)
+            elapsed += sleep_time
         else:
             final_results.append({'host':res['host'], 'snd':res['snd'], 'rcv':res['rcv']})
             break
