@@ -1,0 +1,10 @@
+{
+    "nodes":
+    [
+        {"nodename":"pc604.emulab.net", "port":"25015", "nodeid":"node0"},
+        {"nodename":"pc604.emulab.net", "port":"25016", "nodeid":"node1"},
+        {"nodename":"pc604.emulab.net", "port":"25017", "nodeid":"node2"},  
+        {"nodename":"pc604.emulab.net", "port":"25018", "nodeid": "node3"}, 
+        {"nodename":"pc604.emulab.net", "port":"25019", "nodeid":"node4"}
+    ]
+}
