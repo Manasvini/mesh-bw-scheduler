@@ -31,10 +31,22 @@ type Controller struct {
 	utilChangeThreshold	float64
 	bwFile	*os.File
 	migrationFile	*os.File
+	pendingBwUpdate	bool
+	headroomReq	map[string]map[string]float32
+	headroomThreshold float32
+	ipMap		map[string]string
 }
 
-func NewController(promClient *PromClient, netmonClient *netmon_client.NetmonClient, kubeClient *KubeClient, valuationInterval int64, utilChangeThreshold float64, bwFile string, migrationFile string) *Controller {
-	controller := &Controller{promClient: promClient, netmonClient: netmonClient, kubeClient: kubeClient}
+func NewController(promClient *PromClient, 
+		   netmonClient *netmon_client.NetmonClient, 
+		   kubeClient *KubeClient, 
+		   valuationInterval int64, 
+		   utilChangeThreshold float64, 
+		   bwFile string, 
+		   migrationFile string, 
+		   headroomThreshold float32,
+	   	   ipMap map[string]string) *Controller {
+	controller := &Controller{promClient: promClient, netmonClient: netmonClient, kubeClient: kubeClient, pendingBwUpdate: false}
 	controller.podDepReq = make(PodDeps, 0)
 	controller.podDepActual = make(PodDeps, 0)
 	controller.pods = make(PodSet, 0)
@@ -46,10 +58,19 @@ func NewController(promClient *PromClient, netmonClient *netmon_client.NetmonCli
 	controller.utilChangeThreshold = utilChangeThreshold
 	controller.namespaceValuationTime = make(map[string]int64, 0)
 	controller.namespaceAvgUtilization = make(map[string]float64, 0)
+	controller.headroomReq = make(map[string]map[string]float32, 0)
+	controller.headroomThreshold = headroomThreshold
 	controller.bwFile, _ = os.OpenFile(bwFile, os.O_CREATE|os.O_WRONLY|os.O_TRUNC, 0644)
 	controller.migrationFile, _ = os.OpenFile(migrationFile, os.O_CREATE|os.O_WRONLY|os.O_TRUNC, 0644)
 	controller.bwFile.WriteString(fmt.Sprintf("time,src,dst,bw\n"))
 	controller.migrationFile.WriteString("time,pod\n")
+	controller.ipMap = ipMap
+	// intialize state for cluster
+	controller.UpdateNodes()
+	controller.UpdatePods()
+	controller.UpdatePodMetrics()
+	controller.UpdateNetMetrics(true)
+	
 	return controller
 }
 
@@ -111,8 +132,17 @@ func (controller *Controller) UpdatePodMetrics() {
 }
 
 // Update network bw available between each pair of nodes
-func (controller *Controller) UpdateNetMetrics() {
-	links, paths, traffics := controller.netmonClient.GetStats()
+func (controller *Controller) UpdateNetMetrics(isBwUpdate bool) {
+	nodemap := controller.ipMap
+	var links netmon_client.LinkSet
+	var paths netmon_client.PathSet
+	var traffics netmon_client.TrafficSet
+	if isBwUpdate == true {
+		links, paths, traffics = controller.netmonClient.GetStats(nodemap)
+	} else {
+		links, paths, traffics = controller.netmonClient.GetHeadroomStats(nodemap, controller.headroomReq)
+	}
+
 	for src, dstLinks := range links {
 		for dst, link := range dstLinks {
 			//logger(fmt.Sprintf("src = %s dst = %s", src, dst))
@@ -130,6 +160,14 @@ func (controller *Controller) UpdateNetMetrics() {
 			srcLinks, _ := controller.linksFree[srcNode]
 			srcLinks[dstNode] = link
 			controller.linksFree[srcNode] = srcLinks
+			if isBwUpdate {
+				_, exists = controller.headroomReq[src]
+				if !exists {
+					controller.headroomReq[src] = make(map[string]float32, 0)
+				}
+				controller.headroomReq[src][dst] = float32(link.Bandwidth) * controller.headroomThreshold
+				logger(fmt.Sprintf("threshold src = %s dst = %s bw = %f", src, dst, controller.headroomReq[src][dst]))
+			}
 		}
 	}
 	for src, dstPaths := range paths {
@@ -361,15 +399,21 @@ func (controller *Controller) findPodsToReschedule(bwNeeded map[string]map[strin
 	pList := make(PairList, 0)
 
 	podList := controller.getPodsOnNode(node)
+	bwThresholdViolated := false
 	for _, pod := range podList {
 		satisfied, usedBw, totalShortfall := controller.CheckPodReqSatisfiedOne(bwNeeded, bwAvailable, pod)
 		logger(fmt.Sprintf("pod = %s shortfall=%f node=%s\n", pod.podName, totalShortfall, pod.deployedNode))
+		
 		for node, val := range usedBw {
 			if pod.deployedNode != node {
+				if float32(bwAvailable[pod.deployedNode][node] - val) < controller.headroomReq[pod.deployedNode][node] {
+					bwThresholdViolated = true
+				}
 				bwAvailable[pod.deployedNode][node] -= val
+
 			}
 		} 
-		if !satisfied {
+		if !satisfied || bwThresholdViolated {
 			pList = append(pList, Pair{Key: pod.podName, Value: totalShortfall})
 			logger("added pod " + pod.podName + " to reschedule")
 		}
@@ -573,6 +617,10 @@ func (controller *Controller) EvaluateDeployment() {
 		}
 	}
 	logger(fmt.Sprintf("relocating %d pods", numRescheduled))
+	if numRescheduled > 0 {
+		controller.UpdateNetMetrics(true) // we want to get link capacities
+		controller.pendingBwUpdate = true
+	}
 
 }
 
@@ -585,7 +633,8 @@ func (controller *Controller) MonitorState(delay time.Duration) chan bool {
 			controller.UpdateNodes()
 			controller.UpdatePods()
 			controller.UpdatePodMetrics()
-			controller.UpdateNetMetrics()
+			controller.UpdateNetMetrics(controller.pendingBwUpdate)	// by default we only update headroom not total link capacity
+			controller.pendingBwUpdate = false
 			controller.EvaluateDeployment()
 			//controller.EvaluateUsage()
 			select {

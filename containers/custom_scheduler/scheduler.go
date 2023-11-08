@@ -32,6 +32,7 @@ type DagScheduler struct {
 	processorLock 		*sync.Mutex
 	promClient    	  	*bwcontroller.PromClient
 	ipMap			map[string]string
+	headroomThreshold	float64
 }
 
 func (sched *DagScheduler) ReconcileUnscheduledPods(interval int, done chan struct{}, wg *sync.WaitGroup) {
@@ -319,7 +320,7 @@ func (sched *DagScheduler) Fit(pod Pod, node Node,
 		logger(fmt.Sprintf("pod %s node %s insufficient memory", pod.Metadata.Name, node.Metadata.Name))
 		return false
 	}
-	if podBwSnd > nodeBwSnd || podBwRcv > nodeBwRcv {
+	if podBwSnd > nodeBwSnd *( 1 - sched.headroomThreshold) || podBwRcv > nodeBwRcv *( 1 - sched.headroomThreshold) {
 		logger(fmt.Sprintf("pod %s node %s insufficient bw", pod.Metadata.Name, node.Metadata.Name))
 		return false
 	}

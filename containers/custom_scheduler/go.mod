@@ -3,6 +3,7 @@ module custom_scheduler
 go 1.19
 
 require (
+	github.gatech.edu/cs-epl/mesh-bw-scheduler/bwcontroller v0.0.0-00010101000000-000000000000
 	github.gatech.edu/cs-epl/mesh-bw-scheduler/netmon_client v0.0.0-00010101000000-000000000000
 	k8s.io/apimachinery v0.27.1
 )
@@ -15,7 +16,6 @@ require (
 	github.com/modern-go/reflect2 v1.0.2 // indirect
 	github.com/prometheus/client_golang v1.16.0 // indirect
 	github.com/prometheus/common v0.42.0 // indirect
-	github.gatech.edu/cs-epl/mesh-bw-scheduler/bwcontroller v0.0.0-00010101000000-000000000000 // indirect
 	github.gatech.edu/cs-epl/mesh-bw-scheduler/netmon v0.0.0-00010101000000-000000000000 // indirect
 	golang.org/x/net v0.8.0 // indirect
 	golang.org/x/sys v0.8.0 // indirect

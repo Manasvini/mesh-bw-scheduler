@@ -1,9 +1,9 @@
 {
 "nodes":[
-    {"nodename":"pc606.emulab.net", "port":25010, "bw_config_file":"5nodes/node0.json"},
-    {"nodename":"pc606.emulab.net", "port":25011, "bw_config_file":"5nodes/node1.json"},
-    {"nodename":"pc606.emulab.net", "port":25012, "bw_config_file":"5nodes/node2.json"},
-    {"nodename":"pc606.emulab.net", "port":25013, "bw_config_file":"5nodes/node3.json"},
-    {"nodename":"pc606.emulab.net", "port":25014, "bw_config_file":"5nodes/node4.json"}
+    {"nodename":"clnode005.clemson.cloudlab.us", "port":26410, "bw_config_file":"5nodes/node0.json"},
+    {"nodename":"clnode005.clemson.cloudlab.us", "port":26411, "bw_config_file":"5nodes/node1.json"},
+    {"nodename":"clnode005.clemson.cloudlab.us", "port":26412, "bw_config_file":"5nodes/node2.json"},
+    {"nodename":"clnode005.clemson.cloudlab.us", "port":26413, "bw_config_file":"5nodes/node3.json"},
+    {"nodename":"clnode005.clemson.cloudlab.us", "port":26414, "bw_config_file":"5nodes/node4.json"}
     ]
 }

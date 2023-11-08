@@ -12,4 +12,5 @@ type Config struct {
 	MonDurationSeconds int
 	ValuationInterval  int64
 	UtilChangeThreshold float64
+	HeadroomThreshold   float32
 }

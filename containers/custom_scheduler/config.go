@@ -13,4 +13,5 @@ type Config struct {
 	Namespaces        []string
 	PromAddr	  string
 	PromMetrics       []string
+	HeadroomThreshold float64
 }

@@ -8,9 +8,11 @@
 	],
 	"PromAddr": "http://0.0.0.0:9090",
 	"NetmonAddrs":[
-		"10.10.1.1:50051",
-		"10.10.1.2:50051",
-		"10.10.1.3:50051"
+		"10.10.7.2:50051",
+		"10.10.8.2:50051",
+		"10.10.9.2:50051",
+		"10.10.10.2:50051",
+		"10.10.11.2:50051"
 	],
 	"KubeProxyAddr": "127.0.0.1:8001",
 	"KubeNodesEndpoint": "/api/v1/nodes",
@@ -24,5 +26,6 @@
 	],
 	"MonDurationSeconds":15,
 	"ValuationInterval":30,
-	"UtilChangeThreshold": 0
+	"UtilChangeThreshold": 0,
+	"HeadroomThreshold":0.2
 }

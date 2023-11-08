@@ -16,6 +16,7 @@ def setup_node(nodename, username, port, dirname):
     subprocess.run(cmd.split(), check=True,)
     ssh_pip_cmd = ssh_cmd + ' pip3 install -r mesh-bw-scheduler/containers/netmon/net_helper/requirements.txt'
     subprocess.run(ssh_pip_cmd.split(), check=True)
+
 def update_config(nodename, username, port, configdir, nodeid):
     host = username + '@' + nodename + ':~/'
     ssh_cmd = 'ssh -p ' + str(port) + ' ' +  username +'@' + nodename 
@@ -36,8 +37,9 @@ def read_topo_config(config_filename, user, configdir):
         data = json.load(fh)
         dirname = '../containers/netmon'
         for node in data['nodes']:
+            print(node)
             time.sleep(10)
-            #setup_node(node['nodename'],user, node['port'], dirname)
+            setup_node(node['nodename'],user, node['port'], dirname)
             update_config(node['nodename'], user, node['port'], configdir, node['nodeid'])
   
 def parse_args():

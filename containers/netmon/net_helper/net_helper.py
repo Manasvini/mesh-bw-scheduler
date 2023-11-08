@@ -27,16 +27,25 @@ def run_nmap(subnet):
     return hosts_list
 
 
-def run_iperf(host):
+def run_iperf(host, bwlimit=None):
     client = iperf3.Client()
     client.duration = 5
     client.server_hostname = host
     client.port = 5201
     time.sleep(random.randint(0, 5))
+    if bwlimit is not None:
+        print(type(bwlimit), bwlimit)
+        #client.protocol = 'udp'
+        client.bandwidth = int(float(bwlimit))
+        client.reverse = True
     res = client.run()
     print(res.json)
     if 'error' in res.json:
         return res.json
+    #if bwlimit is not None:
+    #    return {'host':host, 'snd': res.json['end']['streams'][0]['udp']['bits_per_second'], 'rcv':res.json['end']['streams'][0]['udp']['bits_per_second']}
+
+
     return {'host':host, 'snd': res.json['end']['streams'][0]['sender']['bits_per_second'], 'rcv':res.json['end']['streams'][0]['receiver']['bits_per_second']}
 
 
@@ -88,8 +97,9 @@ def get_hosts():
 def get_bw():
     hostname = request.args.get('host')
     #iperf_hosts = get_hosts()
-    print(hostname)
-    results = [run_iperf(hostname)]
+    bwlimit = request.args.get('bwmax')
+    print(hostname, bwlimit)
+    results = [run_iperf(hostname, bwlimit)]
     print(len(results))
     final_results = []
     elapsed = 0

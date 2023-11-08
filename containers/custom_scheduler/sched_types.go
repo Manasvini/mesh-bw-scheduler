@@ -8,7 +8,7 @@ type Resource struct {
 	name   string
 }
 
-const RESOURCE_DIFF_THRESHOLD float64 = 0.75
+const RESOURCE_DIFF_THRESHOLD float64 = 0.25
 type Resources []Resource
 
 func (resources Resources) Len() int {
