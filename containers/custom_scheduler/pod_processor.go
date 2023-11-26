@@ -48,14 +48,20 @@ func (pp *PodProcessor) IsPodInList(podList []*PodList, podName string) bool {
 		for _, pod := range pList.Items {
 			pName := getPodName(pod.Metadata.Name)
 			if pName == podName && (pod.Status.Phase == "Running" || pod.Status.Phase == "ContainerCreating" || strings.Contains(pod.Status.Phase, "Init")) {
-				return true
-			} else if pName == podName && (pod.Status.Phase == "ContainerStatusUnknown" || pod.Status.Phase == "Completed") {
+				logger("Pod " + pName + " already scheduled")
 				continue
+			} else if pName == podName && (pod.Status.Phase == "ContainerStatusUnknown" || pod.Status.Phase == "Completed" || pod.Status.Phase == "Terminating") {
+				logger("Pod " + pName + " yet to be scheduled")
+				continue
+			} else if pName == podName && pod.Status.Phase == "Pending" {
+				logger("Pod " + pName + " is pending")
+				return false
 			}
+
 		}
 
 	}
-	return false
+	return true
 
 }
 func (pp *PodProcessor) AreAllRelatedPodsPresent(pod Pod, relationship string) bool {
@@ -119,6 +125,7 @@ func (pp *PodProcessor) GetPodDependencyGraph(podList []Pod) map[string]map[stri
 			vals := strings.Split(k, ".")
 			if len(vals) < 2 {
 				logger(fmt.Sprintf("ERROR: Incorrect annotation format for pod dependency %s", k))
+				continue
 			}
 			relationship, podName := vals[0], vals[1]
 			if relationship != "dependson" {
@@ -170,6 +177,7 @@ func (pp *PodProcessor) GetPodGraph() (map[string]map[string]bool, []string) {
 			vals := strings.Split(k, ".")
 			if len(vals) < 2 {
 				logger(fmt.Sprintf("ERROR: Incorrect annotation format for pod dependency %s", k))
+				continue
 			}
 			rel, podName := vals[0], vals[1]
 			//logger(fmt.Sprintf("pod = %s rel = %s other pod = %s", pod.Metadata.Name, rel, podName))

@@ -8,10 +8,11 @@ type Pod struct {
 }
 
 type PodDependency struct {
-	source      string
-	destination string
-	latency     float64
-	bandwidth   float64
+	Source      string
+	Destination string
+	Latency     float64
+	Bandwidth   float64
+	FractionUsed float64
 }
 
 type PodSet map[string]Pod

@@ -21,7 +21,7 @@ func NewNetmonClient(addresses []string) *NetmonClient {
 	conns := make(map[string]*grpc.ClientConn, 0)
 	clients := make(map[string]pb.NetMonitorClient, 0)
 	for _, address := range addresses {
-		conn, err := grpc.Dial(address, grpc.WithTransportCredentials(insecure.NewCredentials()))
+		conn, err := grpc.Dial(address, grpc.WithTimeout(300 * time.Second),  grpc.WithTransportCredentials(insecure.NewCredentials()))
 		if err != nil {
 			log.Fatalf("did not connect: %v", err)
 		}
@@ -39,9 +39,10 @@ func (netmonClient *NetmonClient) Close() {
 	}
 }
 
-func (netmonClient *NetmonClient) ComputePathBw(links LinkSet, paths *PathSet) {
+func (netmonClient *NetmonClient) ComputePathBw(links LinkSet, pathsInput PathSet) PathSet {
 	maxPLen := 1
-	for _, pSet := range *paths {
+	paths := make(PathSet, 0)
+	for _, pSet := range pathsInput {
 		for _, path := range pSet {
 			if len(path.Hops) > maxPLen {
 				maxPLen = len(path.Hops)
@@ -49,12 +50,17 @@ func (netmonClient *NetmonClient) ComputePathBw(links LinkSet, paths *PathSet) {
 		}
 	}
 	pLen := 2
-	fmt.Printf("Max p len = %d\n", maxPLen)
+	logger(fmt.Sprintf("Max p len = %d\n", maxPLen))
 	for {
 		if pLen > maxPLen {
 			break
 		}
-		for src, pSet := range *paths {
+		for src, pSetIn := range pathsInput {
+			pSet := make(map[string]Path, 0)
+			paths[src] = pSet
+			for dst, path := range pSetIn {
+				pSet[dst] = path
+			}
 			for dst, path := range pSet {
 				curPLen := len(path.Hops)
 				if curPLen != pLen {
@@ -62,32 +68,48 @@ func (netmonClient *NetmonClient) ComputePathBw(links LinkSet, paths *PathSet) {
 				}
 				lastHop := path.Hops[curPLen-1]
 				curHop := path.Hops[curPLen-2]
+				logger(fmt.Sprintf("src = %s dst=%s lasthop %s curHop %s cur plen = %d pLen = %d", src, dst, lastHop, curHop, curPLen, pLen))
 				lastBws, lExists := links[lastHop]
+				if curPLen == 2{
+					curHop = lastHop
+				}
 				prevPath, pExists := pSet[curHop]
 				if lExists && pExists {
-					dstBw, dExists := lastBws[lastHop]
+					dstBw, dExists := lastBws[dst]
 					if dExists {
+						logger(fmt.Sprintf("Path exists via routing link bw = %f path bw = %f", dstBw.Bandwidth, prevPath.Bandwidth))
 						path.Bandwidth = dstBw.Bandwidth
 						if dstBw.Bandwidth > prevPath.Bandwidth {
 							path.Bandwidth = prevPath.Bandwidth
 						}
 						pSet[dst] = path
+						logger(fmt.Sprintf("path bw = %f", pSet[dst].Bandwidth))
 					}
 				}
 			}
-			(*paths)[src] = pSet
+			paths[src] = pSet
 		}
 		pLen += 1
 
 	}
+	return paths
 }
 
-func (netmonClient *NetmonClient) GetStats() (LinkSet, PathSet, TrafficSet) {
+func (netmonClient *NetmonClient) GetHeadroomStats(ipMap map[string]string, bwReq map[string]map[string]float32) (LinkSet, PathSet, TrafficSet) {
 	links := make(LinkSet, 0)
 	paths := make(PathSet, 0)
 	traffics := make(TrafficSet, 0)
+	logger(fmt.Sprintf("Got %d headroom req\n", len(bwReq)))
+	for src, reqs := range bwReq {
+		for dst, bw := range reqs {
+			logger(fmt.Sprintf("src = %s dst  = %s bwreq = %f", src, dst, bw))
+		}
+	}
 	for addr, _ := range netmonClient.clients {
-		curLinks, curPaths, curTraffic := netmonClient.getStatsOne(addr)
+		host := strings.Split(addr, ":")[0]
+
+		logger(fmt.Sprintf("addr = %s", host))	
+		curLinks, curPaths, curTraffic := netmonClient.getStatsOneHeadroom(addr, ipMap, bwReq[host])
 		if curLinks != nil && curPaths != nil {
 			host := strings.Split(addr, ":")[0]
 			srcPaths, existsP := curPaths[host]
@@ -116,47 +138,174 @@ func (netmonClient *NetmonClient) GetStats() (LinkSet, PathSet, TrafficSet) {
 			}
 			for dst, path := range srcPaths {
 				paths[host][dst] = path
-				logger(fmt.Sprintf("added path %s to %s with bw = %f\n", host, dst, path.Bandwidth))
+				logger(fmt.Sprintf("added path %s to %s with bw = %f and %d hops\n", host, dst, path.Bandwidth, len(path.Hops)))
 			}
 			for dst, link := range srcLinks {
 				links[host][dst] = link
 			}
 
-			fmt.Printf("add %d links to %s \n", len(curLinks[host]), host)
+			//fmt.Printf("add %d links to %s \n", len(curLinks[host]), host)
 		}
 	}
-	netmonClient.ComputePathBw(links, &paths)
-	return links, paths, traffics
+	pathsOut  := netmonClient.ComputePathBw(links, paths)
+	for src, dstPaths := range pathsOut {
+		for dst, path := range dstPaths {
+			logger(fmt.Sprintf("src = %s dst = %s bw = %f\n", src, dst, path.Bandwidth))
+		} 
+	}
+	return links, pathsOut, traffics
 }
 
-func (netmonClient *NetmonClient) getStatsOne(address string) (LinkSet, PathSet, TrafficSet) {
-	var links LinkSet
-	var paths PathSet
-	fmt.Printf("host= " + address)
-	traffic := make(TrafficSet, 0)
 
+func (netmonClient *NetmonClient) GetStats(ipMap map[string]string) (LinkSet, PathSet, TrafficSet) {
+	links := make(LinkSet, 0)
+	paths := make(PathSet, 0)
+	traffics := make(TrafficSet, 0)
+	for addr, _ := range netmonClient.clients {
+		curLinks, curPaths, curTraffic := netmonClient.getStatsOne(addr, ipMap)
+		if curLinks != nil && curPaths != nil {
+			host := strings.Split(addr, ":")[0]
+			srcPaths, existsP := curPaths[host]
+			srcLinks, existsL := curLinks[host]
+			if !existsP || !existsL {
+				fmt.Printf("No links or paths\n")
+				continue
+			}
+			_, exists := links[host]
+			if !exists {
+				links[host] = make(map[string]Link, 0)
+			}
+			_, exists = paths[host]
+			if !exists {
+				paths[host] = make(map[string]Path, 0)
+			}
+
+			for src, tSrcInfo := range curTraffic {
+				_, exists := traffics[src]
+				if !exists {
+					traffics[src] = make(map[string]Traffic, 0)
+				}
+				for dst, traffic := range tSrcInfo {
+					traffics[src][dst] = traffic
+				}
+			}
+			for dst, path := range srcPaths {
+				paths[host][dst] = path
+				//logger(fmt.Sprintf("added path %s to %s with bw = %f and %d hops\n", host, dst, path.Bandwidth, len(path.Hops)))
+			}
+			for dst, link := range srcLinks {
+				links[host][dst] = link
+			}
+
+			//fmt.Printf("add %d links to %s \n", len(curLinks[host]), host)
+		}
+	}
+	pathsOut := netmonClient.ComputePathBw(links, paths)
+
+	for src, trafs := range traffics {
+		for dst, traf := range trafs {
+			logger(fmt.Sprintf("src = %s dst = %s bw = %f\n", src, dst, traf.Bytes))
+		} 
+	}
+	for src, dstPaths := range pathsOut {
+		for dst, path := range dstPaths {
+			logger(fmt.Sprintf("src = %s dst = %s bw = %f\n", src, dst, path.Bandwidth))
+		} 
+	}
+	return links, pathsOut, traffics
+}
+
+func (netmonClient *NetmonClient) getStatsOne(address string, ipMap map[string]string) (LinkSet, PathSet, TrafficSet) {
+	//fmt.Printf("host= " + address)
 	host := strings.Split(address, ":")[0]
+	logger(fmt.Sprintf("address = %s", host))
 	client, exists := netmonClient.clients[address]
 	if !exists {
+		var links LinkSet
+		var paths PathSet
+		traffic := make(TrafficSet, 0)
 		return links, paths, traffic
 	}
 
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 60*time.Second)
 	defer cancel()
 	response, err := client.GetNetInfo(ctx, &pb.NetInfoRequest{})
 	if err != nil {
 		log.Fatalf("could not greet: %v", err)
 	}
+	return netmonClient.ProcessResponse(response, host, ipMap)
+}
+
+func (netmonClient *NetmonClient) getStatsOneHeadroom(address string, ipMap map[string]string, bwReq map[string]float32) (LinkSet, PathSet, TrafficSet) {
+	//fmt.Printf("host= " + address)
+	host := strings.Split(address, ":")[0]
+	logger(fmt.Sprintf("address = %s got %d req", host, len(bwReq)))
+	client, exists := netmonClient.clients[address]
+	if !exists {
+		var links LinkSet
+		var paths PathSet
+		traffic := make(TrafficSet, 0)
+		return links, paths, traffic
+	}
+	bwInfos := make([]*pb.BandwidthInfo, 0)
+	for h, bw := range bwReq {
+		logger(fmt.Sprintf("added %s with req %f", h, bw))
+		bwInfos = append(bwInfos, &pb.BandwidthInfo{Host:h, SendBw: bw})
+	}
+	ctx, cancel := context.WithTimeout(context.Background(), 15 * time.Second)
+	defer cancel()
+	response, err := client.GetHeadroomInfo(ctx, &pb.HeadroomInfoRequest{BwInfo:bwInfos})
+	if err != nil {
+		log.Fatalf("could not greet: %v", err)
+	}
+	return netmonClient.ProcessResponse(response, host, ipMap)
+}
+
+func (netmonClient *NetmonClient) ProcessResponse(response *pb.NetInfoReply, host string, ipMap map[string]string) (LinkSet, PathSet, TrafficSet) {
+	var links LinkSet
+	var paths PathSet
+	traffic := make(TrafficSet, 0)
 	bwInfos := response.BwInfo
-	logger(fmt.Sprintf("Got %d bw stats\n", len(bwInfos)))
+	
+	//logger(fmt.Sprintf("Got %d bw stats\n", len(bwInfos)))
 	trInfo := response.TrInfo
-	logger(fmt.Sprintf("Got %d traceroutes\n", len(trInfo)))
+	//logger(fmt.Sprintf("Got %d traceroutes\n", len(trInfo)))
 
 	paths = make(PathSet, 0)
 	pMap := make(map[string]Path, 0)
 	paths[host] = pMap
+
 	for _, tr := range trInfo {
+		pathActual := make([]string, 0)
+	//	for _, hop := range tr.Hops {
+	//		logger(fmt.Sprintf("src = %s dst = %s hop = %s\n", host, tr.Host, hop))
+	//	}
 		path := Path{Source: host, Destination: tr.Host, Hops: tr.Hops}
+		for _, p := range path.Hops {
+			//logger(fmt.Sprintf("hop = %s actual = %s\n", p, ipMap[p]))
+			//for _, h := range pathActual {
+			//	logger(fmt.Sprintf("%s ", h))
+			//}
+			if len(pathActual) < 1{
+				pathActual = append(pathActual, host)
+			}
+			if strings.Contains(p, "*"){
+				continue
+			}
+			ipActual, exists := ipMap[p]
+			if !exists {
+				continue
+				//ipActual = p
+			}
+			if len(pathActual) >= 1 && ipActual != tr.Host && ipActual != host {
+				pathActual = append(pathActual, ipActual)
+			} 
+			if ipActual == tr.Host {
+				break
+			}
+		}
+		path.Hops = pathActual
+		//logger(fmt.Sprintf("actual plen = %d", len(path.Hops)))
 		_, exists := pMap[tr.Host]
 		if !exists {
 			pMap[tr.Host] = path
@@ -170,7 +319,7 @@ func (netmonClient *NetmonClient) getStatsOne(address string) (LinkSet, PathSet,
 	links[host] = lMap
 	for _, bw := range bwInfos {
 		link := Link{Source: host, Destination: bw.Host, Bandwidth: float64(bw.SendBw)}
-		_, exists = lMap[bw.Host]
+		_, exists := lMap[bw.Host]
 		if !exists {
 			lMap[bw.Host] = link
 		}
@@ -187,12 +336,30 @@ func (netmonClient *NetmonClient) getStatsOne(address string) (LinkSet, PathSet,
 		traffic[tSrc] = tMap
 
 		path, exists := pMap[bw.Host]
-		logger(fmt.Sprintf("src = %s dst = %s hops=%d bw = %f\n", host, bw.Host, len(path.Hops), bw.SendBw))
-		if exists && len(path.Hops) == 1 {
+		//logger(fmt.Sprintf("src = %s dst = %s hops=%d bw = %f exists = %v\n", host, bw.Host, len(path.Hops), bw.SendBw, exists))
+		/*pathActual := make([]string, 0)
+		for _, p := range path.Hops {
+			logger(fmt.Sprintf("hop = %s actual = %s\n", p, ipMap[p]))
+			if strings.Contains(p, "*") {
+				continue
+			}
+			ipActual, exists := ipMap[p]
+			if !exists {
+				ipActual = p
+			}
+			if len(pathActual) > 0 && ipActual != bw.Host{
+				pathActual = append(pathActual, ipActual)
+			} else if len(pathActual) == 0{
+				pathActual = append(pathActual, ipActual)
+			}
+		}
+		path.Hops = pathActual
+		logger(fmt.Sprintf("no. of hops = %d\n", len(path.Hops)))*/
+		if exists && len(path.Hops) <= 1 {
 			path.Bandwidth = float64(bw.SendBw)
 		}
 		pMap[bw.Host] = path
-		logger(fmt.Sprintf("Got bw for %s to %s = %f\n", host, bw.Host, path.Bandwidth))
+		//logger(fmt.Sprintf("Got bw for %s to %s = %f\n", host, bw.Host, path.Bandwidth))
 	}
 	links[host] = lMap
 	paths[host] = pMap

@@ -28,5 +28,5 @@ type TrafficSet map[string]map[string]Traffic
 
 type NetmonClientIntf interface {
 	Close()
-	GetStats() (LinkSet, PathSet, TrafficSet)
+	GetStats(nodeMap map[string]string) (LinkSet, PathSet, TrafficSet)
 }

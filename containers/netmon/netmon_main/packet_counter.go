@@ -3,10 +3,11 @@ package main
 import (
 	"encoding/binary"
 	"fmt"
+	bpf "github.com/iovisor/gobpf/bcc"
 	"net"
 	"os"
 	"time"
-	bpf "github.com/iovisor/gobpf/bcc"
+    "sync"
 )
 
 /*
@@ -16,7 +17,9 @@ import (
 #include <bcc/libbpf.h>
 void perf_reader_free(void *ptr);
 */
-import "C"
+import (
+	"C"
+)
 
 const source string = `
 #include "packet.h"
@@ -65,12 +68,13 @@ func int2ip(nn uint32) net.IP {
 }
 
 type BPFRunner struct {
-	PktStats *bpf.Table
-	PktSize  *bpf.Table
-	device   string
-	module   *bpf.Module
+	PktStats            *bpf.Table
+	PktSize             *bpf.Table
+	device              string
+	module              *bpf.Module
 	lastObservedTraffic map[string]float64
-	lastTs 	int64
+	lastTs              int64
+	lock                *sync.Mutex
 }
 
 func (runner *BPFRunner) Close() {
@@ -84,7 +88,7 @@ func (runner *BPFRunner) Close() {
 
 func NewBPFRunner(device string) *BPFRunner {
 	module := bpf.NewModule(source, []string{})
-
+	mu := &sync.Mutex{}
 	fn, err := module.Load("hello_packet", C.BPF_PROG_TYPE_XDP, 1, 65536)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Failed to load xdp prog: %v\n", err)
@@ -101,12 +105,14 @@ func NewBPFRunner(device string) *BPFRunner {
 
 	pktcnt := bpf.NewTable(module.TableId("packets"), module)
 	pktsize := bpf.NewTable(module.TableId("packetsize"), module)
-	bpfRunner := &BPFRunner{PktStats: pktcnt, device: device, module: module, PktSize: pktsize, lastObservedTraffic:make(map[string]float64, 0)}
+	bpfRunner := &BPFRunner{lock: mu, PktStats: pktcnt, device: device, module: module, PktSize: pktsize, lastObservedTraffic: make(map[string]float64, 0)}
 
 	return bpfRunner
 }
 
 func (runner *BPFRunner) GetStats() map[string]float64 {
+	runner.lock.Lock()
+	defer runner.lock.Unlock()
 	trafficMap := make(map[string]float64, 0)
 	for it := runner.PktSize.Iter(); it.Next(); {
 		key := bpf.GetHostByteOrder().Uint32(it.Key())
@@ -125,7 +131,7 @@ func (runner *BPFRunner) GetStats() map[string]float64 {
 	for host, bytes := range trafficMap {
 		prevBytes, val := runner.lastObservedTraffic[host]
 		if val {
-			bws[host] = (bytes - prevBytes)/ float64(time.Now().Unix() - runner.lastTs)
+			bws[host] = (bytes - prevBytes) / float64(time.Now().Unix()-runner.lastTs)
 		}
 	}
 	runner.lastTs = time.Now().Unix()
@@ -133,6 +139,8 @@ func (runner *BPFRunner) GetStats() map[string]float64 {
 	return bws
 }
 func (runner *BPFRunner) PrintStats() {
+	runner.lock.Lock()
+	defer runner.lock.Unlock()
 	fmt.Printf("\n{IP address}: {total pkts}\n")
 	for it := runner.PktStats.Iter(); it.Next(); {
 		key := bpf.GetHostByteOrder().Uint32(it.Key())

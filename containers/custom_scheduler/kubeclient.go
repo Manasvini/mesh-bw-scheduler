@@ -34,6 +34,7 @@ type KubeClient struct {
 	podsEndpoint      string
 	namespaces        []string
 	metricsEndpoint   string
+	nsEndpoint	  string
 }
 
 func (client *KubeClient) WaitForProxy() int {
@@ -96,6 +97,34 @@ func (client *KubeClient) PostEvent(event Event, ns string) error {
 	}
 	return nil
 }
+
+func (client *KubeClient) GetNamespaces() (*NamespaceList, error) {
+	var nsList NamespaceList
+
+	request := &http.Request{
+		Header: make(http.Header),
+		Method: http.MethodGet,
+		URL: &url.URL{
+			Host:   client.apiHost,
+			Path:   client.nsEndpoint,
+			Scheme: "http",
+		},
+	}
+	request.Header.Set("Accept", "application/json, */*")
+
+	resp, err := http.DefaultClient.Do(request)
+	if err != nil {
+		return nil, err
+	}
+
+	err = json.NewDecoder(resp.Body).Decode(&nsList)
+	if err != nil {
+		return nil, err
+	}
+
+	return &nsList, nil
+}
+
 
 func (client *KubeClient) GetNodeMetrics() (*NodeMetricsList, error) {
 	var nodeMetricsList NodeMetricsList
@@ -306,9 +335,6 @@ func (client *KubeClient) getPodsOne(ns string) (*PodList, error) {
 	var podList PodList
 
 	v := url.Values{}
-	//v.Add("fieldSelector", "status.phase=Pending")
-	//v.Add("fieldSelector", "status.phase=Running")
-	//v.Add("fieldSelector", "status.phase=ContainerCreating")
 	request := &http.Request{
 		Header: make(http.Header),
 		Method: http.MethodGet,

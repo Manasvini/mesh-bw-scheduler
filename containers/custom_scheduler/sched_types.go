@@ -1,12 +1,17 @@
 package main
 
-import "sort"
+import (
+	"sort"
+	"strings"
+)
 
 type Resource struct {
 	cpu    int64
 	memory int64
 	name   string
 }
+
+const RESOURCE_DIFF_THRESHOLD float64 = 0.25
 
 type Resources []Resource
 
@@ -41,8 +46,37 @@ func getResourceByNodeName(resources []Resource, nodeName string) (Resource, int
 
 }
 
+type NodeResourceWithDeps struct {
+	resource Resource
+	numDeps  int
+}
+type NodeResourceDepsList []NodeResourceWithDeps
+
+func (nodeResDeps NodeResourceDepsList) Len() int {
+	return len(nodeResDeps)
+}
+
+func (nodeResDeps NodeResourceDepsList) Swap(i, j int) {
+	nodeResDeps[i], nodeResDeps[j] = nodeResDeps[j], nodeResDeps[i]
+}
+
+func (nodeResDeps NodeResourceDepsList) Less(i, j int) bool {
+	if nodeResDeps[i].numDeps > nodeResDeps[j].numDeps {
+		if float64(nodeResDeps[i].resource.cpu) >= RESOURCE_DIFF_THRESHOLD*float64(nodeResDeps[j].resource.cpu) && float64(nodeResDeps[i].resource.memory) >= RESOURCE_DIFF_THRESHOLD*float64(nodeResDeps[j].resource.memory) {
+			return true
+		}
+		return false
+	}
+	return nodeResDeps[i].resource.cpu >= nodeResDeps[j].resource.cpu || nodeResDeps[i].resource.memory > nodeResDeps[j].resource.memory || strings.Compare(nodeResDeps[i].resource.name, nodeResDeps[j].resource.name) > 0
+}
+
+func sortNodesWithDeps(nodeResWithDeps []NodeResourceWithDeps) {
+	sort.Sort(NodeResourceDepsList(nodeResWithDeps))
+}
+
 type KubeClientIntf interface {
 	GetNodes() (*NodeList, error)
+	GetNamespaces() (*NamespaceList, error)
 	WatchUnscheduledPods() (<-chan Pod, <-chan error)
 	WaitForProxy() int
 	GetNodeMetrics() (*NodeMetricsList, error)

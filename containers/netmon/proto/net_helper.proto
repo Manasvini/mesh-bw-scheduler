@@ -9,9 +9,15 @@ package netmon;
 service NetMonitor {
   // Sends a greeting
   rpc GetNetInfo (NetInfoRequest) returns (NetInfoReply) {}
+  rpc GetHeadroomInfo (HeadroomInfoRequest) returns (NetInfoReply) {}
 }
 
 message NetInfoRequest {
+	
+}
+
+message HeadroomInfoRequest {
+	repeated BandwidthInfo bwInfo = 1;
 }
 
 message NetInfoReply {

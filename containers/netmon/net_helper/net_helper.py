@@ -8,6 +8,8 @@ import ifcfg
 import subprocess
 from concurrent.futures import ThreadPoolExecutor, as_completed, wait, ALL_COMPLETED
 from flask import request
+import time
+import random
 
 app = Flask(__name__)
 
@@ -25,15 +27,25 @@ def run_nmap(subnet):
     return hosts_list
 
 
-def run_iperf(host):
+def run_iperf(host, bwlimit=None):
     client = iperf3.Client()
-    client.duration = 5
+    client.duration = 1
     client.server_hostname = host
     client.port = 5201
+    time.sleep(random.randint(0, 5))
+    if bwlimit is not None:
+        print(type(bwlimit), bwlimit)
+        #client.protocol = 'udp'
+        client.bandwidth = int(float(bwlimit))
+        client.reverse = True
     res = client.run()
     print(res.json)
     if 'error' in res.json:
         return res.json
+    #if bwlimit is not None:
+    #    return {'host':host, 'snd': res.json['end']['streams'][0]['udp']['bits_per_second'], 'rcv':res.json['end']['streams'][0]['udp']['bits_per_second']}
+
+
     return {'host':host, 'snd': res.json['end']['streams'][0]['sender']['bits_per_second'], 'rcv':res.json['end']['streams'][0]['receiver']['bits_per_second']}
 
 
@@ -85,17 +97,25 @@ def get_hosts():
 def get_bw():
     hostname = request.args.get('host')
     #iperf_hosts = get_hosts()
-    print(hostname)
-    results = [run_iperf(hostname)]
+    bwlimit = request.args.get('bwmax')
+    print(hostname, bwlimit)
+    results = [run_iperf(hostname, bwlimit)]
     print(len(results))
     final_results = []
-    for res in results:
-        print(res)
+    elapsed = 0
+    while elapsed < 60:
+        res = run_iperf(hostname)
         if 'error' in res:
-            continue
-        final_results.append({'host':res['host'], 'snd':res['snd'], 'rcv':res['rcv']})
+            sleep_time = random.randint(0, 5)
+            time.sleep(sleep_time)
+            elapsed += sleep_time
+        else:
+            final_results.append({'host':res['host'], 'snd':res['snd'], 'rcv':res['rcv']})
+            break
+    
     print(final_results)
     return json.dumps({'bandwidthResults':final_results})
+
 
 
 
