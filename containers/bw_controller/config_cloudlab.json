@@ -2,12 +2,17 @@
 	"PromMetrics": [
 		"istio_request_duration_milliseconds", 
 		"istio_tcp_sent_bytes_total",
- 		"istio_tcp_received_bytes_total"
+ 		"istio_tcp_received_bytes_total",
+		"container_network_receive_bytes_total",
+		"container_network_transmit_bytes_total"
 	],
 	"PromAddr": "http://0.0.0.0:9090",
 	"NetmonAddrs":[
-		"155.98.38.137:50051",
-		"155.98.38.136:50051"
+		"10.10.7.2:50051",
+		"10.10.8.2:50051",
+		"10.10.9.2:50051",
+		"10.10.10.2:50051",
+		"10.10.11.2:50051"
 	],
 	"KubeProxyAddr": "127.0.0.1:8001",
 	"KubeNodesEndpoint": "/api/v1/nodes",
@@ -16,7 +21,11 @@
 	"KubeNamespaces" :[
 		"epl",
 		"socialnetwork",
-		"camera"
+		"camera",
+		"ion"
 	],
-	"MonDurationSeconds":15
+	"MonDurationSeconds":30,
+	"ValuationInterval":30,
+	"UtilChangeThreshold": 0.65,
+	"HeadroomThreshold":0.1
 }
