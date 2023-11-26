@@ -1,0 +1,9 @@
+{
+"nodes":[
+    {"nodename":"clnode005.clemson.cloudlab.us", "port":26410, "bw_config_file":"5nodes/node0.json"},
+    {"nodename":"clnode005.clemson.cloudlab.us", "port":26411, "bw_config_file":"5nodes/node1.json"},
+    {"nodename":"clnode005.clemson.cloudlab.us", "port":26412, "bw_config_file":"5nodes/node2.json"},
+    {"nodename":"clnode005.clemson.cloudlab.us", "port":26413, "bw_config_file":"5nodes/node3.json"},
+    {"nodename":"clnode005.clemson.cloudlab.us", "port":26414, "bw_config_file":"5nodes/node4.json"}
+    ]
+}

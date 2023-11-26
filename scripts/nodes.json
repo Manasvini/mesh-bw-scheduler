@@ -1,0 +1,10 @@
+{
+    "nodes":
+    [
+        {"nodename":"clnode103.clemson.cloudlab.us", "port":"26215", "nodeid":"node0"},
+        {"nodename":"clnode103.clemson.cloudlab.us", "port":"26216", "nodeid":"node1"},
+        {"nodename":"clnode103.clemson.cloudlab.us", "port":"26217", "nodeid":"node2"},  
+        {"nodename":"clnode103.clemson.cloudlab.us", "port":"26218", "nodeid": "node3"}, 
+        {"nodename":"clnode103.clemson.cloudlab.us", "port":"26219", "nodeid":"node4"}
+    ]
+}

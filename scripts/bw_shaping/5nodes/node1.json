@@ -1,0 +1,8 @@
+{
+    "nodename": "node1",
+    "links":
+    [
+        {"node":"node0", "bwfile":"measurements/iperf_node23_node24.csv", "iface":"eth1"},
+        {"node":"node2", "bwfile":"measurements/iperf_node23_node21.csv", "iface":"eth2"}
+    ]
+}
