@@ -26,6 +26,11 @@
 	],
 	"MonDurationSeconds":30,
 	"ValuationInterval":30,
+<<<<<<< HEAD
 	"UtilChangeThreshold": 0.65,
 	"HeadroomThreshold":0.1
+=======
+	"UtilChangeThreshold": 0.25,
+	"HeadroomThreshold":0.2
+>>>>>>> scheduler
 }
