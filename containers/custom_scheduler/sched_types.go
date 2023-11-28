@@ -1,6 +1,9 @@
 package main
 
-import "sort"
+import (
+	"sort"
+	"strings"
+)
 
 type Resource struct {
 	cpu    int64
@@ -9,6 +12,7 @@ type Resource struct {
 }
 
 const RESOURCE_DIFF_THRESHOLD float64 = 0.25
+
 type Resources []Resource
 
 func (resources Resources) Len() int {
@@ -31,8 +35,8 @@ func sortNodes(resources []Resource) {
 
 }
 
-func getResourceByNodeName( resources []Resource, nodeName string) (Resource, int){
-	res := Resource{name:""}
+func getResourceByNodeName(resources []Resource, nodeName string) (Resource, int) {
+	res := Resource{name: ""}
 	for idx, r := range resources {
 		if r.name == nodeName {
 			return r, idx
@@ -42,9 +46,9 @@ func getResourceByNodeName( resources []Resource, nodeName string) (Resource, in
 
 }
 
-type NodeResourceWithDeps struct{
-	resource	Resource
-	numDeps		int
+type NodeResourceWithDeps struct {
+	resource Resource
+	numDeps  int
 }
 type NodeResourceDepsList []NodeResourceWithDeps
 
@@ -52,18 +56,18 @@ func (nodeResDeps NodeResourceDepsList) Len() int {
 	return len(nodeResDeps)
 }
 
-func (nodeResDeps NodeResourceDepsList) Swap(i, j int){
+func (nodeResDeps NodeResourceDepsList) Swap(i, j int) {
 	nodeResDeps[i], nodeResDeps[j] = nodeResDeps[j], nodeResDeps[i]
 }
 
 func (nodeResDeps NodeResourceDepsList) Less(i, j int) bool {
 	if nodeResDeps[i].numDeps > nodeResDeps[j].numDeps {
-		if float64(nodeResDeps[i].resource.cpu) >= RESOURCE_DIFF_THRESHOLD * float64(nodeResDeps[j].resource.cpu) &&  float64(nodeResDeps[i].resource.memory) >= RESOURCE_DIFF_THRESHOLD * float64(nodeResDeps[j].resource.memory){ 
+		if float64(nodeResDeps[i].resource.cpu) >= RESOURCE_DIFF_THRESHOLD*float64(nodeResDeps[j].resource.cpu) && float64(nodeResDeps[i].resource.memory) >= RESOURCE_DIFF_THRESHOLD*float64(nodeResDeps[j].resource.memory) {
 			return true
 		}
 		return false
 	}
-	return nodeResDeps[i].resource.cpu >= nodeResDeps[j].resource.cpu || nodeResDeps[i].resource.memory > nodeResDeps[j].resource.memory
+	return nodeResDeps[i].resource.cpu >= nodeResDeps[j].resource.cpu || nodeResDeps[i].resource.memory > nodeResDeps[j].resource.memory || strings.Compare(nodeResDeps[i].resource.name, nodeResDeps[j].resource.name) > 0
 }
 
 func sortNodesWithDeps(nodeResWithDeps []NodeResourceWithDeps) {
@@ -72,6 +76,7 @@ func sortNodesWithDeps(nodeResWithDeps []NodeResourceWithDeps) {
 
 type KubeClientIntf interface {
 	GetNodes() (*NodeList, error)
+	GetNamespaces() (*NamespaceList, error)
 	WatchUnscheduledPods() (<-chan Pod, <-chan error)
 	WaitForProxy() int
 	GetNodeMetrics() (*NodeMetricsList, error)
@@ -79,4 +84,3 @@ type KubeClientIntf interface {
 	GetPods() ([]*PodList, error)
 	Bind(pod Pod, node Node) error
 }
-

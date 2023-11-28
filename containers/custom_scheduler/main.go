@@ -17,14 +17,14 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
+	bwcontroller "github.gatech.edu/cs-epl/mesh-bw-scheduler/bwcontroller"
+	netmon_client "github.gatech.edu/cs-epl/mesh-bw-scheduler/netmon_client"
 	"io/ioutil"
 	"log"
 	"os"
 	"os/signal"
 	"sync"
 	"syscall"
-	bwcontroller "github.gatech.edu/cs-epl/mesh-bw-scheduler/bwcontroller"
-	netmon_client "github.gatech.edu/cs-epl/mesh-bw-scheduler/netmon_client"
 )
 
 var (
@@ -63,7 +63,7 @@ func parseIpMap(filename string) map[string]string {
 	}
 
 	// Now let's unmarshall the data into `payload`
-	var payload netmon_client.NodeMap 
+	var payload netmon_client.NodeMap
 	err = json.Unmarshal(content, &payload)
 	if err != nil {
 		log.Fatal("Error during Unmarshal(): ", err)
@@ -102,12 +102,13 @@ func main() {
 		watchPodsEndpoint: config.WatchPodsEndpoint,
 		metricsEndpoint:   config.MetricsEndpoint,
 		configEndpoint:    config.ConfigEndpoint,
-		namespaces:        config.Namespaces}
+		namespaces:        config.Namespaces,
+		nsEndpoint:	   config.NamespaceEndpoint}
 
 	done := client.WaitForProxy()
 	promClient := bwcontroller.NewPrometheusClient(config.PromAddr, config.PromMetrics)
 	logger(fmt.Sprintf("Got %d namespaces", len(config.Namespaces)))
-	dagSched := &DagScheduler{client: &client, processorLock: &sync.Mutex{}, podProcessor: NewPodProcessor(&client), netmonClient: netmon_client.NewNetmonClient(config.NetmonAddrs), promClient:promClient, ipMap: ipMap, headroomThreshold:config.HeadroomThreshold}
+	dagSched := &DagScheduler{client: &client, processorLock: &sync.Mutex{}, podProcessor: NewPodProcessor(&client), netmonClient: netmon_client.NewNetmonClient(config.NetmonAddrs), promClient: promClient, ipMap: ipMap, headroomThreshold: config.HeadroomThreshold, deployedApps: make(map[string]DeploymentMap, 0)}
 	if done == 0 {
 		logger("Failed to connect to proxy.")
 		os.Exit(0)

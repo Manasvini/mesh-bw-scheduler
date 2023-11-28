@@ -24,8 +24,8 @@
 		"camera",
 		"ion"
 	],
-	"MonDurationSeconds":15,
+	"MonDurationSeconds":30,
 	"ValuationInterval":30,
-	"UtilChangeThreshold": 0,
+	"UtilChangeThreshold": 0.25,
 	"HeadroomThreshold":0.2
 }

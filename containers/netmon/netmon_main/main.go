@@ -291,7 +291,7 @@ func (s *server) DoInBackground() {
 		for {
 			s.UpdateCache()
 			s.bpfRunner.PrintStats()
-			time.Sleep(60 * time.Second)
+			time.Sleep(15 * time.Second)
 		}
 	//}()
 }

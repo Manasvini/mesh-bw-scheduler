@@ -7,6 +7,7 @@
 	"WatchPodsEndpoint" : "/api/v1/watch/namespaces/%s/pods",
 	"ConfigEndpoint"    : "/apis/apps/v1/namespaces/epl/deployments/epl-scheduler",
 	"MetricsEndpoint"   : "/apis/metrics.k8s.io/v1beta1/nodes",
+	"NamespaceEndpoint" : "/api/v1/namespaces",
 	"NetmonAddrs"             : [
         
         "10.10.7.2:50051",
@@ -26,6 +27,6 @@
     	"istio_request_duration_milliseconds",
 	"istio_tcp_sent_bytes_total",
 	"istio_tcp_received_bytes_total"
-    ]
-	
+    ],
+    "HeadroomThreshold": 0.1    
 }

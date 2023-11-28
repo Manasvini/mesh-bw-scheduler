@@ -163,3 +163,11 @@ type Deployment struct {
 	Annotations     map[string]string `json:"annotations"`
 	Uid             string            `json:"uid"`
 }
+
+type NamespaceList struct {
+	Items []Namespace
+}
+
+type Namespace struct {
+	Name string
+}

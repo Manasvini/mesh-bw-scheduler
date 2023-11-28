@@ -151,7 +151,7 @@ func (controller *Controller) UpdateNetMetrics(isBwUpdate bool) {
 			if !exists || !dexists {
 				logger("either source or destination dopn't exist!")
 			}
-			logger(fmt.Sprintf("src = %s dst = %s cap = %f\n", srcNode, dstNode, link.Bandwidth))
+			//logger(fmt.Sprintf("src = %s dst = %s cap = %f\n", srcNode, dstNode, link.Bandwidth))
 			_, lExists := controller.linksFree[srcNode]
 			if !lExists {
 				controller.linksFree[srcNode] = make(map[string]netmon_client.Link, 0)
@@ -344,48 +344,61 @@ func (controller *Controller) CheckPodReqSatisfiedOne(bwNeeded map[string]map[st
 	totalShortfall := 0.0
 	totalUsed := 0.0
 	totalNeeded := 0.0
+	fracUsed := 0.0
 	if exists {
 		for dst, dep := range podDeps {
 			dstPod, _ := controller.pods[dst]
 			actual, _ := controller.podDepActual[pod.podName][dst]
+			logger(fmt.Sprintf("podname = %s dep = %s needed = %f used=%f\n", pod.podName, dst, dep.Bandwidth, actual.Bandwidth))
 			dstNode := dstPod.deployedNode
-			totalUsed += float64(actual.Bandwidth) 
-			totalNeeded += float64(dep.Bandwidth)
+			if actual.Bandwidth > 0{
+				totalUsed = float64(actual.Bandwidth) 
+				totalNeeded = float64(dep.Bandwidth)
+				if dst == "all_send" || dst == "all_recv" {
+					totalNeeded = totalNeeded *  float64(len(bwAvailable[pod.deployedNode]) - 1)
+				}
+				fracUsedCur := totalUsed / totalNeeded
+				logger(fmt.Sprintf("fracUsed = %f", fracUsedCur))
+		
+				if fracUsedCur > fracUsed {
+					fracUsed = fracUsedCur
+				}
+				
+			}
+
 			logger("src = " + pod.podName + " dst = " + dst)
 			if dstNode != pod.deployedNode && (dst != "all_send"  && dst != "all_rcv") {
 				//bwAvailable[pod.deployedNode][dstNode] - dep.Bandwidth > 0 && fracUsed >= controller.utilChangeThreshold{
-				diff := dep.Bandwidth - actual.Bandwidth + bwAvailable[pod.deployedNode][dstNode]
+				diff := bwAvailable[pod.deployedNode][dstNode] - actual.Bandwidth
 				logger(fmt.Sprintf("Node %s src pod %s dst pod %s dst Node %s diff %f dep req bw = %f used=%f available = %f\n", pod.deployedNode, pod.podName, dst, dstNode, diff, dep.Bandwidth,actual.Bandwidth,  bwAvailable[pod.deployedNode][dstNode]))
 				if _, exists := bwUsed[dstNode]; !exists{
 					bwUsed[dstNode] = 0
 				} 
 				bwUsed[dstNode] += dep.Bandwidth
-				
 				if diff < 0 {
 					totalShortfall += diff
-				}
-			
+				}	
 				bwAvailable[pod.deployedNode][dstNode] -= dep.Bandwidth
 			} else if dst == "all_send"  {
-				min_bw := -1.0
-				
+				min_bw := 0.0
 				for _, bw := range bwAvailable[pod.deployedNode] {
-					if min_bw < 0 {
-						min_bw = bw
-					}else if bw < min_bw {
-						min_bw = bw
-					}
+					//if min_bw < 0 {
+					//	min_bw = bw
+					//}else if bw < min_bw {
+					//	min_bw = bw
+					//}
+					min_bw += bw
 				}
-				diff := dep.Bandwidth - actual.Bandwidth + min_bw
+				diff := min_bw - actual.Bandwidth 
+				bwUsed[dst] = dep.Bandwidth
 				if diff < 0 {
 					totalShortfall += diff
 				}
 				logger(fmt.Sprintf("node = %s pod = %s diff = %f dep bw = %f used = %f  avail = %f\n", pod.deployedNode, pod.podName, diff, dep.Bandwidth, actual.Bandwidth, min_bw))
 			}
 		}
-		fracUsed := totalUsed / totalNeeded
 		logger(fmt.Sprintf("fracUsed = %f", fracUsed))
-		if totalShortfall < 0  && fracUsed > controller.utilChangeThreshold{
+		if  fracUsed > controller.utilChangeThreshold{
 
 			return false, bwUsed, totalShortfall
 		}
@@ -401,19 +414,21 @@ func (controller *Controller) findPodsToReschedule(bwNeeded map[string]map[strin
 	podList := controller.getPodsOnNode(node)
 	bwThresholdViolated := false
 	for _, pod := range podList {
+		if strings.Contains(pod.podName, "db") || strings.Contains(pod.podName, "nginx") {
+			continue	// hack to prevent db migration
+		}
 		satisfied, usedBw, totalShortfall := controller.CheckPodReqSatisfiedOne(bwNeeded, bwAvailable, pod)
 		logger(fmt.Sprintf("pod = %s shortfall=%f node=%s\n", pod.podName, totalShortfall, pod.deployedNode))
-		
 		for node, val := range usedBw {
 			if pod.deployedNode != node {
 				if float32(bwAvailable[pod.deployedNode][node] - val) < controller.headroomReq[pod.deployedNode][node] {
 					bwThresholdViolated = true
+				} else {
+					bwAvailable[pod.deployedNode][node] -= val
 				}
-				bwAvailable[pod.deployedNode][node] -= val
-
 			}
 		} 
-		if !satisfied || bwThresholdViolated {
+		if !satisfied && bwThresholdViolated {
 			pList = append(pList, Pair{Key: pod.podName, Value: totalShortfall})
 			logger("added pod " + pod.podName + " to reschedule")
 		}

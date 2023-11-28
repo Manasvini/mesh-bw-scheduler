@@ -29,7 +29,7 @@ def run_nmap(subnet):
 
 def run_iperf(host, bwlimit=None):
     client = iperf3.Client()
-    client.duration = 5
+    client.duration = 1
     client.server_hostname = host
     client.port = 5201
     time.sleep(random.randint(0, 5))

@@ -18,21 +18,23 @@ import (
 	netmon_client "github.gatech.edu/cs-epl/mesh-bw-scheduler/netmon_client"
 	"k8s.io/apimachinery/pkg/api/resource"
 	//"sort"
+	bwcontroller "github.gatech.edu/cs-epl/mesh-bw-scheduler/bwcontroller"
 	"strconv"
 	"strings"
 	"sync"
 	"time"
-	bwcontroller "github.gatech.edu/cs-epl/mesh-bw-scheduler/bwcontroller"
 )
 
+type DeploymentMap	map[string]string // pod -> node 
 type DagScheduler struct {
-	client        		KubeClientIntf
-	netmonClient  		netmon_client.NetmonClientIntf
-	podProcessor  		*PodProcessor
-	processorLock 		*sync.Mutex
-	promClient    	  	*bwcontroller.PromClient
-	ipMap			map[string]string
-	headroomThreshold	float64
+	client            KubeClientIntf
+	netmonClient      netmon_client.NetmonClientIntf
+	podProcessor      *PodProcessor
+	processorLock     *sync.Mutex
+	promClient        *bwcontroller.PromClient
+	ipMap             map[string]string
+	headroomThreshold float64
+	deployedApps 	  map[string]DeploymentMap	// ns -> deployment
 }
 
 func (sched *DagScheduler) ReconcileUnscheduledPods(interval int, done chan struct{}, wg *sync.WaitGroup) {
@@ -124,7 +126,7 @@ func (sched *DagScheduler) getNodeResourcesRemaining(nodeList *NodeList, nodeMet
 			resMem := resource.MustParse(memory)
 			nodeResource.cpu -= resCpu.Value()
 			nodeResource.memory -= resMem.Value()
-		
+
 			nodeResources[node.Metadata.Name] = nodeResource
 			logger(fmt.Sprintf("Got node %s cpu = %d mem=%d", nodeResource.name, nodeResource.cpu, nodeResource.memory))
 		}
@@ -184,7 +186,7 @@ func (sched *DagScheduler) GetPodResource(pod Pod) Resource {
 	return podResource
 
 }
-func (sched *DagScheduler) EvalPredicate(pod Pod, node Node, availableBw netmon_client.PathSet) (bool , float64, float64){
+func (sched *DagScheduler) EvalPredicate(pod Pod, node Node, availableBw netmon_client.PathSet) (bool, float64, float64) {
 	nodeIp, ipExists := node.Metadata.Annotations["alpha.kubernetes.io/provided-node-ip"]
 	if !ipExists {
 		nodeIp = node.Metadata.Annotations["flannel.alpha.coreos.com/public-ip"]
@@ -201,13 +203,13 @@ func (sched *DagScheduler) EvalPredicate(pod Pod, node Node, availableBw netmon_
 		logger("ann = " + k)
 		vals := strings.Split(k, ".")
 		if "neighbor" == vals[0] && "bw" == vals[2] {
-			if "all" == vals[1]  {
+			if "all" == vals[1] {
 				nodeCt := 0
-				if vals[3] == "send"{
+				if vals[3] == "send" {
 					req, _ := strconv.Atoi(v)
 					// send bw check for this node to all neighbors
 					for _, bw := range nodeBws {
-						if bw.Bandwidth < float64(sndreq)  {
+						if bw.Bandwidth < float64(sndreq) {
 							return false, 0.0, 0.0
 						}
 						nodeCt += 1
@@ -244,15 +246,15 @@ func (sched *DagScheduler) EvalPredicate(pod Pod, node Node, availableBw netmon_
 						return false, 0.0, 0.0
 					}
 				} else if vals[3] == "rcv" {
-					found :=  false
+					found := false
 					rcvreq, _ := strconv.Atoi(v)
 					for _, bws := range availableBw {
 						bw, exists := bws[nodeIp]
-						if exists && bw.Bandwidth > float64(rcvreq){
+						if exists && bw.Bandwidth > float64(rcvreq) {
 							found = true
 							break
 						}
-					} 
+					}
 					if found == false {
 						return false, 0.0, 0.0
 					}
@@ -261,7 +263,7 @@ func (sched *DagScheduler) EvalPredicate(pod Pod, node Node, availableBw netmon_
 			}
 		}
 	}
-	return true,  float64(sndreq), float64(rcvreq)
+	return true, float64(sndreq), float64(rcvreq)
 }
 
 func (sched *DagScheduler) Fit(pod Pod, node Node,
@@ -303,7 +305,7 @@ func (sched *DagScheduler) Fit(pod Pod, node Node,
 			nodeBwRcv += bw.Bandwidth
 		}
 	}
-	exists, podBwSndAdd, podBwRcvAdd := sched.EvalPredicate(pod, node, availableBw) 
+	exists, podBwSndAdd, podBwRcvAdd := sched.EvalPredicate(pod, node, availableBw)
 	if !exists {
 		logger("node " + node.Metadata.Name + " does not have sufficient bw for predicate")
 		return false
@@ -320,7 +322,7 @@ func (sched *DagScheduler) Fit(pod Pod, node Node,
 		logger(fmt.Sprintf("pod %s node %s insufficient memory", pod.Metadata.Name, node.Metadata.Name))
 		return false
 	}
-	if podBwSnd > nodeBwSnd *( 1 - sched.headroomThreshold) || podBwRcv > nodeBwRcv *( 1 - sched.headroomThreshold) {
+	if podBwSnd > nodeBwSnd*(1-sched.headroomThreshold) || podBwRcv > nodeBwRcv*(1-sched.headroomThreshold) {
 		logger(fmt.Sprintf("pod %s node %s insufficient bw", pod.Metadata.Name, node.Metadata.Name))
 		return false
 	}
@@ -356,11 +358,11 @@ func (sched *DagScheduler) GetNodesForDeps(currentPod Pod, assignments map[strin
 		if exists {
 			numDeps = depCt
 		}
-		nodeResWithDeps := NodeResourceWithDeps{resource:res, numDeps:numDeps}
+		nodeResWithDeps := NodeResourceWithDeps{resource: res, numDeps: numDeps}
 		nodeResDepsList = append(nodeResDepsList, nodeResWithDeps)
 	}
 	sortNodesWithDeps(nodeResDepsList)
-	for _, nodeResDep := range nodeResDepsList{
+	for _, nodeResDep := range nodeResDepsList {
 		nodeNames = append(nodeNames, nodeResDep.resource.name)
 		logger(fmt.Sprintf("node = %s cpu = %d memp=%d deps=%d", nodeResDep.resource.name, nodeResDep.resource.cpu, nodeResDep.resource.memory, nodeResDep.numDeps))
 	}
@@ -474,25 +476,30 @@ func (sched *DagScheduler) SchedulePods(pods map[string]Pod, podGraph map[string
 	logger(fmt.Sprintf("got %d pods and %d podgraph", len(pods), len(podGraph)))
 
 	_, paths, traffics := sched.netmonClient.GetStats(sched.ipMap)
+	for src, trafs := range traffics{
+		for dst, traf := range trafs{
+			logger(fmt.Sprintf("src %s dst %s traf %f", src, dst, traf.Bytes))
+		}
+	}
 
 	nodes, _ := sched.client.GetNodes()
 	nodeMetrics, _ := sched.client.GetNodeMetrics()
 	logger(fmt.Sprintf("Got %d nodes", len(nodes.Items)))
 	podAssignment := make(map[string]string, 0)
+	
 	if len(nodes.Items) == 0 {
 		logger("ERROR: Cannot find any node for scheduling, skipping")
 		return podAssignment, pods, nodes
 	}
 	nodeResources := sched.getNodeResourcesRemaining(nodes, nodeMetrics)
 	netResources := sched.getNetResourcesRemaining(paths, traffics)
-	
+
 	_, podNetUsages := sched.promClient.GetPodMetrics()
 	logger(fmt.Sprintf("got %d paths and %d traffics", len(paths), len(traffics)))
 	topoOrder := topoSortWithChain(podGraph, pods, podNetUsages)
 	logger(fmt.Sprintf("topo order has %d pods", len(topoOrder)))
 	nodeResList := make([]Resource, 0)
 	nodePreference := make([]string, 0)
-
 
 	for _, nr := range nodeResources {
 		nodeResList = append(nodeResList, nr)
@@ -516,7 +523,7 @@ func (sched *DagScheduler) SchedulePods(pods map[string]Pod, podGraph map[string
 		if !sched.podProcessor.IsPodInList(allPods, p) {
 			logger("pod " + p + " is pending, add to list")
 			podsToSchedule = append(podsToSchedule, p)
-		} 
+		}
 	}
 	topoOrder = podsToSchedule
 	if len(topoOrder) == 0 {
@@ -528,6 +535,7 @@ func (sched *DagScheduler) SchedulePods(pods map[string]Pod, podGraph map[string
 	logger("schedule pod " + podToSchedule)
 	for {
 		logger(fmt.Sprintf("Have %d pods to schedule candidate idx = %d", len(topoOrder)-len(podAssignment), candidateNodeIdx))
+		podMeta := getPodWithName(podToSchedule, pods)
 		if len(podAssignment) == len(topoOrder) {
 			break
 		}
@@ -546,10 +554,37 @@ func (sched *DagScheduler) SchedulePods(pods map[string]Pod, podGraph map[string
 			candidateNodeIdx = 0
 		}
 		logger(fmt.Sprintf("Assign pod %s", podToSchedule))
-		candidateNodeName := nodePreference[candidateNodeIdx]
-		candidateNode := getNodeWithName(candidateNodeName, nodes)
-		candidateNodeRes, nodeIdx := getResourceByNodeName(nodeResList, candidateNodeName)
-		podMeta := getPodWithName(podToSchedule, pods)
+		candidateNodeName := ""
+		var candidateNode Node 
+		var candidateNodeRes  Resource
+		nodeIdx := -1
+		for k, v := range podMeta.Metadata.Annotations {
+			if app, exists := sched.deployedApps[podMeta.Metadata.Namespace]; exists {
+				if app[podToSchedule] == v {
+					break	// don't want to reschedule on the same node 
+				}
+			}
+			if  k == "preferredNode"   {
+				candidateNodeName = v
+				break
+			}
+		}
+		fit := false
+		if candidateNodeName != "" {
+			candidateNode = getNodeWithName(candidateNodeName, nodes)
+			candidateNodeRes, nodeIdx = getResourceByNodeName(nodeResList, candidateNodeName)
+
+			if sched.Fit(podMeta, candidateNode, candidateNodeRes, netResources) && sched.AreDepsSatisfied(podMeta, candidateNode, nodes,
+			podAssignment, netResources) {
+				fit = true
+			}
+		} 
+		if !fit {
+			candidateNodeName = nodePreference[candidateNodeIdx]
+		
+			candidateNode = getNodeWithName(candidateNodeName, nodes)
+			candidateNodeRes, nodeIdx = getResourceByNodeName(nodeResList, candidateNodeName)
+		}
 		if podMeta.Metadata.Name == "" {
 			logger("pod for " + podToSchedule + " does not exist")
 			break
@@ -563,7 +598,7 @@ func (sched *DagScheduler) SchedulePods(pods map[string]Pod, podGraph map[string
 			nodeResources[candidateNodeRes.name] = candidateNodeRes
 			nodeResList[nodeIdx] = candidateNodeRes
 			logger(fmt.Sprintf("Found node %s for pod %s meta =%s pod needs %d cpu and %d memory", candidateNode.Metadata.Name, podToSchedule, podMeta.Metadata.Name, podResource.cpu, podResource.memory))
-			logger(fmt.Sprintf("node %s now has cpu %d mem %d", candidateNodeRes.name, candidateNodeRes.cpu, candidateNodeRes.memory)) 
+			logger(fmt.Sprintf("node %s now has cpu %d mem %d", candidateNodeRes.name, candidateNodeRes.cpu, candidateNodeRes.memory))
 			madeAssignment = true
 
 		} else {
@@ -571,6 +606,13 @@ func (sched *DagScheduler) SchedulePods(pods map[string]Pod, podGraph map[string
 			candidateNodeIdx += 1
 			madeAssignment = false
 		}
+		sortNodes(nodeResList)
+		_, exists := sched.deployedApps[podMeta.Metadata.Namespace]
+		if !exists {
+			sched.deployedApps[podMeta.Metadata.Namespace] = make(DeploymentMap, 0)
+		}
+		sched.deployedApps[podMeta.Metadata.Namespace][podToSchedule] = candidateNode.Metadata.Name
+//		time.Sleep(10*time.Second)	
 	}
 	return podAssignment, pods, nodes
 }

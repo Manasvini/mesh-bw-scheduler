@@ -37,7 +37,7 @@ func (client *PromClient) GetPodMetrics() (PodSet, PodDeps) {
 	pods := make(PodSet, 0)
 	podDeps := make(PodDeps, 0)
 	for _, metric := range client.metrics {
-		logger(metric)
+		//logger(metric)
 		curPods, curPodDeps := client.updateMetric(metric)
 		for podName, curPod := range curPods {
 			pods[podName] = curPod
@@ -63,7 +63,7 @@ func (client *PromClient) GetPodMetrics() (PodSet, PodDeps) {
 }
 
 func (client *PromClient) updateMetric(metric string) (PodSet, PodDeps) {
-	logger(metric)
+	//logger(metric)
 	pods := make(PodSet, 0)
 	podDeps := make(PodDeps, 0)
 	v1api := v1.NewAPI(client.promClient)
@@ -90,7 +90,7 @@ func (client *PromClient) updateMetric(metric string) (PodSet, PodDeps) {
 	case model.ValVector:
 		var v model.Vector
 		v = result.(model.Vector)
-		logger("vector")
+		//logger("vector")
 		for _, value := range v {
 			src, srcExist := value.Metric["source_canonical_service"]
 			dst, dstExist := value.Metric["destination_canonical_service"]
@@ -140,8 +140,6 @@ func (client *PromClient) updateMetric(metric string) (PodSet, PodDeps) {
 				podName := getPodName(string(podId))
 				if exists {
 					pod_traffic := float64(value.Value)
-					logger(fmt.Sprintf("metric = %s Pod =%s src traf = %f", metric, podId, pod_traffic))
-					
 					if metric == CONTAINER_SND_BW {
 						if _, exists := pods[podName]; !exists {
 							pods[podName] = Pod{podName: podName, namespace: string(value.Metric["namespace"])}

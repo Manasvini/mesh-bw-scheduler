@@ -57,7 +57,7 @@ func (pp *PodProcessor) IsPodInList(podList []*PodList, podName string) bool {
 				logger("Pod " + pName + " is pending")
 				return false
 			}
-			
+
 		}
 
 	}
@@ -125,6 +125,7 @@ func (pp *PodProcessor) GetPodDependencyGraph(podList []Pod) map[string]map[stri
 			vals := strings.Split(k, ".")
 			if len(vals) < 2 {
 				logger(fmt.Sprintf("ERROR: Incorrect annotation format for pod dependency %s", k))
+				continue
 			}
 			relationship, podName := vals[0], vals[1]
 			if relationship != "dependson" {
@@ -176,6 +177,7 @@ func (pp *PodProcessor) GetPodGraph() (map[string]map[string]bool, []string) {
 			vals := strings.Split(k, ".")
 			if len(vals) < 2 {
 				logger(fmt.Sprintf("ERROR: Incorrect annotation format for pod dependency %s", k))
+				continue
 			}
 			rel, podName := vals[0], vals[1]
 			//logger(fmt.Sprintf("pod = %s rel = %s other pod = %s", pod.Metadata.Name, rel, podName))
@@ -367,4 +369,3 @@ func (pp *PodProcessor) GetUnscheduledPods() (map[string]Pod, map[string]map[str
 	}
 	return pp.unscheduledPods, podGroups[0]
 }
-
