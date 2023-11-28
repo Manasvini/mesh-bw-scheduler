@@ -5,10 +5,16 @@ import json
 import pandas as pd
 import time
 
+
 ifaces = netifaces.interfaces()
 
 iface_bw_map_file = sys.argv[1]
 bw_map = {}
+
+def del_ifaces():
+    for iface in bw_map:
+        cmd = 'sudo tc qdisc del dev ' + iface + ' root'
+        subprocess.run(cmd.split(),  check=True)
 
 with open(iface_bw_map_file) as fh:
     data = json.load(fh)
@@ -22,12 +28,14 @@ with open(iface_bw_map_file) as fh:
 
 total_duration = 1800 #seconds
 
+del_ifaces()
 for i in range(0, total_duration, 5): # 5 second increments
     idx = i
     for iface in bw_map:
         if len(bw_map[iface]) < idx:
             continue
         bw_val = bw_map[iface].iloc[idx]['5sec_window']
+        #bw_val = bw_map[iface]['Bitrate'].mean()
         print('set bw for ' + iface + ' to ' + str(bw_val) + ' mbit')
         op = 'change'
         if idx == 0:
@@ -36,7 +44,5 @@ for i in range(0, total_duration, 5): # 5 second increments
         print(cmd)
         subprocess.run(cmd.split(), check=True)
         time.sleep(5) # wait 5 sec before next bw val
-        
-for iface in bw_map:
-    cmd = 'sudo tc qdisc del dev ' + iface + ' root'
-    subprocess.run(cmd.split(),  check=True)
+
+del_ifaces()
