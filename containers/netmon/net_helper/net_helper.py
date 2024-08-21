@@ -10,6 +10,8 @@ from concurrent.futures import ThreadPoolExecutor, as_completed, wait, ALL_COMPL
 from flask import request
 import time
 import random
+from logging.handlers import RotatingFileHandler
+import logging
 
 app = Flask(__name__)
 
@@ -29,24 +31,26 @@ def run_nmap(subnet):
 
 def run_iperf(host, bwlimit=None):
     client = iperf3.Client()
-    client.duration = 1
+    client.duration = 2
     client.server_hostname = host
-    client.port = 5201
-    time.sleep(random.randint(0, 5))
+    client.port = config['node'] + 5201
+    client.protocol = 'tcp'
+    time.sleep(random.randint(1, 10))
     if bwlimit is not None:
         print(type(bwlimit), bwlimit)
         #client.protocol = 'udp'
         client.bandwidth = int(float(bwlimit))
-        client.reverse = True
+        #client.reverse = True
     res = client.run()
-    print(res.json)
+    print(host, bwlimit, res.sent_bps)
+    #res.json
     if 'error' in res.json:
         return res.json
+    
     #if bwlimit is not None:
     #    return {'host':host, 'snd': res.json['end']['streams'][0]['udp']['bits_per_second'], 'rcv':res.json['end']['streams'][0]['udp']['bits_per_second']}
-
-
-    return {'host':host, 'snd': res.json['end']['streams'][0]['sender']['bits_per_second'], 'rcv':res.json['end']['streams'][0]['receiver']['bits_per_second']}
+    app.logger.error('sent ' + str(res.sent_bytes) + ' to ' +  host)
+    return {'Host':host, 'SndBw': res.sent_bps, 'RcvBw':res.received_bps} #, 'Snd':res.sent_bytes, 'Rcv':res.received_bytes}
 
 
 @app.route('/traceroute')
@@ -95,22 +99,24 @@ def get_hosts():
 
 @app.route('/bw')
 def get_bw():
+    app.logger.error('Got bw req for host ' + request.args.get('host')) 
     hostname = request.args.get('host')
+
     #iperf_hosts = get_hosts()
     bwlimit = request.args.get('bwmax')
     print(hostname, bwlimit)
-    results = [run_iperf(hostname, bwlimit)]
-    print(len(results))
+    #results = [run_iperf(hostname, bwlimit)]
+    #print(len(results))
     final_results = []
     elapsed = 0
     while elapsed < 60:
-        res = run_iperf(hostname)
+        res = run_iperf(hostname, bwlimit)
         if 'error' in res:
             sleep_time = random.randint(0, 5)
             time.sleep(sleep_time)
             elapsed += sleep_time
         else:
-            final_results.append({'host':res['host'], 'snd':res['snd'], 'rcv':res['rcv']})
+            final_results.append(res)
             break
     
     print(final_results)
@@ -153,5 +159,10 @@ if __name__ == "__main__":
     args = parse_args()
     port = int(os.environ.get('PORT', 6000))
     config = get_config(args.config)
+    file_handler = RotatingFileHandler('python.log', maxBytes=1024 * 1024, backupCount=20)
+    file_handler.setLevel(logging.INFO)
+    formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+    file_handler.setFormatter(formatter)
+    app.logger.addHandler(file_handler) 
     app.run(debug=True, host=args.ip, port=port)
 

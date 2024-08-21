@@ -108,7 +108,7 @@ func main() {
 	done := client.WaitForProxy()
 	promClient := bwcontroller.NewPrometheusClient(config.PromAddr, config.PromMetrics)
 	logger(fmt.Sprintf("Got %d namespaces", len(config.Namespaces)))
-	dagSched := &DagScheduler{client: &client, processorLock: &sync.Mutex{}, podProcessor: NewPodProcessor(&client), netmonClient: netmon_client.NewNetmonClient(config.NetmonAddrs), promClient: promClient, ipMap: ipMap, headroomThreshold: config.HeadroomThreshold, deployedApps: make(map[string]DeploymentMap, 0)}
+	dagSched := &DagScheduler{client: &client, processorLock: &sync.Mutex{}, podProcessor: NewPodProcessor(&client), netmonClient: netmon_client.NewNetmonClient(config.NetmonAddrs), promClient: promClient, ipMap: ipMap, tolerance: config.Tolerance, deployedApps: make(map[string]DeploymentMap, 0)}
 	if done == 0 {
 		logger("Failed to connect to proxy.")
 		os.Exit(0)
@@ -123,7 +123,7 @@ func main() {
 	go dagSched.MonitorUnscheduledPods(doneChan, &wg)
 
 	wg.Add(1)
-	go dagSched.ReconcileUnscheduledPods(1, doneChan, &wg)
+	go dagSched.ReconcileUnscheduledPods(30, doneChan, &wg)
 
 	signalChan := make(chan os.Signal, 1)
 	signal.Notify(signalChan, syscall.SIGINT, syscall.SIGTERM)

@@ -39,6 +39,8 @@ def read_topo_config(config_filename, user, configdir):
         for node in data['nodes']:
             print(node)
             time.sleep(10)
+            #if int(node['port']) < 25817:
+            #    continue
             setup_node(node['nodename'],user, node['port'], dirname)
             update_config(node['nodename'], user, node['port'], configdir, node['nodeid'])
   
@@ -46,7 +48,7 @@ def parse_args():
     parser = argparse.ArgumentParser(description='Mesh Setup for cloudlab')
     parser.add_argument('-c','--config', help='config file', required=True, type=str)
     parser.add_argument('-u', '--user', help='username', required=True, type=str)
-    parser.add_argument('-d', '--configdir', help='dir with node specific config', required=True, type=str)
+    parser.add_argument('-d', '--configdir', help='dir with node specific config inside netmon/net_helper', required=True, type=str)
     args = parser.parse_args()
     return args
 

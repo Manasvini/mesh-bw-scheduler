@@ -36,7 +36,7 @@ func parseIpMap(filename string) map[string]string {
 	}
 
 	// Now let's unmarshall the data into `payload`
-	var payload netmon_client.NodeMap 
+	var payload netmon_client.NodeMap
 	err = json.Unmarshal(content, &payload)
 	if err != nil {
 		log.Fatal("Error during Unmarshal(): ", err)
@@ -63,7 +63,7 @@ func main() {
 	flag.StringVar(&bwInfoFile, "bw", "./bwinfo.csv", "bw info file (output)")
 	flag.StringVar(&migrationInfoFile, "migration", "./migration.csv", "migration info file(output)")
 	flag.StringVar(&ipMapFile, "ipmap", "./nodemap.json", "IP map file path")
-	
+
 	flag.Parse()
 	config := parseConfig(configFile)
 	ipMap := parseIpMap(ipMapFile)
@@ -83,7 +83,7 @@ func main() {
 	case syscall.SIGTERM:
 		//handle SIGTERM
 		monCh <- true
-	
+
 	}
 	controller.Shutdown()
 }

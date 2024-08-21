@@ -6,8 +6,8 @@ import (
 	bpf "github.com/iovisor/gobpf/bcc"
 	"net"
 	"os"
+	"sync"
 	"time"
-    "sync"
 )
 
 /*
@@ -72,8 +72,8 @@ type BPFRunner struct {
 	PktSize             *bpf.Table
 	device              string
 	module              *bpf.Module
-	lastObservedTraffic map[string]float64
-	lastTs              int64
+	lastObservedTraffic map[string][]float64
+	lastTs              []int64
 	lock                *sync.Mutex
 }
 
@@ -105,37 +105,59 @@ func NewBPFRunner(device string) *BPFRunner {
 
 	pktcnt := bpf.NewTable(module.TableId("packets"), module)
 	pktsize := bpf.NewTable(module.TableId("packetsize"), module)
-	bpfRunner := &BPFRunner{lock: mu, PktStats: pktcnt, device: device, module: module, PktSize: pktsize, lastObservedTraffic: make(map[string]float64, 0)}
+	bpfRunner := &BPFRunner{lock: mu, PktStats: pktcnt, device: device, module: module, PktSize: pktsize, lastObservedTraffic: make(map[string][]float64, 0)}
 
+	_ = bpfRunner.GetStats()
+	_ = bpfRunner.GetStats()
 	return bpfRunner
 }
 
+func getMean(values []float64, times []int64) float64 {
+	sum := 0.0
+	if len(values) == 1 {
+		return values[0]
+	}
+	for i := 1; i < len(values); i++ {
+		bw := values[i] - values[i-1]
+		tdiff := times[i] - times[i-1]
+		if tdiff == 0 {
+			continue
+		}
+		sum += (bw / 1000.0) / float64(tdiff)
+	}
+
+	return (sum / float64(len(values))) * 1000.0
+}
 func (runner *BPFRunner) GetStats() map[string]float64 {
 	runner.lock.Lock()
 	defer runner.lock.Unlock()
-	trafficMap := make(map[string]float64, 0)
+	trafficMap := make(map[string][]float64, 0)
 	for it := runner.PktSize.Iter(); it.Next(); {
 		key := bpf.GetHostByteOrder().Uint32(it.Key())
 		value := bpf.GetHostByteOrder().Uint64(it.Leaf())
-		trafficMap[fmt.Sprintf("%s", int2ip(key))] = float64(value)
+		trafficMap[fmt.Sprintf("%s", int2ip(key))] = []float64{float64(value)}
 		if value > 0 {
 			fmt.Printf("%s: %v bytes\n", int2ip(key), value)
 		}
 	}
 	if len(runner.lastObservedTraffic) == 0 {
 		runner.lastObservedTraffic = trafficMap
-		runner.lastTs = time.Now().Unix()
-		return trafficMap
+		runner.lastTs = []int64{time.Now().Unix()}
+	} else {
+		for k, v := range trafficMap {
+			runner.lastObservedTraffic[k] = append(runner.lastObservedTraffic[k], v...)
+		}
+		runner.lastTs = append(runner.lastTs, time.Now().Unix())
 	}
 	bws := make(map[string]float64, 0)
-	for host, bytes := range trafficMap {
-		prevBytes, val := runner.lastObservedTraffic[host]
-		if val {
-			bws[host] = (bytes - prevBytes) / float64(time.Now().Unix()-runner.lastTs)
-		}
+	for host, vals := range runner.lastObservedTraffic {
+
+		//prevBytes, val := runner.lastObservedTraffic[host]
+		meanTraffic := getMean(vals, runner.lastTs)
+		bws[host] = 8 * meanTraffic
+
 	}
-	runner.lastTs = time.Now().Unix()
-	runner.lastObservedTraffic = trafficMap
+	//runner.lastObservedTraffic = trafficMap
 	return bws
 }
 func (runner *BPFRunner) PrintStats() {

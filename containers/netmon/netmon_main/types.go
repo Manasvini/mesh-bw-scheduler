@@ -1,11 +1,11 @@
 package main
 
 type Bandwidth struct {
-	Host  string
-	Snd   float64
-	Rcv   float64
-	SndBw int64
-	RcvBw int64
+	Host  string  `json:"Host"`
+	Snd   float64 `json:"Snd"`
+	Rcv   float64 `json:"Rcv"`
+	SndBw float64 `json:"SndBw"`
+	RcvBw float64 `json:"RcvBw"`
 }
 
 type Latency struct {
@@ -16,9 +16,12 @@ type LatencyResults struct {
 	LatencyResults []Latency
 }
 
+type Bandwidths []Bandwidth
+
 type BandwidthResults struct {
-	BandwidthResults []Bandwidth
+	BandwidthResults Bandwidths `json:"bandwidthResults"`
 }
+
 type TracerouteResults struct {
 	TracerouteResults []Traceroute
 }

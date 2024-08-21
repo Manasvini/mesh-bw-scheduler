@@ -24,6 +24,7 @@ type Controller struct {
 	linksFree    netmon_client.LinkSet
 	pathsFree    netmon_client.PathSet
 	pathsUsed    netmon_client.TrafficSet
+	headroomAvailable netmon_client.PathSet
 	metrics      []string
 	valuationInterval int64
 	namespaceValuationTime map[string]int64
@@ -33,8 +34,10 @@ type Controller struct {
 	migrationFile	*os.File
 	pendingBwUpdate	bool
 	headroomReq	map[string]map[string]float32
+	headroomInit	bool
 	headroomThreshold float32
 	ipMap		map[string]string
+	headroomReference netmon_client.PathSet
 }
 
 func NewController(promClient *PromClient, 
@@ -59,6 +62,8 @@ func NewController(promClient *PromClient,
 	controller.namespaceValuationTime = make(map[string]int64, 0)
 	controller.namespaceAvgUtilization = make(map[string]float64, 0)
 	controller.headroomReq = make(map[string]map[string]float32, 0)
+	controller.headroomAvailable = make(netmon_client.PathSet, 0)
+	controller.headroomInit = false
 	controller.headroomThreshold = headroomThreshold
 	controller.bwFile, _ = os.OpenFile(bwFile, os.O_CREATE|os.O_WRONLY|os.O_TRUNC, 0644)
 	controller.migrationFile, _ = os.OpenFile(migrationFile, os.O_CREATE|os.O_WRONLY|os.O_TRUNC, 0644)
@@ -69,6 +74,7 @@ func NewController(promClient *PromClient,
 	controller.UpdateNodes()
 	controller.UpdatePods()
 	controller.UpdatePodMetrics()
+	controller.pendingBwUpdate = true
 	controller.UpdateNetMetrics(true)
 	
 	return controller
@@ -133,23 +139,24 @@ func (controller *Controller) UpdatePodMetrics() {
 
 // Update network bw available between each pair of nodes
 func (controller *Controller) UpdateNetMetrics(isBwUpdate bool) {
+	logger(fmt.Sprintf("bw update = %v\n" , isBwUpdate))
+	isHeadroom := true
 	nodemap := controller.ipMap
 	var links netmon_client.LinkSet
 	var paths netmon_client.PathSet
 	var traffics netmon_client.TrafficSet
-	if isBwUpdate == true {
-		links, paths, traffics = controller.netmonClient.GetStats(nodemap)
-	} else {
-		links, paths, traffics = controller.netmonClient.GetHeadroomStats(nodemap, controller.headroomReq)
-	}
-
+	
+	links, paths, traffics = controller.netmonClient.GetStats(nodemap, isBwUpdate)
+	controller.pendingBwUpdate = false
+	 
+	
+	logger(fmt.Sprintf("headroom = %v\n", isHeadroom))
 	for src, dstLinks := range links {
 		for dst, link := range dstLinks {
-			//logger(fmt.Sprintf("src = %s dst = %s", src, dst))
 			srcNode, exists := controller.nodes[src]
 			dstNode, dexists := controller.nodes[dst]
 			if !exists || !dexists {
-				logger("either source or destination dopn't exist!")
+				continue
 			}
 			//logger(fmt.Sprintf("src = %s dst = %s cap = %f\n", srcNode, dstNode, link.Bandwidth))
 			_, lExists := controller.linksFree[srcNode]
@@ -157,10 +164,12 @@ func (controller *Controller) UpdateNetMetrics(isBwUpdate bool) {
 				controller.linksFree[srcNode] = make(map[string]netmon_client.Link, 0)
 
 			}
-			srcLinks, _ := controller.linksFree[srcNode]
-			srcLinks[dstNode] = link
-			controller.linksFree[srcNode] = srcLinks
-			if isBwUpdate {
+			if  !controller.headroomInit{
+				srcLinks, _ := controller.linksFree[srcNode]
+				if link.Bandwidth > 0 {
+					srcLinks[dstNode] = link
+					controller.linksFree[srcNode] = srcLinks
+			 	}
 				_, exists = controller.headroomReq[src]
 				if !exists {
 					controller.headroomReq[src] = make(map[string]float32, 0)
@@ -170,6 +179,8 @@ func (controller *Controller) UpdateNetMetrics(isBwUpdate bool) {
 			}
 		}
 	}
+
+	_, hpaths, traffics := controller.netmonClient.GetHeadroomStats(nodemap, controller.headroomReq)
 	for src, dstPaths := range paths {
 		for dst, path := range dstPaths {
 			srcNode, exists := controller.nodes[src]
@@ -177,17 +188,57 @@ func (controller *Controller) UpdateNetMetrics(isBwUpdate bool) {
 			if !exists || !dexists {
 				continue
 			}
+			if path.Bandwidth == 0{
+				continue
+			}
 			//logger(fmt.Sprintf("src = %s dst = %s cap = %f\n", srcNode, dstNode, path.Bandwidth))
 			_, pExists := controller.pathsFree[srcNode]
 			if !pExists {
 				controller.pathsFree[srcNode] = make(map[string]netmon_client.Path, 0)
 
-			}
+			}	
 			srcPaths, _ := controller.pathsFree[srcNode]
 			srcPaths[dstNode] = path
 			controller.pathsFree[srcNode] = srcPaths
+			logger(fmt.Sprintf("available bw src = %s dst = %s bw = %f", src, dst, controller.pathsFree[srcNode][dstNode].Bandwidth))
 		}
 	}
+	for src, dstPaths := range hpaths {
+		for dst, path := range dstPaths {
+			srcNode, exists := controller.nodes[src]
+			dstNode, dexists := controller.nodes[dst]
+			_, pExists := controller.headroomAvailable[srcNode]
+			if path.Bandwidth == 0 {
+				continue
+			}
+			if !exists || !dexists {
+				continue
+			}
+			if !pExists {
+				controller.headroomAvailable[srcNode] = make(map[string]netmon_client.Path, 0)
+			}
+			dstVal, dstExists := controller.headroomAvailable[srcNode][dstNode]
+			
+			if dstExists {
+				logger(fmt.Sprintf("src = %s dst = %s, old = %f new = %f", src, dst, dstVal.Bandwidth, path.Bandwidth))
+				if dstVal.Bandwidth > 1.25 * path.Bandwidth  || path.Bandwidth > 1.25 * dstVal.Bandwidth{
+					logger(fmt.Sprintf("trigger update src = %s dst = %s, old = %f new = %f", src, dst, dstVal.Bandwidth, path.Bandwidth))
+					controller.pendingBwUpdate = true
+				}
+			}
+		
+			srcPaths, _ := controller.headroomAvailable[srcNode]
+			srcPaths[dstNode] = path
+			controller.headroomAvailable[srcNode] = srcPaths
+	
+			
+		}
+	}
+	if !controller.headroomInit {
+		controller.headroomReference = controller.headroomAvailable
+		controller.headroomInit = true
+	}
+
 
 	for src, dstTrafs := range traffics {
 		for dst, traffic := range dstTrafs {
@@ -197,11 +248,12 @@ func (controller *Controller) UpdateNetMetrics(isBwUpdate bool) {
 			if !exists || !dexists {
 				continue
 			}
-			//logger(fmt.Sprintf("src = %s dst = %s used = %f\n", srcNode, dstNode, traffic.Bytes))
+			logger(fmt.Sprintf("src = %s dst = %s used = %f\n", src, dst, traffic.Bytes))
 			srcTraf, tExists := controller.pathsUsed[srcNode]
 			if !tExists {
 				controller.pathsUsed[srcNode] = make(map[string]netmon_client.Traffic, 0)
-			}
+			} 
+			
 			srcTraf, _ = controller.pathsUsed[srcNode]
 			srcTraf[dstNode] = traffic
 			controller.pathsUsed[srcNode] = srcTraf
@@ -337,11 +389,10 @@ func (controller *Controller) getNodes() []string {
 
 func (controller *Controller) CheckPodReqSatisfiedOne(bwNeeded map[string]map[string]float64,
 	bwAvailable map[string]map[string]float64,
-	pod Pod) (bool, map[string]float64, float64) /* dep pod -> dep bw shortfall, total shortfall*/ {
+	pod Pod) (bool, map[string]float64, float64) /* max fraction, dep pod -> dep bw used*/ {
 	podDeps, exists := controller.podDepReq[pod.podName]
 	bwUsed := make(map[string]float64, 0)
 
-	totalShortfall := 0.0
 	totalUsed := 0.0
 	totalNeeded := 0.0
 	fracUsed := 0.0
@@ -349,15 +400,29 @@ func (controller *Controller) CheckPodReqSatisfiedOne(bwNeeded map[string]map[st
 		for dst, dep := range podDeps {
 			dstPod, _ := controller.pods[dst]
 			actual, _ := controller.podDepActual[pod.podName][dst]
-			logger(fmt.Sprintf("podname = %s dep = %s needed = %f used=%f\n", pod.podName, dst, dep.Bandwidth, actual.Bandwidth))
 			dstNode := dstPod.deployedNode
+			trafficOnNode, _ := controller.pathsUsed[pod.deployedNode][dstNode] 
+			logger(fmt.Sprintf("podname = %s node = %s dep = %s node = %s needed = %f used=%f avail=%f traffic on node = %f headroom=%f \n", pod.podName, pod.deployedNode, dst, dstNode, dep.Bandwidth, actual.Bandwidth, bwAvailable[pod.deployedNode][dstNode], trafficOnNode.Bytes, controller.headroomAvailable[pod.deployedNode][dstNode].Bandwidth ))
 			if actual.Bandwidth > 0{
 				totalUsed = float64(actual.Bandwidth) 
 				totalNeeded = float64(dep.Bandwidth)
+                		availableOnNode, _ := bwAvailable[pod.deployedNode][dstNode]
 				if dst == "all_send" || dst == "all_recv" {
 					totalNeeded = totalNeeded *  float64(len(bwAvailable[pod.deployedNode]) - 1)
 				}
+				if dstNode == pod.deployedNode || totalUsed == 0 {
+					continue
+				}
+				if _, exists := bwUsed[dstNode];!exists{
+					bwUsed[dstNode] = 0
+				}
+				bwUsed[dstNode] += actual.Bandwidth
 				fracUsedCur := totalUsed / totalNeeded
+				if availableOnNode < (totalNeeded - totalUsed)  && availableOnNode > 0{
+					fracUsedCur = totalUsed / availableOnNode
+				} else if availableOnNode == 0 && fracUsedCur > 0 && dstNode != pod.deployedNode{
+					fracUsedCur = 1
+				}
 				logger(fmt.Sprintf("fracUsed = %f", fracUsedCur))
 		
 				if fracUsedCur > fracUsed {
@@ -366,44 +431,43 @@ func (controller *Controller) CheckPodReqSatisfiedOne(bwNeeded map[string]map[st
 				
 			}
 
-			logger("src = " + pod.podName + " dst = " + dst)
-			if dstNode != pod.deployedNode && (dst != "all_send"  && dst != "all_rcv") {
-				//bwAvailable[pod.deployedNode][dstNode] - dep.Bandwidth > 0 && fracUsed >= controller.utilChangeThreshold{
-				diff := bwAvailable[pod.deployedNode][dstNode] - actual.Bandwidth
-				logger(fmt.Sprintf("Node %s src pod %s dst pod %s dst Node %s diff %f dep req bw = %f used=%f available = %f\n", pod.deployedNode, pod.podName, dst, dstNode, diff, dep.Bandwidth,actual.Bandwidth,  bwAvailable[pod.deployedNode][dstNode]))
-				if _, exists := bwUsed[dstNode]; !exists{
-					bwUsed[dstNode] = 0
-				} 
-				bwUsed[dstNode] += dep.Bandwidth
-				if diff < 0 {
-					totalShortfall += diff
-				}	
-				bwAvailable[pod.deployedNode][dstNode] -= dep.Bandwidth
-			} else if dst == "all_send"  {
-				min_bw := 0.0
-				for _, bw := range bwAvailable[pod.deployedNode] {
-					//if min_bw < 0 {
-					//	min_bw = bw
-					//}else if bw < min_bw {
-					//	min_bw = bw
-					//}
-					min_bw += bw
-				}
-				diff := min_bw - actual.Bandwidth 
-				bwUsed[dst] = dep.Bandwidth
-				if diff < 0 {
-					totalShortfall += diff
-				}
-				logger(fmt.Sprintf("node = %s pod = %s diff = %f dep bw = %f used = %f  avail = %f\n", pod.deployedNode, pod.podName, diff, dep.Bandwidth, actual.Bandwidth, min_bw))
-			}
+			//if dstNode != pod.deployedNode && (dst != "all_send"  && dst != "all_rcv") {
+			//	//bwAvailable[pod.deployedNode][dstNode] - dep.Bandwidth > 0 && fracUsed >= controller.utilChangeThreshold{
+			//	diff := bwAvailable[pod.deployedNode][dstNode] - actual.Bandwidth
+			//	logger(fmt.Sprintf("src pod %s dst pod %s diff %f \n",  pod.podName, dst, diff))
+			//	if _, exists := bwUsed[dstNode]; !exists{
+			//		bwUsed[dstNode] = 0
+			//	} 
+			//	bwUsed[dstNode] += actual.Bandwidth
+			//	//if diff < 0 {
+			//	//	totalShortfall += diff
+			//	//}	
+			//	//bwAvailable[pod.deployedNode][dstNode] -= dep.Bandwidth
+			//} else if dst == "all_send"  {
+			//	min_bw := 0.0
+			//	for _, bw := range bwAvailable[pod.deployedNode] {
+			//		//if min_bw < 0 {
+			//		//	min_bw = bw
+			//		//}else if bw < min_bw {
+			//		//	min_bw = bw
+			//		//}
+			//		min_bw += bw
+			//	}
+			//	//diff := min_bw - actual.Bandwidth 
+			//	//bwUsed[dst] = dep.Bandwidth
+			//	//if diff < 0 {
+			//	//	totalShortfall += diff
+			//	//}
+			//	logger(fmt.Sprintf("node = %s pod = %s diff = %f dep bw = %f used = %f  avail = %f\n", pod.deployedNode, pod.podName, diff, dep.Bandwidth, actual.Bandwidth, min_bw))
+			//}
 		}
-		logger(fmt.Sprintf("fracUsed = %f", fracUsed))
+		logger(fmt.Sprintf("final fracUsed = %f", fracUsed))
 		if  fracUsed > controller.utilChangeThreshold{
 
-			return false, bwUsed, totalShortfall
+			return true, bwUsed, fracUsed
 		}
 	}
-	return true, nil, 0
+	return false, bwUsed, fracUsed
 }
 
 func (controller *Controller) findPodsToReschedule(bwNeeded map[string]map[string]float64,
@@ -414,21 +478,25 @@ func (controller *Controller) findPodsToReschedule(bwNeeded map[string]map[strin
 	podList := controller.getPodsOnNode(node)
 	bwThresholdViolated := false
 	for _, pod := range podList {
+		totalShortfall := 0.0
 		if strings.Contains(pod.podName, "db") || strings.Contains(pod.podName, "nginx") {
 			continue	// hack to prevent db migration
 		}
-		satisfied, usedBw, totalShortfall := controller.CheckPodReqSatisfiedOne(bwNeeded, bwAvailable, pod)
-		logger(fmt.Sprintf("pod = %s shortfall=%f node=%s\n", pod.podName, totalShortfall, pod.deployedNode))
+		toRelo, usedBw, fracUsed := controller.CheckPodReqSatisfiedOne(bwNeeded, bwAvailable, pod)
 		for node, val := range usedBw {
 			if pod.deployedNode != node {
-				if float32(bwAvailable[pod.deployedNode][node] - val) < controller.headroomReq[pod.deployedNode][node] {
+				logger(fmt.Sprintf("pod = %s node=%s needed = %f headrrom=%f \n", pod.podName, node, float64(bwAvailable[pod.deployedNode][node] - val ) , controller.headroomReference[pod.deployedNode][node].Bandwidth))
+				if float64(bwAvailable[pod.deployedNode][node] - val ) < float64(controller.headroomReference[pod.deployedNode][node].Bandwidth) && fracUsed >= controller.utilChangeThreshold{
 					bwThresholdViolated = true
-				} else {
+					totalShortfall += float64(bwAvailable[pod.deployedNode][node]) - val
+				} 
+				if val < bwAvailable[pod.deployedNode][node] {
 					bwAvailable[pod.deployedNode][node] -= val
 				}
+				logger(fmt.Sprintf("dst node %s bw used %f avail %f\n", node, val, bwAvailable[pod.deployedNode][node]))
 			}
 		} 
-		if !satisfied && bwThresholdViolated {
+		if bwThresholdViolated && toRelo{
 			pList = append(pList, Pair{Key: pod.podName, Value: totalShortfall})
 			logger("added pod " + pod.podName + " to reschedule")
 		}
@@ -593,18 +661,19 @@ func (controller *Controller) EvaluateDeployment() {
 		}
 	}
 	// check if available bw satifies the requirements
-	for src, srcBw := range bwNeeded {
-		for dst, bw := range srcBw {
-			if _, exists := bwAvailable[src][dst]; exists{
-				bwAvailable[src][dst] -= bw
-			}
-		}
-	}
-	for src, srcBw := range bwAvailable {
-		for dst, bw := range srcBw {
-			logger(fmt.Sprintf("src = %s dst = %s remaining bw = %f", src, dst,bw))
-		}
-	}
+//	for src, srcBw := range bwNeeded {
+//		for dst, bw := range srcBw {
+//			if _, exists := bwAvailable[src][dst]; exists{
+//				logger(fmt.Sprintf("src = %s dst = %s avail = %f needed = %f\n", src,dst, bwAvailable[src][dst], bw))
+//				bwAvailable[src][dst] -= bw
+//			}
+//		}
+//	}
+	//for src, srcBw := range bwAvailable {
+	//	for dst, bw := range srcBw {
+	//		logger(fmt.Sprintf("src = %s dst = %s remaining bw = %f", src, dst,bw))
+	//	}
+	//}
 	logger(fmt.Sprintf("Got %d nodes", len(bwAvailable)))
 	if len(bwAvailable) == 0 {
 		logger("No pods to reschedule in any namespace")
@@ -633,7 +702,7 @@ func (controller *Controller) EvaluateDeployment() {
 	}
 	logger(fmt.Sprintf("relocating %d pods", numRescheduled))
 	if numRescheduled > 0 {
-		controller.UpdateNetMetrics(true) // we want to get link capacities
+		//controller.UpdateNetMetrics(true) // we want to get link capacities
 		controller.pendingBwUpdate = true
 	}
 
@@ -649,8 +718,7 @@ func (controller *Controller) MonitorState(delay time.Duration) chan bool {
 			controller.UpdatePods()
 			controller.UpdatePodMetrics()
 			controller.UpdateNetMetrics(controller.pendingBwUpdate)	// by default we only update headroom not total link capacity
-			controller.pendingBwUpdate = false
-			controller.EvaluateDeployment()
+				controller.EvaluateDeployment()
 			//controller.EvaluateUsage()
 			select {
 			case <-time.After(delay):

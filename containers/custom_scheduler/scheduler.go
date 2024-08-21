@@ -28,12 +28,12 @@ import (
 type DeploymentMap	map[string]string // pod -> node 
 type DagScheduler struct {
 	client            KubeClientIntf
-	netmonClient      netmon_client.NetmonClientIntf
+	netmonClient      *netmon_client.NetmonClient
 	podProcessor      *PodProcessor
 	processorLock     *sync.Mutex
 	promClient        *bwcontroller.PromClient
 	ipMap             map[string]string
-	headroomThreshold float64
+	tolerance         float64
 	deployedApps 	  map[string]DeploymentMap	// ns -> deployment
 }
 
@@ -322,7 +322,7 @@ func (sched *DagScheduler) Fit(pod Pod, node Node,
 		logger(fmt.Sprintf("pod %s node %s insufficient memory", pod.Metadata.Name, node.Metadata.Name))
 		return false
 	}
-	if podBwSnd > nodeBwSnd*(1-sched.headroomThreshold) || podBwRcv > nodeBwRcv*(1-sched.headroomThreshold) {
+	if nodeBwSnd < podBwSnd*(1-sched.tolerance) ||  nodeBwRcv < podBwRcv*(1-sched.tolerance) {
 		logger(fmt.Sprintf("pod %s node %s insufficient bw", pod.Metadata.Name, node.Metadata.Name))
 		return false
 	}
@@ -475,7 +475,7 @@ func (sched *DagScheduler) SchedulePods(pods map[string]Pod, podGraph map[string
 	defer sched.processorLock.Unlock()
 	logger(fmt.Sprintf("got %d pods and %d podgraph", len(pods), len(podGraph)))
 
-	_, paths, traffics := sched.netmonClient.GetStats(sched.ipMap)
+	_, paths, traffics := sched.netmonClient.GetStats(sched.ipMap, false)
 	for src, trafs := range traffics{
 		for dst, traf := range trafs{
 			logger(fmt.Sprintf("src %s dst %s traf %f", src, dst, traf.Bytes))
@@ -505,6 +505,7 @@ func (sched *DagScheduler) SchedulePods(pods map[string]Pod, podGraph map[string
 		nodeResList = append(nodeResList, nr)
 		nodePreference = append(nodePreference, nr.name)
 	}
+	startTime := time.Now()
 	sortNodes(nodeResList)
 	podIdx := 0
 	madeAssignment := false
@@ -531,9 +532,12 @@ func (sched *DagScheduler) SchedulePods(pods map[string]Pod, podGraph map[string
 
 		return podAssignment, pods, nodes
 	}
+	endTime := time.Now()
+	logger(fmt.Sprintf("graph sort took %v\n", endTime.Sub(startTime)))
 	podToSchedule := topoOrder[podIdx]
 	logger("schedule pod " + podToSchedule)
 	for {
+		startTime := time.Now()
 		logger(fmt.Sprintf("Have %d pods to schedule candidate idx = %d", len(topoOrder)-len(podAssignment), candidateNodeIdx))
 		podMeta := getPodWithName(podToSchedule, pods)
 		if len(podAssignment) == len(topoOrder) {
@@ -558,13 +562,16 @@ func (sched *DagScheduler) SchedulePods(pods map[string]Pod, podGraph map[string
 		var candidateNode Node 
 		var candidateNodeRes  Resource
 		nodeIdx := -1
+		current := ""
 		for k, v := range podMeta.Metadata.Annotations {
 			if app, exists := sched.deployedApps[podMeta.Metadata.Namespace]; exists {
-				if app[podToSchedule] == v {
+                current, e := app[podToSchedule] 
+				if e && current  == v {
+					current = v
 					break	// don't want to reschedule on the same node 
 				}
 			}
-			if  k == "preferredNode"   {
+			if  k == "preferredNode"  && v != current {
 				candidateNodeName = v
 				break
 			}
@@ -612,7 +619,9 @@ func (sched *DagScheduler) SchedulePods(pods map[string]Pod, podGraph map[string
 			sched.deployedApps[podMeta.Metadata.Namespace] = make(DeploymentMap, 0)
 		}
 		sched.deployedApps[podMeta.Metadata.Namespace][podToSchedule] = candidateNode.Metadata.Name
-//		time.Sleep(10*time.Second)	
+//		time.Sleep(10*time.Second)
+		endTime := time.Now()
+		logger(fmt.Sprintf("loop took %v\n", endTime.Sub(startTime)))
 	}
 	return podAssignment, pods, nodes
 }

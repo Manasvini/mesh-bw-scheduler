@@ -5,16 +5,16 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
+	pb "github.gatech.edu/cs-epl/mesh-bw-scheduler/netmon"
+	"google.golang.org/grpc"
 	"io/ioutil"
 	"log"
 	"net"
 	"net/http"
+	"os"
 	"strings"
 	"sync"
 	"time"
-
-	pb "github.gatech.edu/cs-epl/mesh-bw-scheduler/netmon"
-	"google.golang.org/grpc"
 )
 
 var (
@@ -50,18 +50,18 @@ func readConfig(configfile string) []string {
 
 type server struct {
 	pb.UnimplementedNetMonitorServer
-	BwCache      		map[string]Bandwidth  // dest node -> bw map [ to estimate link capacity]
-	HeadroomCacheMeasured 	map[string]Bandwidth // dest node -> available bw [to check if excess capacity is available. The goal is to avoid disrupting existing flows. The headroom bw is specified by the controller]
-	HeadroomCacheRequested 	map[string]pb.BandwidthInfo
-	TrCache      		TracerouteResults // dest node -> traceroute map
-	LatencyCache 		LatencyResults    // dest node -> latency map
-	mu           		sync.Mutex
-	netClient    		http.Client
-	hosts        		[]string
-	bpfRunner    		*BPFRunner
-	hostIdx	     		int
-	pendingBwRequest	bool
-	headroomIdx		int
+	BwCache                map[string]Bandwidth // dest node -> bw map [ to estimate link capacity]
+	HeadroomCacheMeasured  map[string]Bandwidth // dest node -> available bw [to check if excess capacity is available. The goal is to avoid disrupting existing flows. The headroom bw is specified by the controller]
+	HeadroomCacheRequested map[string]pb.BandwidthInfo
+	TrCache                TracerouteResults // dest node -> traceroute map
+	LatencyCache           LatencyResults    // dest node -> latency map
+	mu                     sync.Mutex
+	netClient              http.Client
+	hosts                  []string
+	bpfRunner              *BPFRunner
+	hostIdx                int
+	pendingBwRequest       bool
+	headroomIdx            int
 }
 
 func (s *server) QueryNetStats(hostname string, qty string) ([]byte, error) {
@@ -104,7 +104,6 @@ func (s *server) QueryHeadroom(hostname string, bw float32) ([]byte, error) {
 	fmt.Printf(string(resBody))
 	return resBody, nil
 
-
 }
 func (s *server) QueryTrStats() ([]byte, error) {
 	reqURL := "http://" + *helper
@@ -128,9 +127,9 @@ func (s *server) QueryTrStats() ([]byte, error) {
 func GetBwResults(bwResponse []byte) BandwidthResults {
 	var bwInfo BandwidthResults
 	json.Unmarshal(bwResponse, &bwInfo)
+	fmt.Printf("\noriginal %s unmarshal %v\n", string(bwResponse), bwInfo)
 	return bwInfo
 }
-
 
 func GetTrResults(trResponse []byte) TracerouteResults {
 	var trInfo TracerouteResults
@@ -152,12 +151,16 @@ func (s *server) GetNetInfo(ctx context.Context, in *pb.NetInfoRequest) (*pb.Net
 	bws := s.BwCache
 	trs := s.TrCache
 	//s.mu.Unlock()
-	for _, bw := range bws {
-		trafficSent, exists := bwUsed[bw.Host]
-        	log.Printf("Host = %s", bw.Host)
-		bwInfo := pb.BandwidthInfo{Host: bw.Host, SendBw: float32(bw.Snd), ReceiveBw: float32(bw.Rcv)}
+	if !s.pendingBwRequest {
+		s.pendingBwRequest = in.ShouldUpdate
+	}
+	for dst, trafficSent := range bwUsed {
+		bw, exists := bws[dst]
+		log.Printf("BWInfoFull: Host = %s bw = %f", bw.Host, bw.RcvBw)
+		bwInfo := pb.BandwidthInfo{Host: dst, RecvBwUsed: float32(trafficSent)}
 		if exists {
-			bwInfo.RecvBwUsed = float32(trafficSent)
+			bwInfo.SendBw = float32(bw.SndBw)
+			bwInfo.ReceiveBw = float32(bw.RcvBw)
 		}
 		bwInfos = append(bwInfos, &bwInfo)
 	}
@@ -176,21 +179,37 @@ func (s *server) GetHeadroomInfo(ctx context.Context, in *pb.HeadroomInfoRequest
 	//defer s.mu.Unlock()
 	bwUsed := s.bpfRunner.GetStats()
 	hrInfos := make([]*pb.BandwidthInfo, 0)
-	log.Printf("cahce has %d measure and  %d reqs , req has %d bws", len(s.HeadroomCacheMeasured),  len(s.HeadroomCacheRequested), len(in.BwInfo))
-	for _, hostInfo := range in.BwInfo {
+	log.Printf("cahce has %d measure and  %d reqs , req has %d bws", len(s.HeadroomCacheMeasured), len(s.HeadroomCacheRequested), len(in.BwInfo))
+	for dst, trafficSent := range bwUsed {
 		//requestedHeadroomInfo, exists  := s.HeadroomCacheRequested[hostInfo.Host]
-		log.Printf("host = %s headroom req = %f %v", hostInfo.Host, hostInfo.SendBw, hostInfo)
-		s.HeadroomCacheRequested[hostInfo.Host] = *hostInfo	
-		
-		measuredHeadroom, exists := s.HeadroomCacheMeasured[hostInfo.Host]
-		if exists {
-			headroomInfo := pb.BandwidthInfo{Host:measuredHeadroom.Host, SendBw: float32(measuredHeadroom.Snd), ReceiveBw: float32(measuredHeadroom.Rcv)}
-			trafficSent, exists := bwUsed[hostInfo.Host]
-        		if exists {
-				headroomInfo.RecvBwUsed = float32(trafficSent)
+		var hostInfo *pb.BandwidthInfo = nil
+		for _, h := range in.BwInfo {
+			if h.Host == dst {
+				hostInfo = h
 			}
-			hrInfos = append(hrInfos, &headroomInfo)
 		}
+		log.Printf("Recv bw Used = %f\n", trafficSent)
+		bwInfo := pb.BandwidthInfo{RecvBwUsed: float32(trafficSent)}
+		bwInfo.Host = dst
+		if hostInfo != nil {
+			log.Printf("host = %s headroom req = %f %v", bwInfo.Host, hostInfo.SendBw, hostInfo)
+			s.HeadroomCacheRequested[hostInfo.Host] = *hostInfo
+
+			measuredHeadroom, exists := s.HeadroomCacheMeasured[hostInfo.Host]
+			if exists {
+				bwInfo.ReceiveBw = float32(measuredHeadroom.RcvBw)
+				bwInfo.SendBw = float32(measuredHeadroom.SndBw)
+			}
+		}
+		hrInfos = append(hrInfos, &bwInfo)
+		//if exists {
+		//	headroomInfo := pb.BandwidthInfo{Host:measuredHeadroom.Host, SendBw: float32(measuredHeadroom.SndBw), ReceiveBw: float32(measuredHeadroom.RcvBw)}
+		//	trafficSent, exists := bwUsed[hostInfo.Host]
+		//	if exists {
+		//		headroomInfo.RecvBwUsed = float32(trafficSent)
+		//	}
+		//	hrInfos = append(hrInfos, &headroomInfo)
+		//}
 
 	}
 	trInfos := make([]*pb.TracerouteInfo, 0)
@@ -198,38 +217,38 @@ func (s *server) GetHeadroomInfo(ctx context.Context, in *pb.HeadroomInfoRequest
 		trInfo := pb.TracerouteInfo{Host: tr.Host, Hops: tr.Route}
 		trInfos = append(trInfos, &trInfo)
 	}
-	
-	reply := &pb.NetInfoReply{BwInfo: hrInfos, TrInfo:trInfos}
+
+	reply := &pb.NetInfoReply{BwInfo: hrInfos, TrInfo: trInfos}
 	return reply, nil
 }
 
 func (s *server) GetUpdatedNetStats() (BandwidthResults, TracerouteResults, LatencyResults) {
 	var allBwInfo BandwidthResults
 	var allLatencyInfo LatencyResults
-    	var trInfo TracerouteResults
+	var trInfo TracerouteResults
 	//for _, host := range s.hosts {
-	s.pendingBwRequest = true
-	host := s.hosts[s.hostIdx]
-	fmt.Printf("host = %s idx = %d\n", host, s.hostIdx)
-	bwResponse, err := s.QueryNetStats(host, "bw")
-    if err == nil{
-	    bwInfo := GetBwResults(bwResponse)
-	    if len(bwInfo.BandwidthResults) > 0  {
-	
-            	log.Printf("Update stat for %s bw = %f", host, bwInfo.BandwidthResults[0])
-	        allBwInfo.BandwidthResults = append(allBwInfo.BandwidthResults, bwInfo.BandwidthResults[0])
-            	s.hostIdx = (s.hostIdx + 1) 
+		s.pendingBwRequest = true
+		host := s.hosts[s.hostIdx]
+		fmt.Printf("host = %s idx = %d\n", host, s.hostIdx)
+		bwResponse, err := s.QueryNetStats(host, "bw")
+		if err == nil {
+			bwInfo := GetBwResults(bwResponse)
+			if len(bwInfo.BandwidthResults) > 0 {
 
-        }
-    }
+				log.Printf("Update stat for %s rcv bw = %f snd bw = %f %v", host, bwInfo.BandwidthResults[0].RcvBw, bwInfo.BandwidthResults[0].SndBw, bwInfo)
+				allBwInfo.BandwidthResults = append(allBwInfo.BandwidthResults, bwInfo.BandwidthResults[0])
+				s.hostIdx = (s.hostIdx + 1)
+
+			}
+		}
 	//}
 	trResponse, err := s.QueryTrStats()
-    if err == nil {
-	    trInfo = GetTrResults(trResponse)
+	if err == nil {
+		trInfo = GetTrResults(trResponse)
 	}
-    fmt.Printf("tr: Got %d hosts\n", len(trInfo.TracerouteResults))
+	fmt.Printf("tr: Got %d hosts\n", len(trInfo.TracerouteResults))
 
-    fmt.Printf("bw: Got %d hosts\n", len(allBwInfo.BandwidthResults))
+	fmt.Printf("bw: Got %d hosts\n", len(allBwInfo.BandwidthResults))
 	return allBwInfo, trInfo, allLatencyInfo
 }
 
@@ -238,14 +257,16 @@ func (s *server) GetUpdatedHeadroomStats() (BandwidthResults, TracerouteResults)
 	var trInfo TracerouteResults
 	host := s.hosts[s.headroomIdx]
 	//for _, host := range s.hosts {
-	fmt.Printf("headroom host = %s", host)
+	fmt.Printf("headroom host = %s headroom idx = %d\n", host, s.headroomIdx)
 	headroomReq, exists := s.HeadroomCacheRequested[host]
 	if exists {
 		fmt.Sprintf("Query host %s with bw %f", host, headroomReq)
 		bwResponse, err := s.QueryHeadroom(host, float32(headroomReq.SendBw))
 		if err == nil {
+
 			bwInfo := GetBwResults(bwResponse)
-			if len(bwInfo.BandwidthResults) > 0{
+			if len(bwInfo.BandwidthResults) > 0 {
+				log.Printf("Headroom host %s requested = %f actual = %f\n", host, headroomReq.SendBw, bwInfo.BandwidthResults[0].RcvBw)
 				headroomInfo.BandwidthResults = append(headroomInfo.BandwidthResults, bwInfo.BandwidthResults[0])
 				s.headroomIdx = (s.headroomIdx + 1) % len(s.hosts)
 			}
@@ -268,7 +289,7 @@ func (s *server) UpdateCache() {
 			log.Printf("Updated %s", bwResult.Host)
 			s.BwCache[bwResult.Host] = bwResult
 		}
-		if s.hostIdx == len(s.hosts)  {
+		if s.hostIdx == len(s.hosts) {
 			s.pendingBwRequest = false
 			s.hostIdx = 0
 		}
@@ -279,20 +300,20 @@ func (s *server) UpdateCache() {
 		fmt.Printf("Updated %s headroom", bwResult.Host)
 		s.HeadroomCacheMeasured[bwResult.Host] = bwResult
 	}
-	if len(trInfo.TracerouteResults) > 0{
-        		s.TrCache = trInfo
+	if len(trInfo.TracerouteResults) > 0 {
+		s.TrCache = trInfo
 	}
-    		
+
 	s.mu.Unlock()
 }
 
 func (s *server) DoInBackground() {
 	//go func() {
-		for {
-			s.UpdateCache()
-			s.bpfRunner.PrintStats()
-			time.Sleep(15 * time.Second)
-		}
+	for {
+		s.UpdateCache()
+		s.bpfRunner.GetStats()
+		time.Sleep(15 * time.Second)
+	}
 	//}()
 }
 
@@ -306,11 +327,11 @@ func StartServer() {
 	bpfRunner := NewBPFRunner(*device)
 	s := grpc.NewServer()
 	client := http.Client{Timeout: 60 * time.Second}
-	monserver := &server{netClient: client, hosts: hosts, bpfRunner: bpfRunner, hostIdx:0, BwCache:make(map[string]Bandwidth, 0),HeadroomCacheRequested:make(map[string]pb.BandwidthInfo, 0), HeadroomCacheMeasured: make(map[string]Bandwidth, 0), pendingBwRequest: true, headroomIdx:0}
+	monserver := &server{netClient: client, hosts: hosts, bpfRunner: bpfRunner, hostIdx: 0, BwCache: make(map[string]Bandwidth, 0), HeadroomCacheRequested: make(map[string]pb.BandwidthInfo, 0), HeadroomCacheMeasured: make(map[string]Bandwidth, 0), pendingBwRequest: true, headroomIdx: 0}
 
 	pb.RegisterNetMonitorServer(s, monserver)
 	log.Printf("server listening at %v", lis.Addr())
-	go func(){
+	go func() {
 		monserver.DoInBackground()
 	}()
 	if err := s.Serve(lis); err != nil {
@@ -319,5 +340,11 @@ func StartServer() {
 }
 
 func main() {
+	f, err := os.OpenFile("netmon_log", os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0644)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer f.Close()
+	log.SetOutput(f)
 	StartServer()
 }

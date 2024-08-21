@@ -28,5 +28,5 @@
 	"istio_tcp_sent_bytes_total",
 	"istio_tcp_received_bytes_total"
     ],
-    "HeadroomThreshold": 0.1    
+    "Tolerance": 0.0    
 }

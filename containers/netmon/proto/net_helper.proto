@@ -13,7 +13,7 @@ service NetMonitor {
 }
 
 message NetInfoRequest {
-	
+	bool ShouldUpdate = 1;	
 }
 
 message HeadroomInfoRequest {

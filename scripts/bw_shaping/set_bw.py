@@ -27,11 +27,11 @@ def read_topo_config(config_filename, user):
     with open(config_filename) as fh:
         data = json.load(fh)
         for node in data['nodes']:
+            if int(node['port'])<25011:
+                continue
             with open(node['bw_config_file']) as fh:
                 bw_file_data = json.load(fh)
                 files = []
-                if node['port'] < 26413:
-                    continue
                 for l in bw_file_data['links']:
                     files.append(l['bwfile'])
             time.sleep(10)
